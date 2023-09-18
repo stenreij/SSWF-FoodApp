@@ -9,7 +9,6 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\Core.Domain\Core.Domain.csproj" />
-	  <ProjectReference Include="..\FoodApp\FoodApp.csproj" />
 	</ItemGroup>
 
 </Project>
