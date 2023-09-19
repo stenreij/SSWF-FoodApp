@@ -1,4 +1,7 @@
-﻿namespace Core.Domain
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Core.Domain
 {
 
     public class MealPackage
@@ -10,11 +13,11 @@
         public City City { get; set; }
         public Canteen? Canteen { get; set; }
         public int CanteenId { get; set; }
-        public DateOnly PickUpDate { get; set; }
-        public TimeOnly PickUpTime { get; set; }
+        public DateTime PickUpDateTime { get; set; }
+        public DateTime ExpireDateTime { get; set; }
         public bool AdultsOnly { get; set; }
         public double Price { get; set; }
-        public MealType Meal { get; set; }
+        public MealType MealType { get; set; }
         public Student? ReservedByStudent { get; set; }
     }
 }

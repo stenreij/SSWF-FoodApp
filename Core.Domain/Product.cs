@@ -12,6 +12,6 @@ namespace Core.Domain
         public string Name { get; set; }
         public bool ContainsAlcohol { get; set; }
         public string PhotoUrl { get; set; } = null!;
-        public ICollection<MealType> Meals { get; set; } = null!; 
+        public ICollection<MealPackage> Meals { get; set; } = null!; 
     }
 }

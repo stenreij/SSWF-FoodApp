@@ -1,7 +1,7 @@
 ﻿
 namespace Application.Services
 {
-    public class IMealPackageService
+    public interface IMealPackageService
     {
 
     }

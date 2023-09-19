@@ -1,7 +1,24 @@
+using Application.Services;
+using Core.DomainServices;
+using Infrastructure;
+using Microsoft.EntityFrameworkCore;
+using System.Globalization;
+
 var builder = WebApplication.CreateBuilder(args);
+
+// Configure culture to use dot as decimal separator
+var cultureInfo = new CultureInfo("en-US");
+cultureInfo.NumberFormat.NumberDecimalSeparator = ".";
+CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<IMealPackageRepo, MealPackageEFRepo>();
+builder.Services.AddScoped<IMealPackageService, MealPackageService>();
+builder.Services.AddScoped<IProductRepo, ProductEFRepo>();
+builder.Services.AddDbContext<FoodAppDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
 

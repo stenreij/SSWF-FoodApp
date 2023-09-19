@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Core.Domain
+﻿namespace Core.Domain
 {
 
     public enum MealType
     {
-        Brood,
-        Avondmaaltijd,
-        Bier,
-        Wijn
+        Bread,
+        WarmMeal, 
+        Beer,
+        Wine,
     }
 }
