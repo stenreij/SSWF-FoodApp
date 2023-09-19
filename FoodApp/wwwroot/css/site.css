@@ -1,5 +1,5 @@
 html {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 /* Navbar */
@@ -18,23 +18,35 @@ html {
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+    html {
+        font-size: 16px;
+    }
 }
 
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
 }
 
 body {
-  background-color: #ecf3e2 !important;
-  margin-bottom: 60px;
+    background-color: #ecf3e2 !important;
+    margin-bottom: 60px;
 }
 
-/* Footer */
+/* Footer styling */
 .footer {
     background-color: #659765bc !important;
     color: #4a4949 !important;
+    font-size: 16px !important;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.footer a {
+    color: #3e3d3d !important;
+}
+
+.footer a:hover {
+    color: #141514 !important;
 }
