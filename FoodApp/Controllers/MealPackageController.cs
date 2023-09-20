@@ -2,6 +2,7 @@
 using Core.Domain;
 using Core.DomainServices;
 using FoodApp.Models;
+using Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
@@ -19,6 +20,19 @@ namespace FoodApp.Controllers
             _mealPackageRepo = mealPackageRepo;
             _mealPackageService = mealPackageService;
             _productRepo = productRepo;
+        }
+
+        [HttpGet]
+        public IActionResult MealOverview()
+        {
+            var mealPackage = _mealPackageRepo.GetMealPackages();
+            return View(mealPackage);
+        }
+
+        [HttpGet]
+        public IActionResult Reserved()
+        {
+            return View();
         }
 
         [HttpGet]

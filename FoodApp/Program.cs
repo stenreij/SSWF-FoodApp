@@ -7,7 +7,7 @@ using System.Globalization;
 var builder = WebApplication.CreateBuilder(args);
 
 // Configure culture to use dot as decimal separator
-var cultureInfo = new CultureInfo("en-US");
+var cultureInfo = new CultureInfo("nl-NL");
 cultureInfo.NumberFormat.NumberDecimalSeparator = ".";
 CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
 CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
@@ -19,6 +19,7 @@ builder.Services.AddScoped<IMealPackageService, MealPackageService>();
 builder.Services.AddScoped<IProductRepo, ProductEFRepo>();
 builder.Services.AddDbContext<FoodAppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 
 var app = builder.Build();
 

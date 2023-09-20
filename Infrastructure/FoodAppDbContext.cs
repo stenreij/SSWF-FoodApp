@@ -20,7 +20,6 @@ namespace Infrastructure
             modelBuilder.Entity<MealPackage>()
                 .Property(m => m.Price)
                 .HasColumnType("decimal(18, 2)");
-
         }
     }
 }
