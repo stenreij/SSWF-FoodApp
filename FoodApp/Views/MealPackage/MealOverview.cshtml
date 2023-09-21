@@ -33,13 +33,13 @@
                 {
                     <tr>
                         <td>@mealPackage.Name</td>
-                        <td>@mealPackage.City</td>
-                        <td>@mealPackage.Canteen</td>
+                        <td>@mealPackage.Canteen.City</td>
+                        <td>@mealPackage.Canteen.CanteenName</td> 
                         <td>@string.Format("{0:C}", mealPackage.Price)</td>
                         <td>@mealPackage.MealType</td>
                         <td>@mealPackage.AdultsOnly</td>
                         <td>@mealPackage.PickUpDateTime.ToString("dd-MM-yyyy HH:mm")</td>
-                        <td>@mealPackage.ExpireDateTime.ToString("dd-MM-yyyy HH:mm")</td>    
+                        <td>@mealPackage.ExpireDateTime.ToString("dd-MM-yyyy HH:mm")</td>
                         <td>@mealPackage.ReservedByStudent</td>
                     </tr>
                 }

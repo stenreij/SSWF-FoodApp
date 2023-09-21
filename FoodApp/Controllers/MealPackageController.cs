@@ -2,9 +2,7 @@
 using Core.Domain;
 using Core.DomainServices;
 using FoodApp.Models;
-using Infrastructure;
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
 
 namespace FoodApp.Controllers
 {
@@ -12,20 +10,25 @@ namespace FoodApp.Controllers
     {
         private readonly IMealPackageRepo _mealPackageRepo;
         private readonly IProductRepo _productRepo;
+        private readonly ICanteenRepo _canteenRepo;
         private readonly IMealPackageService _mealPackageService;
 
-        public MealPackageController(IMealPackageRepo mealPackageRepo, IMealPackageService mealPackageService, 
-            IProductRepo productRepo)
+        public MealPackageController(IMealPackageRepo mealPackageRepo, IMealPackageService mealPackageService,
+            IProductRepo productRepo, ICanteenRepo canteenRepo)
         {
             _mealPackageRepo = mealPackageRepo;
             _mealPackageService = mealPackageService;
             _productRepo = productRepo;
+            _canteenRepo = canteenRepo;
         }
 
         [HttpGet]
         public IActionResult MealOverview()
         {
             var mealPackage = _mealPackageRepo.GetMealPackages();
+            var canteens = _canteenRepo.GetCanteens();
+
+            ViewBag.Canteens = canteens;
             return View(mealPackage);
         }
 
@@ -38,31 +41,53 @@ namespace FoodApp.Controllers
         [HttpGet]
         public IActionResult AddMealPackage()
         {
+            var canteens = _canteenRepo.GetCanteens(); 
+
+            ViewBag.Canteens = canteens; 
+
             return View();
         }
 
         [HttpPost]
         public IActionResult AddMealPackage(MealPackageViewModel mealPackageViewModel)
         {
-            if (ModelState.IsValid)
+            try
             {
-                var mealPackage = new MealPackage
+                if (ModelState.IsValid)
                 {
-                    Name = mealPackageViewModel.Name,
-                    PickUpDateTime = mealPackageViewModel.PickUpDateTime,
-                    ExpireDateTime = mealPackageViewModel.ExpireDateTime,
-                    AdultsOnly = false,
-                    Price = mealPackageViewModel.Price,
-                    City = mealPackageViewModel.City,
-                    CanteenId = mealPackageViewModel.CanteenId,
-                    MealType = mealPackageViewModel.MealType,
-                };
+                    var canteen = _canteenRepo.GetCanteenById(mealPackageViewModel.CanteenId);
 
-                _mealPackageRepo.AddMealPackage(mealPackage);
-                return RedirectToAction("Index", "Home");
+                    var mealPackage = new MealPackage
+                    {
+                        Name = mealPackageViewModel.Name,
+                        PickUpDateTime = mealPackageViewModel.PickUpDateTime,
+                        ExpireDateTime = mealPackageViewModel.ExpireDateTime,
+                        AdultsOnly = false,
+                        Price = mealPackageViewModel.Price,
+                        City = canteen.City,
+
+                        Canteen = canteen,
+
+                        MealType = mealPackageViewModel.MealType,
+                    };
+
+                    _mealPackageRepo.AddMealPackage(mealPackage);
+
+                    return RedirectToAction("MealOverview");
+                }
+
+                var canteens = _canteenRepo.GetCanteens();
+                ViewBag.Canteens = canteens;
+
+                return View(mealPackageViewModel);
             }
-            return View();
-
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("CustomError", "Something went wrong while adding a new MealPackage: " + ex.Message);
+                var canteens = _canteenRepo.GetCanteens();
+                ViewBag.Canteens = canteens;
+                return View(mealPackageViewModel);
+            }
         }
     }
 }

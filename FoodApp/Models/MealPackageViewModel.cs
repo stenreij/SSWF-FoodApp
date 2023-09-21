@@ -9,7 +9,7 @@ public class MealPackageViewModel
     public string Name { get; set; } = null!;
     public ICollection<Product>? Products { get; set; }
     public City City { get; set; }
-    public int CanteenId { get; set; }
+    public int CanteenId { get; set; } 
     public DateTime PickUpDateTime { get; set; }
     public DateTime ExpireDateTime { get; set; }
     public bool AdultsOnly { get; set; }
@@ -18,5 +18,5 @@ public class MealPackageViewModel
     public Student? ReservedByStudent { get; set; }
     public List<CheckBoxItem>? ProductCheckBoxes { get; set; }
     public List<int>? SelectedProducts { get; set; }
-
 }
+
