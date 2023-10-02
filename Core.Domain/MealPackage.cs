@@ -8,7 +8,7 @@ namespace Core.Domain
     {
         public int Id { get; set; }
         [Required(ErrorMessage = "Name is required.")]
-        public string Name { get; set; } = null!;
+        public string Name { get; set; } =  string.Empty!;
         public ICollection<Product>? Products { get; set; }
         public City City { get; set; }
         [Required(ErrorMessage = "Canteen is required.")]

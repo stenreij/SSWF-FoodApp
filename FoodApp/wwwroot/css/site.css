@@ -82,3 +82,8 @@ table tr:nth-child(odd) {
 table tr:nth-child(even) {
     background-color: #e6eddd;
 }
+
+.btn-primary {
+    background-color: #008000 !important;
+    border-color: #171717
+}

@@ -3,6 +3,7 @@ using Core.Domain;
 using Core.DomainServices;
 using FoodApp.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Xml.Linq;
 
 namespace FoodApp.Controllers
 {
@@ -41,11 +42,33 @@ namespace FoodApp.Controllers
         [HttpGet]
         public IActionResult AddMealPackage()
         {
-            var canteens = _canteenRepo.GetCanteens(); 
+            var canteens = _canteenRepo.GetCanteens();
 
-            ViewBag.Canteens = canteens; 
+            ViewBag.Canteens = canteens;
 
             return View();
+        }
+
+        [HttpGet]
+        public IActionResult EditMealPackage(int id)
+        {
+            var mealPackage = _mealPackageRepo.GetMealPackageById(id);
+            var canteens = _canteenRepo.GetCanteens();
+
+            var mealPackageViewModel = new MealPackageViewModel
+            {
+                Name = mealPackage.Name,
+                PickUpDateTime = mealPackage.PickUpDateTime,
+                ExpireDateTime = mealPackage.ExpireDateTime,
+                AdultsOnly = mealPackage.AdultsOnly,
+                Price = mealPackage.Price,
+                City = mealPackage.City,
+                CanteenId = mealPackage.Canteen.Id,
+                MealType = mealPackage.MealType,
+            };
+
+            ViewBag.Canteens = canteens;
+            return View(mealPackageViewModel);
         }
 
         [HttpPost]
@@ -57,23 +80,31 @@ namespace FoodApp.Controllers
                 {
                     var canteen = _canteenRepo.GetCanteenById(mealPackageViewModel.CanteenId);
 
-                    var mealPackage = new MealPackage
+                    var currentTime = DateTime.Now;
+                    var timeDifference = mealPackageViewModel.PickUpDateTime - currentTime;
+
+                    if (timeDifference.TotalHours < 48)
                     {
-                        Name = mealPackageViewModel.Name,
-                        PickUpDateTime = mealPackageViewModel.PickUpDateTime,
-                        ExpireDateTime = mealPackageViewModel.ExpireDateTime,
-                        AdultsOnly = false,
-                        Price = mealPackageViewModel.Price,
-                        City = canteen.City,
+                        var mealPackage = new MealPackage
+                        {
+                            Name = mealPackageViewModel.Name,
+                            PickUpDateTime = mealPackageViewModel.PickUpDateTime,
+                            ExpireDateTime = mealPackageViewModel.ExpireDateTime,
+                            AdultsOnly = false,
+                            Price = mealPackageViewModel.Price,
+                            City = canteen.City,
 
-                        Canteen = canteen,
+                            Canteen = canteen,
+                            MealType = mealPackageViewModel.MealType,
+                        };
 
-                        MealType = mealPackageViewModel.MealType,
-                    };
-
-                    _mealPackageRepo.AddMealPackage(mealPackage);
-
-                    return RedirectToAction("MealOverview");
+                        _mealPackageRepo.AddMealPackage(mealPackage);
+                        return RedirectToAction("MealOverview");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("PickUpDateTime", "PickUpDateTime must be within 48 hours from now.");
+                    }
                 }
 
                 var canteens = _canteenRepo.GetCanteens();
@@ -87,6 +118,79 @@ namespace FoodApp.Controllers
                 var canteens = _canteenRepo.GetCanteens();
                 ViewBag.Canteens = canteens;
                 return View(mealPackageViewModel);
+            }
+        }
+
+        [HttpPost]
+        public IActionResult DeleteMealPackage(int id)
+        {
+            _mealPackageRepo.DeleteMealPackage(id);
+            return RedirectToAction("MealOverview");
+        }
+
+        [HttpPost]
+        public IActionResult EditMealPackage(MealPackageViewModel editMealPackageViewModel)
+        {
+            var canteens = _canteenRepo.GetCanteens();
+            ViewBag.Canteens = canteens;
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var canteen = _canteenRepo.GetCanteenById(editMealPackageViewModel.CanteenId);
+                    var currentTime = DateTime.Now;
+
+                    var timeDifference = editMealPackageViewModel.PickUpDateTime - currentTime;
+
+                    if (timeDifference.TotalHours < 48 && editMealPackageViewModel.PickUpDateTime >= currentTime)
+                    {
+                        // Haal het pakket op dat moet worden bijgewerkt (Op Id)
+                        var existingMealPackage = _mealPackageRepo.GetMealPackageById(editMealPackageViewModel.Id);
+
+                        if (existingMealPackage != null)
+                        {
+                            // Werk de eigenschappen van het bestaande pakket bij
+                            existingMealPackage.Name = editMealPackageViewModel.Name;
+                            existingMealPackage.PickUpDateTime = editMealPackageViewModel.PickUpDateTime;
+                            existingMealPackage.ExpireDateTime = editMealPackageViewModel.ExpireDateTime;
+                            existingMealPackage.Price = editMealPackageViewModel.Price;
+                            existingMealPackage.MealType = editMealPackageViewModel.MealType;
+                            existingMealPackage.AdultsOnly = false;
+
+                            if (existingMealPackage.ExpireDateTime > existingMealPackage.PickUpDateTime)
+                            {
+                                _mealPackageRepo.EditMealPackage(existingMealPackage);
+                                return RedirectToAction("MealOverview");
+                            }
+                            else
+                            {
+                                ModelState.AddModelError("ExpireDateTime", "Expired must be at a later time dan PickUpDate!");
+                            }
+                        }
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("PickUpDateTime", "PickUpDate must be within 2 days from now!");
+                    }
+                }
+
+                var existingMealPackageFromDatabase = _mealPackageRepo.GetMealPackageById(editMealPackageViewModel.Id);
+
+                if (existingMealPackageFromDatabase != null)
+                {
+                    editMealPackageViewModel.Name = existingMealPackageFromDatabase.Name;
+                    editMealPackageViewModel.PickUpDateTime   = existingMealPackageFromDatabase.PickUpDateTime;
+                    editMealPackageViewModel.ExpireDateTime = existingMealPackageFromDatabase.ExpireDateTime;
+                    editMealPackageViewModel.Price = existingMealPackageFromDatabase.Price;
+                    editMealPackageViewModel.MealType = existingMealPackageFromDatabase.MealType;
+                }
+
+                return View("EditMealPackage", editMealPackageViewModel);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("CustomError", "Something went wrong while updating the pakket: " + ex.Message);
+                return View("EditMealPackage", editMealPackageViewModel);
             }
         }
     }

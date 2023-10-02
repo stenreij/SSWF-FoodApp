@@ -31,5 +31,21 @@ namespace Infrastructure
             _context.SaveChanges();
             return mealPackage;
         }
+
+        public void DeleteMealPackage(int id)
+        {
+            MealPackage mealPackage = _context.MealPackages.Find(id);
+
+            if(mealPackage != null)
+            {
+                _context.MealPackages.Remove(mealPackage);
+                _context.SaveChanges();
+            }
+        }
+        public void EditMealPackage(MealPackage mealPackage)
+        {
+            _context.Update(mealPackage);
+            _context.SaveChanges();
+        }
     }
 }

@@ -8,6 +8,8 @@ namespace Core.DomainServices
         IEnumerable<MealPackage> GetMealPackages();
         MealPackage GetMealPackageById(int id);
         MealPackage AddMealPackage(MealPackage mealPackage);
+        void EditMealPackage(MealPackage mealPackage);
+        void DeleteMealPackage(int id);
 
     }
 }
