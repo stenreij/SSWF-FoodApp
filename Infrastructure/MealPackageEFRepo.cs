@@ -20,9 +20,19 @@ namespace Infrastructure
             return _context.MealPackages.ToList();
         }
 
+        public IEnumerable<MealPackage> GetAvailableMealPackages()
+        {
+            return _context.MealPackages.Where(p => p.ReservedByStudent == null).ToList();
+        }
+
         public MealPackage GetMealPackageById(int id)
         {
             return _context.MealPackages.First(p => p.Id == id);
+        }
+
+        public IEnumerable<MealPackage> GetReservedMealPackages()
+        {
+            return _context.MealPackages.Where(p => p.ReservedByStudent != null).ToList();
         }
 
         public MealPackage AddMealPackage(MealPackage mealPackage)
@@ -47,5 +57,6 @@ namespace Infrastructure
             _context.Update(mealPackage);
             _context.SaveChanges();
         }
+
     }
 }

@@ -1,4 +1,7 @@
-﻿@{
+﻿@using Core.Domain;
+@model List<MealPackage>
+
+@{
     ViewData["Title"] = "Reserved MealPackages";
 }
 
@@ -11,8 +14,57 @@
 <body>
     <div class="text-center">
         <h1>@ViewData["Title"]</h1>
-        @* TODO: Make and load an overview of all the meals that are already reserved! *@
-        <p>Show here an overview of all the reserved mealpackages.</p>
+        @if (!Model.Any())
+        {
+            <p class="alert">For now there are no reserved mealpackages.</p>
+        }
+        else
+        {
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>City</th>
+                        <th>Canteen</th>
+                        <th>Price</th>
+                        <th>MealType</th>
+                        <th>18+</th>
+                        <th>PickUpDateTime</th>
+                        <th>ExpireDateTime</th>
+                        <th>Reserved</th>
+                        <th>Update</th>
+                        <th>Delete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var mealPackage in Model)
+                    {
+                        <tr>
+                            <td>@mealPackage.Name</td>
+                            <td>@mealPackage.Canteen.City</td>
+                            <td>@mealPackage.Canteen.CanteenName</td>
+                            <td>@string.Format("{0:C}", mealPackage.Price)</td>
+                            <td>@mealPackage.MealType</td>
+                            <td>@mealPackage.AdultsOnly</td>
+                            <td>@mealPackage.PickUpDateTime.ToString("dd-MM-yyyy HH:mm")</td>
+                            <td>@mealPackage.ExpireDateTime.ToString("dd-MM-yyyy HH:mm")</td>
+                            <td>@mealPackage.ReservedByStudent.FirstName</td>
+
+                            <td>
+                                <a asp-controller="MealPackage" asp-action="EditMealPackage" asp-route-id="@mealPackage.Id" class="btn btn-primary">Edit</a>
+                            </td>
+
+                            <td>
+                                <form method="post" action="@Url.Action("DeleteMealPackage", "MealPackage", new { id = mealPackage.Id })">
+                                    @Html.Hidden("id", mealPackage.Id)
+                                    <button type="submit" class="btn btn-primary">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
     </div>
 </body>
 </html>

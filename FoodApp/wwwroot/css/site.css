@@ -87,3 +87,16 @@ table tr:nth-child(even) {
     background-color: #008000 !important;
     border-color: #171717
 }
+
+/* Alert voor no content (e.g. no reserved meals, so nothing to be shown) */
+.alert {
+    padding: 20px;
+    margin-top: 50px;
+    margin-bottom: 20px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    color: #260c0c;
+    font-size: 18px;
+    background-color: #f7dad9;
+    border-color: #f1bcbc;
+}

@@ -18,6 +18,7 @@ builder.Services.AddScoped<IMealPackageRepo, MealPackageEFRepo>();
 builder.Services.AddScoped<IMealPackageService, MealPackageService>();
 builder.Services.AddScoped<IProductRepo, ProductEFRepo>();
 builder.Services.AddScoped<ICanteenRepo, CanteenEFRepo>();
+builder.Services.AddScoped<IStudentRepo, StudentEFRepo>();
 builder.Services.AddDbContext<FoodAppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 

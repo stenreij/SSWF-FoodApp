@@ -12,23 +12,27 @@ namespace FoodApp.Controllers
         private readonly IMealPackageRepo _mealPackageRepo;
         private readonly IProductRepo _productRepo;
         private readonly ICanteenRepo _canteenRepo;
+        private readonly IStudentRepo _studentRepo;
         private readonly IMealPackageService _mealPackageService;
 
         public MealPackageController(IMealPackageRepo mealPackageRepo, IMealPackageService mealPackageService,
-            IProductRepo productRepo, ICanteenRepo canteenRepo)
+            IProductRepo productRepo, ICanteenRepo canteenRepo, IStudentRepo studentRepo)
         {
             _mealPackageRepo = mealPackageRepo;
             _mealPackageService = mealPackageService;
             _productRepo = productRepo;
             _canteenRepo = canteenRepo;
+            _studentRepo = studentRepo;
         }
 
         [HttpGet]
         public IActionResult MealOverview()
         {
-            var mealPackage = _mealPackageRepo.GetMealPackages();
+            var mealPackage = _mealPackageRepo.GetAvailableMealPackages();
             var canteens = _canteenRepo.GetCanteens();
+            var students = _studentRepo.GetStudents();
 
+            ViewBag.Students = students;
             ViewBag.Canteens = canteens;
             return View(mealPackage);
         }
@@ -36,7 +40,14 @@ namespace FoodApp.Controllers
         [HttpGet]
         public IActionResult Reserved()
         {
-            return View();
+            var mealPackage = _mealPackageRepo.GetReservedMealPackages();
+
+            var canteens = _canteenRepo.GetCanteens();
+            var students = _studentRepo.GetStudents();
+
+            ViewBag.Students = students;
+            ViewBag.Canteens = canteens;
+            return View(mealPackage);
         }
 
         [HttpGet]
@@ -133,6 +144,7 @@ namespace FoodApp.Controllers
         {
             var canteens = _canteenRepo.GetCanteens();
             ViewBag.Canteens = canteens;
+
             try
             {
                 if (ModelState.IsValid)
@@ -144,12 +156,10 @@ namespace FoodApp.Controllers
 
                     if (timeDifference.TotalHours < 48 && editMealPackageViewModel.PickUpDateTime >= currentTime)
                     {
-                        // Haal het pakket op dat moet worden bijgewerkt (Op Id)
                         var existingMealPackage = _mealPackageRepo.GetMealPackageById(editMealPackageViewModel.Id);
 
                         if (existingMealPackage != null)
                         {
-                            // Werk de eigenschappen van het bestaande pakket bij
                             existingMealPackage.Name = editMealPackageViewModel.Name;
                             existingMealPackage.PickUpDateTime = editMealPackageViewModel.PickUpDateTime;
                             existingMealPackage.ExpireDateTime = editMealPackageViewModel.ExpireDateTime;
@@ -179,7 +189,7 @@ namespace FoodApp.Controllers
                 if (existingMealPackageFromDatabase != null)
                 {
                     editMealPackageViewModel.Name = existingMealPackageFromDatabase.Name;
-                    editMealPackageViewModel.PickUpDateTime   = existingMealPackageFromDatabase.PickUpDateTime;
+                    editMealPackageViewModel.PickUpDateTime = existingMealPackageFromDatabase.PickUpDateTime;
                     editMealPackageViewModel.ExpireDateTime = existingMealPackageFromDatabase.ExpireDateTime;
                     editMealPackageViewModel.Price = existingMealPackageFromDatabase.Price;
                     editMealPackageViewModel.MealType = existingMealPackageFromDatabase.MealType;

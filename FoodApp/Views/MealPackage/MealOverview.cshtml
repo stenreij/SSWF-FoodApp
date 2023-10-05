@@ -42,7 +42,18 @@
                         <td>@mealPackage.AdultsOnly</td>
                         <td>@mealPackage.PickUpDateTime.ToString("dd-MM-yyyy HH:mm")</td>
                         <td>@mealPackage.ExpireDateTime.ToString("dd-MM-yyyy HH:mm")</td>
-                        <td>@mealPackage.ReservedByStudent</td>
+                        <td>
+                            @if (mealPackage.ReservedByStudent != null)
+                            {
+                                @mealPackage.ReservedByStudent.FirstName
+                            }
+                            else
+                            {
+                                <p>Not reserved</p>
+                            }
+                        </td>
+
+
                         <td>
                             <a asp-controller="MealPackage" asp-action="EditMealPackage" asp-route-id="@mealPackage.Id" class="btn btn-primary">Edit</a>
                         </td>
