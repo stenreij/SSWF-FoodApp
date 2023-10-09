@@ -9,7 +9,6 @@ namespace Core.Domain
         public int Id { get; set; }
         [Required(ErrorMessage = "Name is required.")]
         public string Name { get; set; } =  string.Empty!;
-        public ICollection<Product>? Products { get; set; }
         public City City { get; set; }
         [Required(ErrorMessage = "Canteen is required.")]
         public Canteen Canteen { get; set; } = null!;
@@ -25,5 +24,6 @@ namespace Core.Domain
         [Required(ErrorMessage = "Meal type is required.")]
         public MealType MealType { get; set; }
         public Student? ReservedByStudent { get; set; }
+        public ICollection<Product> Products { get; set; }
     }
 }

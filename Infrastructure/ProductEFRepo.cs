@@ -19,7 +19,7 @@ namespace Infrastructure
 
         public Product GetProductById(int id)
         {
-            return _context.Products.FirstOrDefault(p => p.Id == id);
+            return _context.Products.First(p => p.Id == id);
         }
     }
 }

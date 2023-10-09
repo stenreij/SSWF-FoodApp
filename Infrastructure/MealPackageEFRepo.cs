@@ -52,6 +52,7 @@ namespace Infrastructure
                 _context.SaveChanges();
             }
         }
+
         public void EditMealPackage(MealPackage mealPackage)
         {
             _context.Update(mealPackage);

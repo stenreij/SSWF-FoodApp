@@ -12,7 +12,6 @@ namespace Application.Services
             _mealRepo = mealPackageRepo;
         }
 
-        //Get MealPackages ordered by pick up date/time (and not yet reserved)
         public IEnumerable<MealPackage> GetMealPackages()
             => _mealRepo.GetMealPackages();
 
