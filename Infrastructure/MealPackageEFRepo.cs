@@ -22,17 +22,28 @@ namespace Infrastructure
 
         public IEnumerable<MealPackage> GetAvailableMealPackages()
         {
-            return _context.MealPackages.Where(p => p.ReservedByStudent == null).ToList();
+            var mealPackages = _context.MealPackages
+                .Where(p => p.ReservedByStudent == null)
+                .ToList();
+
+            mealPackages = mealPackages.OrderBy(p => p.PickUpDateTime).ToList();
+
+            return mealPackages;
         }
+
 
         public MealPackage GetMealPackageById(int id)
         {
-            return _context.MealPackages.First(p => p.Id == id);
+            return _context.MealPackages
+                .First(p => p.Id == id);
         }
 
         public IEnumerable<MealPackage> GetReservedMealPackages()
         {
-            return _context.MealPackages.Where(p => p.ReservedByStudent != null).ToList();
+            return _context.MealPackages
+                .Where(p => p.ReservedByStudent != null)
+                .OrderBy(p => p.PickUpDateTime)
+                .ToList();
         }
 
         public MealPackage AddMealPackage(MealPackage mealPackage)
@@ -55,9 +66,51 @@ namespace Infrastructure
 
         public void EditMealPackage(MealPackage mealPackage)
         {
-            _context.Update(mealPackage);
+            _context.MealPackages.Update(mealPackage);
             _context.SaveChanges();
         }
 
+        public IEnumerable<Product> GetMealPackageProducts(int mealPackageId)
+        {
+            return _context.MealPackages
+                .Where(mp => mp.Id == mealPackageId)
+                .SelectMany(mp => mp.Products)
+                .ToList();
+        }
+
+        public void RemoveProductsFromMealPackage(int mealPackageId, int productId)
+        {
+            var mealPackage = _context.MealPackages
+                .Include(mp => mp.Products)
+                .FirstOrDefault(mp => mp.Id == mealPackageId);
+
+            if (mealPackage != null)
+            {
+                var productToRemove = mealPackage.Products.FirstOrDefault(p => p.Id == productId);
+
+                if (productToRemove != null)
+                {
+                    mealPackage.Products.Remove(productToRemove);
+                    _context.SaveChanges();
+                }
+            }
+        }
+        public void AddProductToMealPackage(int mealPackageId, int productId)
+        {
+            var mealPackage = _context.MealPackages
+                .Include(mp => mp.Products)
+                .FirstOrDefault(mp => mp.Id == mealPackageId);
+
+            if (mealPackage != null)
+            {
+                var productToAdd = _context.Products.FirstOrDefault(p => p.Id == productId);
+
+                if (productToAdd != null && !mealPackage.Products.Any(p => p.Id == productId))
+                {
+                    mealPackage.Products.Add(productToAdd);
+                    _context.SaveChanges();
+                }
+            }
+        }
     }
 }

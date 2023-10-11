@@ -46,18 +46,16 @@
                 }
             </select>
         </div>
-        <div class="mb-3">
-            Select Products:
-            @foreach (var product in Model.Products)
-            {
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="SelectedProducts" value="@product.Id">
-                    <label class="form-check-label">
-                        @product.Name
-                    </label>
-                </div>
-            }
-        </div>
+        <label class="form-label">Select Products:</label>
+        @foreach (var product in Model.Products)
+        {
+            <div class="form-check">            
+                <input class="form-check-input" type="checkbox" name="SelectedProducts" value="@product.Id" @(Model.SelectedProducts?.Contains(product.Id) ?? false ? "checked" : "")>
+                <label class="form-check-label">
+                    @product.Name
+                </label>
+            </div>
+        }
 
         <button type="submit" class="btn btn-primary">Add Meal</button>
     </form>

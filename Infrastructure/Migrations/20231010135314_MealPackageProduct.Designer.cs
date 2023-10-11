@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(FoodAppDbContext))]
-    [Migration("20230919164656_Changed Database MealPrice Type")]
-    partial class ChangedDatabaseMealPriceType
+    [Migration("20231010135314_MealPackageProduct")]
+    partial class MealPackageProduct
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -92,6 +92,19 @@ namespace Infrastructure.Migrations
                     b.HasIndex("ReservedByStudentId");
 
                     b.ToTable("MealPackages");
+                });
+
+            modelBuilder.Entity("Core.Domain.MealPackageProduct", b =>
+                {
+                    b.Property<int>("MealPackageId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.HasKey("MealPackageId", "ProductId");
+
+                    b.ToTable("MealPackageProducts");
                 });
 
             modelBuilder.Entity("Core.Domain.Product", b =>

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(FoodAppDbContext))]
-    [Migration("20230919145915_Changed Database")]
-    partial class ChangedDatabase
+    [Migration("20231009091207_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -46,7 +46,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Canteen");
+                    b.ToTable("Canteens");
                 });
 
             modelBuilder.Entity("Core.Domain.MealPackage", b =>
@@ -69,7 +69,7 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime>("ExpireDateTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Meal")
+                    b.Property<int>("MealType")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
@@ -79,8 +79,8 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime>("PickUpDateTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<double>("Price")
-                        .HasColumnType("float");
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int?>("ReservedByStudentId")
                         .HasColumnType("int");

@@ -79,6 +79,7 @@ namespace FoodApp.Controllers
             try
             {
                 var mealPackage = _mealPackageRepo.GetMealPackageById(id);
+                var canteens = _canteenRepo.GetCanteens();
 
                 if (mealPackage == null)
                 {
@@ -91,7 +92,6 @@ namespace FoodApp.Controllers
                     .SelectMany(mp => mp.Products.Select(p => p.Id))
                     .ToList();
 
-                // Bouw een lijst met objecten op die producten en een indicator voor selectie bevatten
                 var productViewModels = products.Select(p => new ProductCheckBoxes
                 {
                     Product = p,
@@ -99,23 +99,19 @@ namespace FoodApp.Controllers
                     IsChecked = selectedProductIds.Contains(p.Id)
                 }).ToList();
 
-                var canteens = _canteenRepo.GetCanteens();
-
                 var mealPackageViewModel = new MealPackageViewModel
                 {
                     Id = mealPackage.Id,
                     Name = mealPackage.Name,
+                    CanteenId = mealPackage.Canteen.Id,
                     PickUpDateTime = mealPackage.PickUpDateTime,
                     ExpireDateTime = mealPackage.ExpireDateTime,
                     AdultsOnly = mealPackage.AdultsOnly,
                     Price = mealPackage.Price,
-                    City = mealPackage.City,
-                    CanteenId = mealPackage.Canteen.Id,
                     MealType = mealPackage.MealType,
+                    Products = products.ToList(),
                     ProductCheckBoxes = productViewModels,
-
-                    // Hier wordt de lijst met geselecteerde producten ingesteld
-                    SelectedProducts = selectedProductIds
+                    SelectedProducts = selectedProductIds,
                 };
 
                 ViewBag.Canteens = canteens;
@@ -124,73 +120,72 @@ namespace FoodApp.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("CustomError", "Something went wrong while loading the meal package: " + ex.Message);
-                return View("EditMealPackage", new MealPackageViewModel());
+                ModelState.AddModelError("CustomError", "Something went wrong while loading the meal package for editing: " + ex.Message);
+                var canteens = _canteenRepo.GetCanteens();
+                ViewBag.Canteens = canteens;
+
+                return View(new MealPackageViewModel());
             }
         }
 
         [HttpPost]
-        public IActionResult AddMealPackage(MealPackageViewModel mealPackageViewModel, List<int>? SelectedProducts)
+        public IActionResult AddMealPackage(MealPackageViewModel mealPackageViewModel, List<int> selectedProducts)
         {
             try
             {
-                var canteen = _canteenRepo.GetCanteenById(mealPackageViewModel.CanteenId);
-
-                var currentTime = DateTime.Now;
-                var timeDifference = mealPackageViewModel.PickUpDateTime - currentTime;
-
                 var products = _productRepo.GetProducts();
-
-                var selectedProducts = SelectedProducts != null
-                    ? products.Where(p => SelectedProducts.Contains(p.Id)).ToList()
+                var canteen = _canteenRepo.GetCanteenById(mealPackageViewModel.CanteenId);
+                var SelectedProducts = selectedProducts != null
+                    ? products.Where(p => selectedProducts.Contains(p.Id)).ToList()
                     : new List<Product>();
+                bool containsAlcohol = SelectedProducts.Any(p => p.ContainsAlcohol);
+
+                mealPackageViewModel.SelectedProducts = SelectedProducts.Select(p => p.Id).ToList();
 
                 if (ModelState.IsValid)
                 {
+                    var currentTime = DateTime.Now;
+                    var timeDifference = mealPackageViewModel.PickUpDateTime - currentTime;
+
                     if (timeDifference.TotalHours < 48 && mealPackageViewModel.PickUpDateTime >= currentTime)
                     {
-                        var mealPackage = new MealPackage
+                        var mealpackage = new MealPackage
                         {
                             Name = mealPackageViewModel.Name,
                             PickUpDateTime = mealPackageViewModel.PickUpDateTime,
                             ExpireDateTime = mealPackageViewModel.ExpireDateTime,
-                            AdultsOnly = false,
                             Price = mealPackageViewModel.Price,
-                            City = canteen.City,
-                            Canteen = canteen,
                             MealType = mealPackageViewModel.MealType,
-                            Products = selectedProducts
+                            City = canteen.City,
+                            AdultsOnly = containsAlcohol,
+                            Canteen = canteen,
+                            Products = SelectedProducts,
                         };
-
-                        _mealPackageRepo.AddMealPackage(mealPackage);
-
-                        return RedirectToAction("MealOverview");
+                        if (mealPackageViewModel.ExpireDateTime > mealPackageViewModel.PickUpDateTime)
+                        {
+                            _mealPackageRepo.AddMealPackage(mealpackage);
+                            return RedirectToAction("MealOverview");
+                        }
+                        else
+                        {
+                            ModelState.AddModelError("ExpireDateTime", "ExpireDate has to be after the PickUpDateTime.");
+                        }
                     }
                     else
                     {
-                        ModelState.AddModelError("PickUpDateTime", "PickUp DateTime must be within 2 days from now!");
+                        ModelState.AddModelError("PickUpDateTime", "PickUpDateTime can only be 2 days from now.");
                     }
                 }
-
-
-                if (selectedProducts.Count == 0)
-                {
-                    ModelState.AddModelError("SelectedProducts", "Please select at least one product.");
-                }
-
                 var canteens = _canteenRepo.GetCanteens();
-                ViewBag.Canteens = canteens;
-
                 mealPackageViewModel.Products = products.ToList();
-
+                ViewBag.Canteens = canteens;
                 return View(mealPackageViewModel);
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("CustomError", "Something went wrong while adding a new MealPackage: " + ex.Message);
+                ModelState.AddModelError("CustomError", "Something went wrong while adding a new pakket: " + ex.Message);
                 var canteens = _canteenRepo.GetCanteens();
                 ViewBag.Canteens = canteens;
-
                 return View(mealPackageViewModel);
             }
         }
@@ -203,75 +198,90 @@ namespace FoodApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult EditMealPackage(MealPackageViewModel editMealPackageViewModel, List<int>? SelectedProducts)
+        public IActionResult EditMealPackage(MealPackageViewModel mealPackageViewModel)
         {
             try
             {
-                var canteen = _canteenRepo.GetCanteenById(editMealPackageViewModel.CanteenId);
-                var currentTime = DateTime.Now;
-                var timeDifference = editMealPackageViewModel.PickUpDateTime - currentTime;
-
                 var products = _productRepo.GetProducts();
-
-                var selectedProducts = SelectedProducts != null
-                    ? products.Where(p => SelectedProducts.Contains(p.Id)).ToList()
-                    : new List<Product>();
-
-                // Haal de lijst met producten op basis van de geselecteerde IDs
-                editMealPackageViewModel.Products = selectedProducts;
+                mealPackageViewModel.Products = products.ToList(); // Zet de lijst met producten in het ViewModel
 
                 if (ModelState.IsValid)
                 {
-                    if (timeDifference.TotalHours < 48 && editMealPackageViewModel.PickUpDateTime >= currentTime)
+                    var canteen = _canteenRepo.GetCanteenById(mealPackageViewModel.CanteenId);
+
+                    // Haal het bestaande MealPackage op
+                    var existingMealPackage = _mealPackageRepo.GetMealPackageById(mealPackageViewModel.Id);
+
+                    if (existingMealPackage == null)
                     {
-                        var existingMealPackage = _mealPackageRepo.GetMealPackageById(editMealPackageViewModel.Id);
+                        return NotFound();
+                    }
 
-                        if (existingMealPackage != null)
-                        {
-                            existingMealPackage.Name = editMealPackageViewModel.Name;
-                            existingMealPackage.PickUpDateTime = editMealPackageViewModel.PickUpDateTime;
-                            existingMealPackage.ExpireDateTime = editMealPackageViewModel.ExpireDateTime;
-                            existingMealPackage.Price = editMealPackageViewModel.Price;
-                            existingMealPackage.MealType = editMealPackageViewModel.MealType;
-                            existingMealPackage.AdultsOnly = false;
+                    // Haal de huidige koppelingen tussen MealPackage en Product op uit de database
+                    var currentMealPackageProducts = _mealPackageRepo.GetMealPackageProducts(existingMealPackage.Id);
 
-                            if (existingMealPackage.ExpireDateTime > existingMealPackage.PickUpDateTime)
-                            {
-                                // Als alles in orde is, bewerk het maaltijdpakket en keer terug naar de overzichtspagina
-                                _mealPackageRepo.EditMealPackage(existingMealPackage);
-                                return RedirectToAction("MealOverview");
-                            }
-                            else
-                            {
-                                ModelState.AddModelError("ExpireDateTime", "Expire DateTime must be later than PickUp DateTime!");
-                            }
-                        }
+                    // Bepaal welke producten moeten worden verwijderd (niet meer geselecteerd)
+                    var productsToRemove = currentMealPackageProducts
+                        .Where(product => !mealPackageViewModel.SelectedProducts.Contains(product.Id))
+                        .ToList();
+
+                    // Verwijder de te verwijderen koppelingen uit de database
+                    foreach (var productToRemove in productsToRemove)
+                    {
+                        _mealPackageRepo.RemoveProductsFromMealPackage(existingMealPackage.Id, productToRemove.Id); // Verwijder de koppeling
+                    }
+
+                    // Voeg de nieuwe geselecteerde producten toe aan de lijst met koppelingen
+                    var productsToAdd = mealPackageViewModel.SelectedProducts
+                        .Where(productId => !currentMealPackageProducts.Any(product => product.Id == productId))
+                        .ToList();
+
+                    foreach (var productId in productsToAdd)
+                    {
+                        _mealPackageRepo.AddProductToMealPackage(existingMealPackage.Id, productId); // Voeg de koppeling toe
+                    }
+
+                    bool containsAlcohol = products.Any(p => mealPackageViewModel.SelectedProducts.Contains(p.Id) && p.ContainsAlcohol);
+
+                    existingMealPackage.Name = mealPackageViewModel.Name;
+                    existingMealPackage.PickUpDateTime = mealPackageViewModel.PickUpDateTime;
+                    existingMealPackage.ExpireDateTime = mealPackageViewModel.ExpireDateTime;
+                    existingMealPackage.Price = mealPackageViewModel.Price;
+                    existingMealPackage.MealType = mealPackageViewModel.MealType;
+                    existingMealPackage.City = canteen.City;
+                    existingMealPackage.AdultsOnly = containsAlcohol;
+                    existingMealPackage.Canteen = canteen;
+
+                    if (mealPackageViewModel.ExpireDateTime > mealPackageViewModel.PickUpDateTime)
+                    {
+                        _mealPackageRepo.EditMealPackage(existingMealPackage);
+                        return RedirectToAction("MealOverview");
                     }
                     else
                     {
-                        ModelState.AddModelError("PickUpDateTime", "PickUp DateTime must be within 2 days from now!");
+                        ModelState.AddModelError("ExpireDateTime", "ExpireDate has to be after the PickUpDateTime.");
                     }
                 }
 
-                // Als ModelState ongeldig is of als er fouten zijn opgetreden, blijft de lijst met producten behouden
                 var canteens = _canteenRepo.GetCanteens();
                 ViewBag.Canteens = canteens;
 
-                editMealPackageViewModel.ProductCheckBoxes = products.Select(p => new ProductCheckBoxes
-                {
-                    Product = p,
-                    IsSelected = SelectedProducts != null && SelectedProducts.Contains(p.Id),
-                    IsChecked = SelectedProducts != null && SelectedProducts.Contains(p.Id)
-                }).ToList();
-
-                return View(editMealPackageViewModel);
+                return View(mealPackageViewModel);
+            }
+            catch (ArgumentNullException ex)
+            {
+                ModelState.AddModelError("CustomError", "An error occurred: " + ex.Message);
+                var canteens = _canteenRepo.GetCanteens();
+                ViewBag.Canteens = canteens;
+                return View(mealPackageViewModel);
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("CustomError", "Something went wrong while updating the package: " + ex.Message);
-                return View(editMealPackageViewModel);
+                ModelState.AddModelError("CustomError", "Something went wrong while editing the meal package: " + ex.Message);
+                var canteens = _canteenRepo.GetCanteens();
+                ViewBag.Canteens = canteens;
+                return View(mealPackageViewModel);
             }
         }
-
     }
 }

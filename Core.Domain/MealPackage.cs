@@ -24,6 +24,6 @@ namespace Core.Domain
         [Required(ErrorMessage = "Meal type is required.")]
         public MealType MealType { get; set; }
         public Student? ReservedByStudent { get; set; }
-        public ICollection<Product> Products { get; set; }
+        public ICollection<Product> Products { get; set; } = null!;
     }
 }

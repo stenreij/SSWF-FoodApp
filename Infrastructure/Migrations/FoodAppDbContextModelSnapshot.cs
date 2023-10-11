@@ -92,6 +92,19 @@ namespace Infrastructure.Migrations
                     b.ToTable("MealPackages");
                 });
 
+            modelBuilder.Entity("Core.Domain.MealPackageProduct", b =>
+                {
+                    b.Property<int>("MealPackageId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.HasKey("MealPackageId", "ProductId");
+
+                    b.ToTable("MealPackageProducts");
+                });
+
             modelBuilder.Entity("Core.Domain.Product", b =>
                 {
                     b.Property<int>("Id")

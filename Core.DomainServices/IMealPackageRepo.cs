@@ -12,5 +12,8 @@ namespace Core.DomainServices
         MealPackage AddMealPackage(MealPackage mealPackage);
         void EditMealPackage(MealPackage mealPackage);
         void DeleteMealPackage(int id);
+        void RemoveProductsFromMealPackage(int mealPackageId, int productId);
+        void AddProductToMealPackage(int mealPackageId, int productId);
+        IEnumerable<Product> GetMealPackageProducts(int mealPackageId);
     }
 }

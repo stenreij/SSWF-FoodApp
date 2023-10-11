@@ -5,12 +5,12 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Infrastructure.Migrations
 {
-    public partial class InitialMigration : Migration
+    public partial class InitialCreate : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Canteen",
+                name: "Canteens",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -22,7 +22,7 @@ namespace Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Canteen", x => x.Id);
+                    table.PrimaryKey("PK_Canteens", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -69,18 +69,19 @@ namespace Infrastructure.Migrations
                     City = table.Column<int>(type: "int", nullable: false),
                     CanteenId = table.Column<int>(type: "int", nullable: false),
                     PickUpDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ExpireDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     AdultsOnly = table.Column<bool>(type: "bit", nullable: false),
-                    Price = table.Column<double>(type: "float", nullable: false),
-                    Meal = table.Column<int>(type: "int", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    MealType = table.Column<int>(type: "int", nullable: false),
                     ReservedByStudentId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_MealPackages", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_MealPackages_Canteen_CanteenId",
+                        name: "FK_MealPackages_Canteens_CanteenId",
                         column: x => x.CanteenId,
-                        principalTable: "Canteen",
+                        principalTable: "Canteens",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -142,7 +143,7 @@ namespace Infrastructure.Migrations
                 name: "Products");
 
             migrationBuilder.DropTable(
-                name: "Canteen");
+                name: "Canteens");
 
             migrationBuilder.DropTable(
                 name: "Student");
