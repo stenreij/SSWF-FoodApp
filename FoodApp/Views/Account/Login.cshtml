@@ -1,0 +1,31 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model FoodApp.Models.LoginViewModel
+
+@{
+    ViewData["Title"] = "Login";
+    var returnUrl = Context.Request.Query["ReturnUrl"];
+}
+
+<div class="login-form-wrapper">
+
+    <div class="  form-container p-3">
+        <h1>@ViewData["Title"]</h1>
+        <form asp-action="Login" asp-route-returnurl="@returnUrl" method="post">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label">Email: </label>
+                <input type="email" class="form-control" asp-for="Email">
+            </div>
+            <div class="mb-3">
+                <label asp-for="Password" class="form-label">Password: </label>
+                <input type="password" class="form-control" placeholder="*****" asp-for="Password">
+            </div>
+            <div class="form-check">
+                <input asp-for="RememberMe" class="form-check-input">
+                <label asp-for="RememberMe" class="form-check-label" for="rememberUserCheck">Remember me</label>
+            </div>
+            <input type="submit" class="btn btn-primary" value="Login">
+
+        </form>
+    </div>
+</div>

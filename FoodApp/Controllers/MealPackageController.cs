@@ -3,6 +3,7 @@ using Core.Domain;
 using Core.DomainServices;
 using FoodApp.Models;
 using Infrastructure;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
@@ -56,6 +57,7 @@ namespace FoodApp.Controllers
         }
 
         [HttpGet]
+        [Authorize (Roles = "employee")]
         public IActionResult AddMealPackage()
         {
             var products = _productRepo.GetProducts();
@@ -74,6 +76,7 @@ namespace FoodApp.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "employee")]
         public IActionResult EditMealPackage(int id)
         {
             try
@@ -115,7 +118,6 @@ namespace FoodApp.Controllers
                 };
 
                 ViewBag.Canteens = canteens;
-
                 return View(mealPackageViewModel);
             }
             catch (Exception ex)
@@ -203,13 +205,12 @@ namespace FoodApp.Controllers
             try
             {
                 var products = _productRepo.GetProducts();
-                mealPackageViewModel.Products = products.ToList(); // Zet de lijst met producten in het ViewModel
+                mealPackageViewModel.Products = products.ToList(); 
 
                 if (ModelState.IsValid)
                 {
                     var canteen = _canteenRepo.GetCanteenById(mealPackageViewModel.CanteenId);
 
-                    // Haal het bestaande MealPackage op
                     var existingMealPackage = _mealPackageRepo.GetMealPackageById(mealPackageViewModel.Id);
 
                     if (existingMealPackage == null)
@@ -217,28 +218,26 @@ namespace FoodApp.Controllers
                         return NotFound();
                     }
 
-                    // Haal de huidige koppelingen tussen MealPackage en Product op uit de database
                     var currentMealPackageProducts = _mealPackageRepo.GetMealPackageProducts(existingMealPackage.Id);
-
-                    // Bepaal welke producten moeten worden verwijderd (niet meer geselecteerd)
+          
                     var productsToRemove = currentMealPackageProducts
-                        .Where(product => !mealPackageViewModel.SelectedProducts.Contains(product.Id))
+                        .Where(product => !mealPackageViewModel.SelectedProducts
+                        .Contains(product.Id))
                         .ToList();
 
-                    // Verwijder de te verwijderen koppelingen uit de database
                     foreach (var productToRemove in productsToRemove)
                     {
-                        _mealPackageRepo.RemoveProductsFromMealPackage(existingMealPackage.Id, productToRemove.Id); // Verwijder de koppeling
+                        _mealPackageRepo.RemoveProductsFromMealPackage(existingMealPackage.Id, productToRemove.Id); 
                     }
 
-                    // Voeg de nieuwe geselecteerde producten toe aan de lijst met koppelingen
                     var productsToAdd = mealPackageViewModel.SelectedProducts
-                        .Where(productId => !currentMealPackageProducts.Any(product => product.Id == productId))
+                        .Where(productId => !currentMealPackageProducts
+                        .Any(product => product.Id == productId))
                         .ToList();
 
                     foreach (var productId in productsToAdd)
                     {
-                        _mealPackageRepo.AddProductToMealPackage(existingMealPackage.Id, productId); // Voeg de koppeling toe
+                        _mealPackageRepo.AddProductToMealPackage(existingMealPackage.Id, productId); 
                     }
 
                     bool containsAlcohol = products.Any(p => mealPackageViewModel.SelectedProducts.Contains(p.Id) && p.ContainsAlcohol);
@@ -271,13 +270,6 @@ namespace FoodApp.Controllers
             catch (ArgumentNullException ex)
             {
                 ModelState.AddModelError("CustomError", "An error occurred: " + ex.Message);
-                var canteens = _canteenRepo.GetCanteens();
-                ViewBag.Canteens = canteens;
-                return View(mealPackageViewModel);
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError("CustomError", "Something went wrong while editing the meal package: " + ex.Message);
                 var canteens = _canteenRepo.GetCanteens();
                 ViewBag.Canteens = canteens;
                 return View(mealPackageViewModel);

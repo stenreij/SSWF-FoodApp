@@ -12,5 +12,6 @@ namespace Core.Domain
         public string Name { get; set; }
         public int EmployeeNr { get; set; }
         public Location Location { get; set; }
+        public string Email { get; set; }
     }
 }

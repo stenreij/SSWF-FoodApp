@@ -13,6 +13,7 @@ namespace Infrastructure
         public DbSet<Product> Products { get; set; }
         public DbSet<Canteen> Canteens { get; set; }
         public DbSet<Student> Student { get; set; }
+        public DbSet<Employee> Employee { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

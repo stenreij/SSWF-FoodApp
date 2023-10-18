@@ -25,9 +25,15 @@
                     <th>18+</th>
                     <th>PickUpDateTime</th>
                     <th>ExpireDateTime</th>
-                    <th>Reserved</th>
-                    <th>Update</th>
-                    <th>Delete</th>
+                    @if (User.IsInRole("student"))
+                    {
+                        <th>Reserve</th>
+                    }
+                    @if (User.IsInRole("employee"))
+                    {
+                        <th>Update</th>
+                        <th>Delete</th>
+                    }
                 </tr>
             </thead>
             <tbody>
@@ -42,34 +48,38 @@
                         <td>@mealPackage.AdultsOnly</td>
                         <td>@mealPackage.PickUpDateTime.ToString("dd-MM-yyyy HH:mm")</td>
                         <td>@mealPackage.ExpireDateTime.ToString("dd-MM-yyyy HH:mm")</td>
-                        <td>
-                            @if (mealPackage.ReservedByStudent != null)
-                            {
-                                @mealPackage.ReservedByStudent.FirstName
-                            }
-                            else
-                            {
-                                <p>Not reserved</p>
-                            }
-                        </td>
+                        
+                        @if (User.IsInRole("student"))
+                        {
+                            <td>
+                                @if (mealPackage.ReservedByStudent != null)
+                                {
+                                    @mealPackage.ReservedByStudent.FirstName
+                                }
+                                else
+                                {
+                                    <a asp-controller="MealPackage" asp-action="ReserveMealPackage" asp-route-id="@mealPackage.Id" class="btn btn-primary">Reserve</a>
+                                }
+                            </td>
+                        }
 
+                        @if (User.IsInRole("employee"))
+                        {
+                            <td>
+                                <a asp-controller="MealPackage" asp-action="EditMealPackage" asp-route-id="@mealPackage.Id" class="btn btn-primary">Edit</a>
+                            </td>
 
-                        <td>
-                            <a asp-controller="MealPackage" asp-action="EditMealPackage" asp-route-id="@mealPackage.Id" class="btn btn-primary">Edit</a>
-                        </td>
-
-                        <td>
-                            <form method="post" action="@Url.Action("DeleteMealPackage", "MealPackage", new { id = mealPackage.Id })">
-                                @Html.Hidden("id", mealPackage.Id)
-                                <button type="submit" class="btn btn-primary">Delete</button>
-                            </form>
-                        </td>
-
+                            <td>
+                                <form method="post" action="@Url.Action("DeleteMealPackage", "MealPackage", new { id = mealPackage.Id })">
+                                    @Html.Hidden("id", mealPackage.Id)
+                                    <button type="submit" class="btn btn-primary">Delete</button>
+                                </form>
+                            </td>
+                        }
                     </tr>
                 }
             </tbody>
         </table>
-
     </div>
 </body>
 </html>

@@ -4,6 +4,7 @@ using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(FoodAppDbContext))]
-    partial class FoodAppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231018133235_Employee-Email")]
+    partial class EmployeeEmail
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -44,7 +46,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Canteens", (string)null);
+                    b.ToTable("Canteens");
                 });
 
             modelBuilder.Entity("Core.Domain.Employee", b =>
@@ -71,7 +73,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Employee", (string)null);
+                    b.ToTable("Employee");
                 });
 
             modelBuilder.Entity("Core.Domain.MealPackage", b =>
@@ -116,7 +118,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("ReservedByStudentId");
 
-                    b.ToTable("MealPackages", (string)null);
+                    b.ToTable("MealPackages");
                 });
 
             modelBuilder.Entity("Core.Domain.Product", b =>
@@ -140,7 +142,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Products", (string)null);
+                    b.ToTable("Products");
                 });
 
             modelBuilder.Entity("Core.Domain.Student", b =>
@@ -177,7 +179,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Student", (string)null);
+                    b.ToTable("Student");
                 });
 
             modelBuilder.Entity("MealPackageProduct", b =>
@@ -192,7 +194,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("ProductsId");
 
-                    b.ToTable("MealPackageProduct", (string)null);
+                    b.ToTable("MealPackageProduct");
                 });
 
             modelBuilder.Entity("Core.Domain.MealPackage", b =>

@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Microsoft.AspNetCore.Identity
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -18,21 +21,56 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="MealPackage" asp-action="MealOverview">Meal-Overview</a>
-                        </li>                      
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="MealPackage" asp-action="Reserved">Reserved</a>
-                        </li>                      
+                    <ul class="navbar-nav">
+                        @if (User.IsInRole("student") || User.IsInRole("employee"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="MealPackage" asp-action="MealOverview">Meal-Overview</a>
+                            </li>
+                        }
+                        @if (User.IsInRole("student"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="MealPackage" asp-action="Reserved">Reserved</a>
+                            </li>
+                        }
+                        @if (User.IsInRole("employee"))
+                        {
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="MealPackage" asp-action="AddMealPackage">Add-MealPackage</a>
-                        </li>                         
+                            </li>
+                        }
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
-
                     </ul>
+
+
+                    <div class="ml-auto"></div> 
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <ul class="navbar-nav right">
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Profile">Profile</a>
+                            </li>
+                            <li class="nav-item">
+                                <form method="post" asp-area="" asp-controller="Account" asp-action="LogOut">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="nav-link btn btn-secondary text-dark">LogOut</button>
+                                </form>
+                            </li>
+                        </ul>
+                    }
+                    else{
+                    <ul class="navbar-nav right">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Login">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Register">Register</a>
+                        </li>
+                    </ul>
+                    }
                 </div>
             </div>
         </nav>

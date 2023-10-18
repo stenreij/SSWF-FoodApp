@@ -1,6 +1,8 @@
 using Application.Services;
 using Core.DomainServices;
 using Infrastructure;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 
@@ -14,13 +16,22 @@ CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddScoped<IMealPackageRepo, MealPackageEFRepo>();
 builder.Services.AddScoped<IMealPackageService, MealPackageService>();
+builder.Services.AddScoped<IMealPackageRepo, MealPackageEFRepo>();
 builder.Services.AddScoped<IProductRepo, ProductEFRepo>();
 builder.Services.AddScoped<ICanteenRepo, CanteenEFRepo>();
 builder.Services.AddScoped<IStudentRepo, StudentEFRepo>();
+builder.Services.AddScoped<IEmployeeRepo, EmployeeEFRepo>();
+
 builder.Services.AddDbContext<FoodAppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddDbContext<FoodAppIdentityDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("IdentityConnection")));
+
+builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = false)
+    .AddEntityFrameworkStores<FoodAppIdentityDbContext>();
+        
 
 
 var app = builder.Build();
@@ -38,6 +49,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(

@@ -17,6 +17,10 @@ html {
     font-size: 24px !important
 }
 
+.navbar-nav.right {
+    margin-right: 30px; 
+}
+
 @media (min-width: 768px) {
     html {
         font-size: 16px;
@@ -50,13 +54,17 @@ body {
 .footer a:hover {
     color: #141514 !important;
 }
-
+/* Text styling */
+h1 {
+    font-size: 60px;
+    margin-bottom: 50px;
+}
 /* Table Styling */
 table {
     width: 100%;
     margin: 0 auto;
-    border-collapse: collapse; 
-    border: 1px solid #ddd; 
+    border-collapse: collapse;
+    border: 1px solid #ddd;
 }
 
 table th {
@@ -67,11 +75,11 @@ table th {
     text-align: left;
 }
 
-/* Stijl voor de tabelrijen */
+/* Styling for tablerows */
 table td {
-    padding: 8px; 
+    padding: 8px;
     border-bottom: 1px solid #ddd;
-    text-align: left; 
+    text-align: left;
     padding-left: 10px;
 }
 
@@ -83,12 +91,30 @@ table tr:nth-child(even) {
     background-color: #e6eddd;
 }
 
+/* Button styling */
 .btn-primary {
+    background-color: #78bf78 !important;
+    color: #000000;
+    border-color: #171717
+}
+
+.btn-primary:hover {
     background-color: #008000 !important;
     border-color: #171717
 }
 
-/* Alert voor no content (e.g. no reserved meals, so nothing to be shown) */
+.btn-secondary {
+    background-color: #b8c8b8 !important;
+    color: #000000;
+    border-color: #a3cca3bc;
+}
+
+.btn-secondary:hover{
+    background-color: aquamarine !important;
+    border-color: none !important;
+}
+
+/* Alert if no content (e.g. no reserved meals, so nothing to be shown) */
 .alert {
     padding: 20px;
     margin-top: 50px;
