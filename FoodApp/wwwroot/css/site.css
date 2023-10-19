@@ -103,17 +103,6 @@ table tr:nth-child(even) {
     border-color: #171717
 }
 
-.btn-secondary {
-    background-color: #b8c8b8 !important;
-    color: #000000;
-    border-color: #a3cca3bc;
-}
-
-.btn-secondary:hover{
-    background-color: aquamarine !important;
-    border-color: none !important;
-}
-
 /* Alert if no content (e.g. no reserved meals, so nothing to be shown) */
 .alert {
     padding: 20px;

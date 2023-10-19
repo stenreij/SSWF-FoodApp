@@ -32,8 +32,11 @@
                         <th>PickUpDateTime</th>
                         <th>ExpireDateTime</th>
                         <th>Reserved</th>
-                        <th>Update</th>
-                        <th>Delete</th>
+                        @if(User.IsInRole("employee"))
+                        {
+                            <th>Update</th>
+                            <th>Delete</th>
+                        })
                     </tr>
                 </thead>
                 <tbody>
@@ -50,16 +53,19 @@
                             <td>@mealPackage.ExpireDateTime.ToString("dd-MM-yyyy HH:mm")</td>
                             <td>@mealPackage.ReservedByStudent.FirstName</td>
 
-                            <td>
-                                <a asp-controller="MealPackage" asp-action="EditMealPackage" asp-route-id="@mealPackage.Id" class="btn btn-primary">Edit</a>
-                            </td>
+                            @if(User.IsInRole("employee"))
+                            {
+                                <td>
+                                    <a asp-controller="MealPackage" asp-action="EditMealPackage" asp-route-id="@mealPackage.Id" class="btn btn-primary">Edit</a>
+                                </td>
 
-                            <td>
-                                <form method="post" action="@Url.Action("DeleteMealPackage", "MealPackage", new { id = mealPackage.Id })">
-                                    @Html.Hidden("id", mealPackage.Id)
-                                    <button type="submit" class="btn btn-primary">Delete</button>
-                                </form>
-                            </td>
+                                <td>
+                                    <form method="post" action="@Url.Action("DeleteMealPackage", "MealPackage", new { id = mealPackage.Id })">
+                                        @Html.Hidden("id", mealPackage.Id)
+                                        <button type="submit" class="btn btn-primary">Delete</button>
+                                    </form>
+                                </td>
+                            }                  
                         </tr>
                     }
                 </tbody>

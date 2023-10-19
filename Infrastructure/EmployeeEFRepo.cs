@@ -10,19 +10,24 @@ namespace Infrastructure
 {
     public class EmployeeEFRepo : IEmployeeRepo
     {
+        private readonly FoodAppDbContext _context;
+        public EmployeeEFRepo(FoodAppDbContext context)
+        {
+            _context = context;
+        }
         public Employee GetEmployeeByEmail(string email)
         {
-            throw new NotImplementedException();
+            return _context.Employee.FirstOrDefault(e => e.Email == email);
         }
 
         public Employee GetEmployeeById(int id)
         {
-            throw new NotImplementedException();
+            return _context.Employee.First(e => e.Id == id);
         }
 
         public IEnumerable<Employee> GetEmployees()
         {
-            throw new NotImplementedException();
+            return _context.Employee.ToList();
         }
     }
 }

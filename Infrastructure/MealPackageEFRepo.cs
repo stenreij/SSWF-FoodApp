@@ -38,10 +38,10 @@ namespace Infrastructure
                 .First(p => p.Id == id);
         }
 
-        public IEnumerable<MealPackage> GetReservedMealPackages()
+        public IEnumerable<MealPackage> GetReservedMealPackages(int studentId)
         {
             return _context.MealPackages
-                .Where(p => p.ReservedByStudent != null)
+                .Where(p => p.ReservedByStudent != null && p.ReservedByStudent.Id == studentId)
                 .OrderBy(p => p.PickUpDateTime)
                 .ToList();
         }

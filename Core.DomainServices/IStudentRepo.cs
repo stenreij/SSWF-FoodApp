@@ -11,5 +11,6 @@ namespace Core.DomainServices
     {
         IEnumerable<Student> GetStudents();
         Student GetStudentById(int id);
+        Student GetStudentByEmail(string email);
     }
 }

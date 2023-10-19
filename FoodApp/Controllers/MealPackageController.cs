@@ -5,9 +5,6 @@ using FoodApp.Models;
 using Infrastructure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using System.Xml.Linq;
 
 namespace FoodApp.Controllers
 {
@@ -19,9 +16,10 @@ namespace FoodApp.Controllers
         private readonly ICanteenRepo _canteenRepo;
         private readonly IStudentRepo _studentRepo;
         private readonly IMealPackageService _mealPackageService;
+        private readonly IEmployeeRepo _employeeRepo;
 
         public MealPackageController(FoodAppDbContext foodAppDbContext, IMealPackageRepo mealPackageRepo, IMealPackageService mealPackageService,
-            IProductRepo productRepo, ICanteenRepo canteenRepo, IStudentRepo studentRepo)
+            IProductRepo productRepo, ICanteenRepo canteenRepo, IStudentRepo studentRepo, IEmployeeRepo employeeRepo)
         {
             _context = foodAppDbContext;
             _mealPackageRepo = mealPackageRepo;
@@ -29,9 +27,11 @@ namespace FoodApp.Controllers
             _productRepo = productRepo;
             _canteenRepo = canteenRepo;
             _studentRepo = studentRepo;
+            _employeeRepo = employeeRepo;
         }
 
         [HttpGet]
+        [Authorize]
         public IActionResult MealOverview()
         {
             var mealPackage = _mealPackageRepo.GetAvailableMealPackages();
@@ -44,9 +44,15 @@ namespace FoodApp.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "student")]
         public IActionResult Reserved()
         {
-            var mealPackage = _mealPackageRepo.GetReservedMealPackages();
+            if (User == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            var studentId = _studentRepo.GetStudentByEmail(User.Identity.Name).Id;
+            var mealPackage = _mealPackageRepo.GetReservedMealPackages(studentId);
 
             var canteens = _canteenRepo.GetCanteens();
             var students = _studentRepo.GetStudents();
@@ -131,6 +137,7 @@ namespace FoodApp.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "employee")]
         public IActionResult AddMealPackage(MealPackageViewModel mealPackageViewModel, List<int> selectedProducts)
         {
             try
@@ -193,6 +200,7 @@ namespace FoodApp.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "employee")]
         public IActionResult DeleteMealPackage(int id)
         {
             _mealPackageRepo.DeleteMealPackage(id);
@@ -200,6 +208,7 @@ namespace FoodApp.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "employee")]
         public IActionResult EditMealPackage(MealPackageViewModel mealPackageViewModel)
         {
             try

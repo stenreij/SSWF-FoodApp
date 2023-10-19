@@ -7,7 +7,7 @@ namespace Core.DomainServices
     {
         IEnumerable<MealPackage> GetMealPackages();
         IEnumerable<MealPackage> GetAvailableMealPackages();
-        IEnumerable<MealPackage> GetReservedMealPackages();
+        IEnumerable<MealPackage> GetReservedMealPackages(int studentId);
         MealPackage GetMealPackageById(int id);
         MealPackage AddMealPackage(MealPackage mealPackage);
         void EditMealPackage(MealPackage mealPackage);

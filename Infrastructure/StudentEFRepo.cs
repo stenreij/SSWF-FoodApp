@@ -26,5 +26,10 @@ namespace Infrastructure
         {
             return _context.Student.First(p => p.Id == id);
         }
+
+        public Student GetStudentByEmail(string email)
+        {
+            return _context.Student.FirstOrDefault(s => s.Email == email);
+        }
     }
 }

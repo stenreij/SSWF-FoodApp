@@ -1,4 +1,5 @@
-﻿using FoodApp.Models;
+﻿using Core.DomainServices;
+using FoodApp.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -9,11 +10,16 @@ namespace FoodApp.Controllers
     {
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly IStudentRepo _studentRepo;
+        private readonly IEmployeeRepo _employeeRepo;
 
-        public AccountController(SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager)
+        public AccountController(SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager, 
+            IStudentRepo studentRepo, IEmployeeRepo employeeRepo)
         {
             _signInManager = signInManager;
             _userManager = userManager;
+            _studentRepo = studentRepo;
+            _employeeRepo = employeeRepo;
         }
 
         [HttpGet]
@@ -28,6 +34,7 @@ namespace FoodApp.Controllers
             return View();
         }
         [HttpGet]
+        [Authorize]
         public IActionResult Profile()
         {
             return View();
@@ -65,18 +72,29 @@ namespace FoodApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                var res = await _userManager.CreateAsync(new IdentityUser
+                var user = new IdentityUser
                 {
                     UserName = model.Email,
                     Email = model.Email
-                }, model.Password);
+                };
 
-                if (res.Succeeded)
+                var result = await _userManager.CreateAsync(user, model.Password);
+
+                if (result.Succeeded)
                 {
-                    return RedirectToAction("Index", "Home");
+                    if (_studentRepo.GetStudentByEmail(user.Email) != null)
+                    {
+                        await _userManager.AddToRoleAsync(user, "student");
+                    }
+                    else if (_employeeRepo.GetEmployeeByEmail(user.Email) != null)
+                    {
+                        await _userManager.AddToRoleAsync(user, "employee");
+                    }
+
+                    return RedirectToAction("Login", "Account");
                 }
 
-                foreach (var error in res.Errors)
+                foreach (var error in result.Errors)
                 {
                     ModelState.AddModelError("", error.Description);
                 }
