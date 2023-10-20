@@ -9,8 +9,7 @@ namespace FoodApp.Models
         [Required][DataType(DataType.Password)]
         public string Password { get; set; } = null!;
 
-        [Display(Name = "Remember me")]
+        [Display(Name = "Remember Me")]
         public bool RememberMe { get; set; }
-
     }
 }

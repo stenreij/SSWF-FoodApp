@@ -112,5 +112,36 @@ namespace Infrastructure
                 }
             }
         }
+
+        public MealPackage ReserveMealPackage(int mealPackageId, int studentId)
+        {
+            var mealPackage = _context.MealPackages
+                .Include(mp => mp.Products)
+                .Include(mp => mp.ReservedByStudent)
+                .FirstOrDefault(mp => mp.Id == mealPackageId);
+
+            if (mealPackage == null)
+            {
+                throw new NullReferenceException("MealPackage not found");
+            }
+
+            if (mealPackage.ReservedByStudent != null)
+            {
+                throw new Exception("MealPackage already reserved");
+            }
+
+            var student = _context.Student.FirstOrDefault(s => s.Id == studentId);
+
+            if (student == null)
+            {
+                throw new NullReferenceException("Student not found");
+            }
+
+            mealPackage.ReservedByStudent = student;
+            _context.SaveChanges();
+
+            return mealPackage;
+        }
+
     }
 }

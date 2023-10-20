@@ -41,29 +41,25 @@ namespace FoodApp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login(LoginViewModel model, string? returnUrl)
+        public async Task<IActionResult> Login(LoginViewModel model)
         {
             if (ModelState.IsValid)
             {
-                var res = await _signInManager.PasswordSignInAsync(
+                var result = await _signInManager.PasswordSignInAsync(
                     model.Email,
                     model.Password,
                     model.RememberMe,
                     false
                 );
 
-                if (res.Succeeded)
+                if (result.Succeeded)
                 {
-                    if (!string.IsNullOrEmpty(returnUrl))
-                    {
-                        return LocalRedirect(returnUrl);
-                    }
-
                     return RedirectToAction("Index", "Home");
                 }
 
-                ModelState.AddModelError("", "Email/wachtwoord incorrect!");
+                ModelState.AddModelError("Login", "Email/password incorrect!");
             }
+
             return View(model);
         }
 

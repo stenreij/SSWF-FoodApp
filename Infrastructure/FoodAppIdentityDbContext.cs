@@ -39,8 +39,6 @@ namespace Infrastructure
                     PasswordHash = hasher.HashPassword(null, "aA1234!"),
                 },
 
-
-
                 new IdentityUser
                 {
                     Id = "20", 

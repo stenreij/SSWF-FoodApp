@@ -4,6 +4,7 @@ using Core.DomainServices;
 using FoodApp.Models;
 using Infrastructure;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FoodApp.Controllers
@@ -34,14 +35,26 @@ namespace FoodApp.Controllers
         [Authorize]
         public IActionResult MealOverview()
         {
-            var mealPackage = _mealPackageRepo.GetAvailableMealPackages();
+            var mealPackages = _mealPackageRepo.GetAvailableMealPackages();
             var canteens = _canteenRepo.GetCanteens();
             var students = _studentRepo.GetStudents();
 
+            if (User.IsInRole("student"))
+            {
+                var studentId = _studentRepo.GetStudentByEmail(User.Identity.Name).Id;
+                ViewBag.studentId = studentId;
+            }
+            else if (User.IsInRole("employee"))
+            {
+                var employeeId = _employeeRepo.GetEmployeeByEmail(User.Identity.Name).Id;
+                ViewBag.employeeId = employeeId;
+            }
+
             ViewBag.Students = students;
             ViewBag.Canteens = canteens;
-            return View(mealPackage);
+            return View(mealPackages);
         }
+
 
         [HttpGet]
         [Authorize(Roles = "student")]
@@ -57,6 +70,7 @@ namespace FoodApp.Controllers
             var canteens = _canteenRepo.GetCanteens();
             var students = _studentRepo.GetStudents();
 
+            ViewBag.studentId = studentId;
             ViewBag.Students = students;
             ViewBag.Canteens = canteens;
             return View(mealPackage);
@@ -284,5 +298,52 @@ namespace FoodApp.Controllers
                 return View(mealPackageViewModel);
             }
         }
+
+        [HttpPost]
+        [Authorize(Roles = "student")]
+        public IActionResult ReserveMealPackage(int mealPackageId, int studentId)
+        {
+            try
+            {
+                if (!_mealPackageService.ReserveMealPackage(mealPackageId, studentId))
+                    ModelState.AddModelError("CustomError", "Dit maaltijdpakket is niet meer beschikbaar");
+
+                return RedirectToAction("Reserved");
+            }
+            catch (Exception e)
+            {
+                ModelState.AddModelError("CustomError", e.Message);
+
+                return RedirectToAction("MealOverview");
+            }
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "student")]
+        public IActionResult CancelReservation(int mealPackageId, int studentId)
+        {
+            var student = _studentRepo.GetStudentByEmail(User.Identity.Name);
+            if (student.Id != studentId)
+            {
+                return RedirectToAction("Reserved");
+            }
+
+            var mealPackage = _mealPackageRepo.GetMealPackageById(mealPackageId);
+            if (mealPackage.ReservedByStudent == null)
+            {
+                return RedirectToAction("Reserved");
+            }
+
+            if (mealPackage.ReservedByStudent.Id != studentId)
+            {
+                return RedirectToAction("Reserved");
+            }
+
+            mealPackage.ReservedByStudent = null;
+            _mealPackageRepo.EditMealPackage(mealPackage);
+            return RedirectToAction("Reserved");
+
+        }
+
     }
 }
