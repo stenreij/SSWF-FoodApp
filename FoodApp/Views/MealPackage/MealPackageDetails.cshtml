@@ -1,0 +1,63 @@
+﻿@using Core.Domain
+@model MealPackage
+
+@{
+    ViewData["Title"] = "MealPackage Details";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+
+<body>
+    <div class="text-center">
+        <h1>@ViewData["Title"]</h1>
+        <div class="content-container">
+
+            <dl class="row">
+                <dt class="col-sm-3">Name:</dt>
+                <dd class="col-sm-9">@Model.Name</dd>
+
+                <dt class="col-sm-3">PickUp time:</dt>
+                <dd class="col-sm-9">@Model.PickUpDateTime.ToString("dd-MM-yyyy HH:mm")</dd>
+
+                <dt class="col-sm-3">Expire time:</dt>
+                <dd class="col-sm-9">@Model.ExpireDateTime.ToString("dd-MM-yyyy HH:mm")</dd>
+
+                <dt class="col-sm-3">Price:</dt>
+                <dd class="col-sm-9">@string.Format("{0:C}", Model.Price)</dd>
+
+                <dt class="col-sm-3">Meal Type:</dt>
+                <dd class="col-sm-9">@Model.MealType</dd>
+
+                <dt class="col-sm-3">Canteen:</dt>
+                <dd class="col-sm-9">@Model.Canteen.CanteenName</dd>
+
+                <dt class="col-sm-3">Products:</dt>
+                <dd class="col-sm-9">
+                    @foreach (var product in Model.Products)
+                    {
+                        <div>@product.Name</div>
+                    }
+                </dd>
+            </dl>
+
+            @if (User.IsInRole("student"))
+            {
+                @if (Model.ReservedByStudent != null)
+                {
+                    <p>This meal package is reserved by: @Model.ReservedByStudent.FirstName</p>
+                }
+                else
+                {
+                    <form method="post" asp-controller="MealPackage" asp-action="ReserveMealPackage" asp-route-mealPackageId="@Model.Id" asp-route-studentId="@ViewBag.studentId">
+                        <button type="submit" class="btn btn-primary">Reserve</button>
+                    </form>
+                }
+            }
+        </div>
+    </div>
+</body>
+</html>

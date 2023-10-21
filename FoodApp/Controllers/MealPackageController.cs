@@ -77,7 +77,37 @@ namespace FoodApp.Controllers
         }
 
         [HttpGet]
-        [Authorize (Roles = "employee")]
+        [Authorize(Roles = "student")]
+        public IActionResult MealPackageDetails(int id)
+        {
+            try
+            {
+                var mealPackage = _mealPackageRepo.GetMealPackageById(id);
+                var canteens = _canteenRepo.GetCanteens();
+
+                if (mealPackage == null)
+                {
+                    return NotFound();
+                }
+
+                var mealPackageProducts = _mealPackageRepo.GetMealPackageProducts(mealPackage.Id);
+                mealPackage.Products = mealPackageProducts.ToList();
+
+                ViewBag.Canteens = canteens;
+                return View(mealPackage);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("CustomError", "Something went wrong while loading the meal package for editing: " + ex.Message);
+                var canteens = _canteenRepo.GetCanteens();
+                ViewBag.Canteens = canteens;
+
+                return View("MealOverview");
+            }
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "employee")]
         public IActionResult AddMealPackage()
         {
             var products = _productRepo.GetProducts();
@@ -228,7 +258,7 @@ namespace FoodApp.Controllers
             try
             {
                 var products = _productRepo.GetProducts();
-                mealPackageViewModel.Products = products.ToList(); 
+                mealPackageViewModel.Products = products.ToList();
 
                 if (ModelState.IsValid)
                 {
@@ -242,7 +272,7 @@ namespace FoodApp.Controllers
                     }
 
                     var currentMealPackageProducts = _mealPackageRepo.GetMealPackageProducts(existingMealPackage.Id);
-          
+
                     var productsToRemove = currentMealPackageProducts
                         .Where(product => !mealPackageViewModel.SelectedProducts
                         .Contains(product.Id))
@@ -250,7 +280,7 @@ namespace FoodApp.Controllers
 
                     foreach (var productToRemove in productsToRemove)
                     {
-                        _mealPackageRepo.RemoveProductsFromMealPackage(existingMealPackage.Id, productToRemove.Id); 
+                        _mealPackageRepo.RemoveProductsFromMealPackage(existingMealPackage.Id, productToRemove.Id);
                     }
 
                     var productsToAdd = mealPackageViewModel.SelectedProducts
@@ -260,7 +290,7 @@ namespace FoodApp.Controllers
 
                     foreach (var productId in productsToAdd)
                     {
-                        _mealPackageRepo.AddProductToMealPackage(existingMealPackage.Id, productId); 
+                        _mealPackageRepo.AddProductToMealPackage(existingMealPackage.Id, productId);
                     }
 
                     bool containsAlcohol = products.Any(p => mealPackageViewModel.SelectedProducts.Contains(p.Id) && p.ContainsAlcohol);

@@ -16,7 +16,7 @@
         <h1>@ViewData["Title"]</h1>
         @if (!Model.Any())
         {
-            <p class="alert">You don't have any reservations at this moment'.</p>
+            <p class="alert">You don't have any reservations at this moment.</p>
         }
         else
         {
@@ -32,12 +32,13 @@
                         <th>PickUpDateTime</th>
                         <th>ExpireDateTime</th>
                         <th>Reserved</th>
-                        @if(User.IsInRole("student"))
+                        @if (User.IsInRole("student"))
                         {
+                            <th>Details</th>
                             <th>Cancel</th>
                         }
-                        
-                        @if(User.IsInRole("employee"))
+
+                        @if (User.IsInRole("employee"))
                         {
                             <th>Update</th>
                             <th>Delete</th>
@@ -58,8 +59,11 @@
                             <td>@mealPackage.ExpireDateTime.ToString("dd-MM-yyyy HH:mm")</td>
                             <td>@mealPackage.ReservedByStudent.FirstName</td>
 
-                            @if(User.IsInRole("student"))
+                            @if (User.IsInRole("student"))
                             {
+                                <td>
+                                    <a asp-controller="MealPackage" asp-action="MealPackageDetails" asp-route-id="@mealPackage.Id" class="btn btn-primary">Details</a>
+                                </td>
                                 <td>
                                     <form method="post" asp-controller="MealPackage" asp-action="CancelReservation" asp-route-mealPackageId="@mealPackage.Id" asp-route-studentId="@ViewBag.studentId">
                                         <button type="submit" class="btn btn-primary">Cancel</button>
@@ -67,7 +71,7 @@
                                 </td>
                             }
 
-                            @if(User.IsInRole("employee"))
+                            @if (User.IsInRole("employee"))
                             {
                                 <td>
                                     <a asp-controller="MealPackage" asp-action="EditMealPackage" asp-route-id="@mealPackage.Id" class="btn btn-primary">Edit</a>
@@ -79,7 +83,7 @@
                                         <button type="submit" class="btn btn-primary">Delete</button>
                                     </form>
                                 </td>
-                            }                  
+                            }
                         </tr>
                     }
                 </tbody>

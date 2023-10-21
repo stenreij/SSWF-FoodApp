@@ -27,6 +27,7 @@
                     <th>ExpireDateTime</th>
                     @if (User.IsInRole("student"))
                     {
+                        <th>Details</th>
                         <th>Reserve</th>
                     }
                     @if (User.IsInRole("employee"))
@@ -51,6 +52,10 @@
                         
                         @if (User.IsInRole("student"))
                         {
+                            <td>
+                                <a asp-controller="MealPackage" asp-action="MealPackageDetails" asp-route-id="@mealPackage.Id" class="btn btn-primary">Details</a>
+                            </td>
+
                             <td>
                                 @if (mealPackage.ReservedByStudent != null)
                                 {

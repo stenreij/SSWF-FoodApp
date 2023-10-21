@@ -91,6 +91,36 @@ table tr:nth-child(even) {
     background-color: #e6eddd;
 }
 
+/* Details Overview Styling*/
+.content-container {
+    max-width: 800px; 
+    margin: 0 auto; 
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+dl {
+    margin: 0;
+    padding: 0;
+    margin-bottom: 25px;
+}
+
+dt {
+    margin: 0;
+    padding: 5px 0; 
+    font-weight: bold;
+    border-bottom: solid 1px;
+    text-align: left;
+}
+
+dd {
+    margin: 0;
+    padding: 5px 0;
+    border-bottom: solid 1px;
+    text-align: left;
+}
+
 /* Button styling */
 .btn-primary {
     background-color: #78bf78 !important;
