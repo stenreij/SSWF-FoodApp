@@ -78,16 +78,31 @@ namespace FoodApp.Controllers
 
                 if (result.Succeeded)
                 {
-                    if (_studentRepo.GetStudentByEmail(user.Email) != null)
+                    var student = _studentRepo.GetStudentByEmail(user.Email);
+                    var birthDate = student.BirthDate.Date;
+                    var today = DateTime.Today;
+                    var age = today.Year - birthDate.Year;
+
+                    if (birthDate > today.AddYears(-age))
                     {
-                        await _userManager.AddToRoleAsync(user, "student");
-                    }
-                    else if (_employeeRepo.GetEmployeeByEmail(user.Email) != null)
-                    {
-                        await _userManager.AddToRoleAsync(user, "employee");
+                        age--;
                     }
 
-                    return RedirectToAction("Login", "Account");
+                    if (age >= 16)
+                    {
+                        if (_studentRepo.GetStudentByEmail(user.Email) != null)
+                        {
+                            await _userManager.AddToRoleAsync(user, "student");
+                        }
+                        else if (_employeeRepo.GetEmployeeByEmail(user.Email) != null)
+                        {
+                            await _userManager.AddToRoleAsync(user, "employee");
+                        }
+
+                        return RedirectToAction("Login", "Account");
+                    }
+                    await _userManager.DeleteAsync(user);
+                    ModelState.AddModelError("AgeError", "You have to be at least 16 to make an account.");
                 }
 
                 foreach (var error in result.Errors)
