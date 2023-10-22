@@ -48,7 +48,7 @@
             {
                 @if (Model.ReservedByStudent != null)
                 {
-                    <p>This meal package is reserved by: @Model.ReservedByStudent.FirstName</p>
+                    <p>This meal package is reserved by: @Model.ReservedByStudent.FirstName @Model.ReservedByStudent.LastName</p>
                 }
                 else
                 {

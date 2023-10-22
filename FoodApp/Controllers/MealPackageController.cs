@@ -4,7 +4,6 @@ using Core.DomainServices;
 using FoodApp.Models;
 using Infrastructure;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FoodApp.Controllers
@@ -84,6 +83,8 @@ namespace FoodApp.Controllers
             {
                 var mealPackage = _mealPackageRepo.GetMealPackageById(id);
                 var canteens = _canteenRepo.GetCanteens();
+                var studentId = _studentRepo.GetStudentByEmail(User.Identity.Name).Id;
+                ViewBag.studentId = studentId;
 
                 if (mealPackage == null)
                 {
@@ -335,15 +336,30 @@ namespace FoodApp.Controllers
         {
             try
             {
+                var mealPackage = _mealPackageRepo.GetMealPackageById(mealPackageId);
+                var reservationDate = mealPackage.PickUpDateTime.Date;
+
+                var existingReservationDate = _mealPackageRepo.GetReservedMealPackages(studentId)
+                    .Where(mp => mp.PickUpDateTime.Date == reservationDate)
+                    .ToList();
+
+                if (existingReservationDate.Any())
+                {
+                    ModelState.AddModelError("CustomError", "You already have reserved a mealpackage for this day.");                  
+                    return RedirectToAction("MealOverview");
+                }
+
                 if (!_mealPackageService.ReserveMealPackage(mealPackageId, studentId))
-                    ModelState.AddModelError("CustomError", "Dit maaltijdpakket is niet meer beschikbaar");
+                {
+                    ModelState.AddModelError("CustomError", "This mealpackage is not available at this moment.");
+                    return RedirectToAction("MealOverview");
+                }
 
                 return RedirectToAction("Reserved");
             }
             catch (Exception e)
             {
                 ModelState.AddModelError("CustomError", e.Message);
-
                 return RedirectToAction("MealOverview");
             }
         }
