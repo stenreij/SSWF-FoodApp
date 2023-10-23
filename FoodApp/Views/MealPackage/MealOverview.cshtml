@@ -14,7 +14,14 @@
 <body>
     <div class="text-center">
         <h1>@ViewData["Title"]</h1>
+        @if (!string.IsNullOrEmpty(ViewBag.CustomError as string))
+        {
+            <div class="alert alert-danger">
+                @ViewBag.CustomError
+            </div>
+        }
         <table>
+
             <thead>
                 <tr>
                     <th>Name</th>

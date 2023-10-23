@@ -13,7 +13,7 @@ namespace FoodApp.Controllers
         private readonly IStudentRepo _studentRepo;
         private readonly IEmployeeRepo _employeeRepo;
 
-        public AccountController(SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager, 
+        public AccountController(SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager,
             IStudentRepo studentRepo, IEmployeeRepo employeeRepo)
         {
             _signInManager = signInManager;
@@ -57,7 +57,7 @@ namespace FoodApp.Controllers
                     return RedirectToAction("Index", "Home");
                 }
 
-                ModelState.AddModelError("Login", "Email/password incorrect!");
+                ViewBag.CustomError = "Email/password incorrect!";
             }
 
             return View(model);
@@ -68,48 +68,63 @@ namespace FoodApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new IdentityUser
+                var isStudentEmail = _studentRepo.GetStudentByEmail(model.Email) != null;
+                var isEmployeeEmail = _employeeRepo.GetEmployeeByEmail(model.Email) != null;
+
+                if (isStudentEmail || isEmployeeEmail)
                 {
-                    UserName = model.Email,
-                    Email = model.Email
-                };
-
-                var result = await _userManager.CreateAsync(user, model.Password);
-
-                if (result.Succeeded)
-                {
-                    var student = _studentRepo.GetStudentByEmail(user.Email);
-                    var birthDate = student.BirthDate.Date;
-                    var today = DateTime.Today;
-                    var age = today.Year - birthDate.Year;
-
-                    if (birthDate > today.AddYears(-age))
+                    var user = new IdentityUser
                     {
-                        age--;
-                    }
+                        UserName = model.Email,
+                        Email = model.Email
+                    };
 
-                    if (age >= 16)
+                    var result = await _userManager.CreateAsync(user, model.Password);
+
+                    if (result.Succeeded)
                     {
-                        if (_studentRepo.GetStudentByEmail(user.Email) != null)
+                        if (isStudentEmail)
                         {
-                            await _userManager.AddToRoleAsync(user, "student");
+                            var student = _studentRepo.GetStudentByEmail(model.Email);
+                            var birthDate = student.BirthDate.Date;
+                            var today = DateTime.Today;
+                            var age = today.Year - birthDate.Year;
+
+                            if (birthDate > today.AddYears(-age))
+                            {
+                                age--;
+                            }
+
+                            if (age >= 16)
+                            {
+                                await _userManager.AddToRoleAsync(user, "student");
+                            }
+                            else
+                            {
+                                await _userManager.DeleteAsync(user);
+                                ViewBag.CustomError = "You have to be at least 16 to make an account.";
+                                return View(model);
+                            }
                         }
-                        else if (_employeeRepo.GetEmployeeByEmail(user.Email) != null)
+                        else if (isEmployeeEmail)
                         {
                             await _userManager.AddToRoleAsync(user, "employee");
                         }
 
                         return RedirectToAction("Login", "Account");
                     }
-                    await _userManager.DeleteAsync(user);
-                    ModelState.AddModelError("AgeError", "You have to be at least 16 to make an account.");
-                }
 
-                foreach (var error in result.Errors)
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError("", error.Description.ToString());
+                    }
+                }
+                else
                 {
-                    ModelState.AddModelError("", error.Description);
+                    ViewBag.CustomError = "You have to be a student or employee at Avans to create an account.";
                 }
             }
+            ViewBag.CustomError = "Email/password incorrect!";
             return View(model);
         }
 

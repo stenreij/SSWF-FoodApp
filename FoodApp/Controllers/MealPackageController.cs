@@ -343,23 +343,28 @@ namespace FoodApp.Controllers
                     .Where(mp => mp.PickUpDateTime.Date == reservationDate)
                     .ToList();
 
+                var mealPackages = _mealPackageRepo.GetAvailableMealPackages();
+                ViewBag.studentId = _studentRepo.GetStudentByEmail(User.Identity.Name).Id;
+                ViewBag.Students = _studentRepo.GetStudents();
+                ViewBag.Canteens = _canteenRepo.GetCanteens();
+
                 if (existingReservationDate.Any())
                 {
-                    ModelState.AddModelError("CustomError", "You already have reserved a mealpackage for this day.");                  
-                    return RedirectToAction("MealOverview");
+                    ViewBag.CustomError = "You already have reserved a mealpackage for this day.";
+                    return View("MealOverview", mealPackages);
                 }
 
                 if (!_mealPackageService.ReserveMealPackage(mealPackageId, studentId))
                 {
-                    ModelState.AddModelError("CustomError", "This mealpackage is not available at this moment.");
-                    return RedirectToAction("MealOverview");
+                    ViewBag.CustomError = "This mealpackage is not available at this moment.";
+                    return View("MealOverview", mealPackages);
                 }
 
                 return RedirectToAction("Reserved");
             }
             catch (Exception e)
             {
-                ModelState.AddModelError("CustomError", e.Message);
+                ViewBag.CustomError = e.Message;
                 return RedirectToAction("MealOverview");
             }
         }

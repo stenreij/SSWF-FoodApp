@@ -9,10 +9,14 @@
 <div class="login-form-wrapper">
 
     <div class="  form-container p-3">
-        <h1>@ViewData["Title"]</h1>
-        <h3>Create an account</h3>
+        <h1 class="text-center">@ViewData["Title"]</h1>
         <form asp-action="Register" method="post">
-            <div asp-validation-summary="All" class="text-danger"></div>
+            @if (!string.IsNullOrEmpty(ViewBag.CustomError as string))
+            {
+                <div class="alert alert-danger text-center">
+                    @ViewBag.CustomError
+                </div>
+            }
             <div class="mb-3">
                 <label asp-for="Email" class="form-label">Email: </label>
                 <input type="email" class="form-control" asp-for="Email">
@@ -25,7 +29,9 @@
                 <label asp-for="ConfirmPassword" class="form-label">Confirm password: </label>
                 <input type="password" class="form-control" asp-for="ConfirmPassword" placeholder="*****">
             </div>
-            <input type="submit" class="btn btn-primary" value="Register">
+            <div>
+                <input type="submit" class="btn btn-primary" value="Register">
+            </div>
 
         </form>
     </div>

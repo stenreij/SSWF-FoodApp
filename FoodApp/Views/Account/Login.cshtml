@@ -7,11 +7,15 @@
 }
 
 <div class="login-form-wrapper">
-
     <div class="  form-container p-3">
-        <h1>@ViewData["Title"]</h1>
+        <h1 class="text-center">@ViewData["Title"]</h1>
         <form asp-action="Login" asp-route-returnurl="@returnUrl" method="post">
-            <div asp-validation-summary="All" class="text-danger"></div>
+            @if (!string.IsNullOrEmpty(ViewBag.CustomError as string))
+            {
+                <div class="alert alert-danger text-center">
+                    @ViewBag.CustomError
+                </div>
+            }
             <div class="mb-3">
                 <label asp-for="Email" class="form-label">Email: </label>
                 <input type="email" class="form-control" asp-for="Email">
@@ -24,7 +28,9 @@
                 <input asp-for="RememberMe" class="form-check-input">
                 <label asp-for="RememberMe" class="form-check-label" for="rememberUserCheck">Remember me</label>
             </div>
-            <input type="submit" class="btn btn-primary" value="Login">
+            <div>
+                <input type="submit" class="btn btn-primary" value="Login">
+            </div>
 
         </form>
     </div>
