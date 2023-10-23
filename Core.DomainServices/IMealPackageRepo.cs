@@ -15,6 +15,7 @@ namespace Core.DomainServices
         void RemoveProductsFromMealPackage(int mealPackageId, int productId);
         void AddProductToMealPackage(int mealPackageId, int productId);
         IEnumerable<Product> GetMealPackageProducts(int mealPackageId);
-        public MealPackage ReserveMealPackage(int mealPackageId, int studentId);
+        MealPackage ReserveMealPackage(int mealPackageId, int studentId);
+        IEnumerable<MealPackage> GetMealPackagesByCanteenId(int canteenId);
     }
 }

@@ -19,7 +19,7 @@ namespace Core.Domain
         public DateTime ExpireDateTime { get; set; }
         public bool AdultsOnly { get; set; }
         [Required(ErrorMessage = "Price is required.")]
-        [Range(0.01, 800, ErrorMessage = "Price must be between 0.01 and 800.")]
+        [Range(0.01, 800, ErrorMessage = "Price must be between 0.01 and 100.")]
         public double Price { get; set; }
         [Required(ErrorMessage = "Meal type is required.")]
         public MealType MealType { get; set; }

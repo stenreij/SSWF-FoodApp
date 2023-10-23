@@ -10,6 +10,11 @@ namespace Core.Domain
     {
         La,
         Ld,
-        Hl
+        Lc,
+        Hl,
+        Ta,
+        DBa,
+        DBb
+
     }
 }

@@ -13,9 +13,12 @@ public class MealPackageViewModel
     public DateTime PickUpDateTime { get; set; }
     public DateTime ExpireDateTime { get; set; }
     public bool AdultsOnly { get; set; }
+    [Required(ErrorMessage = "Price is required.")]
+    [Range(0.01, 800, ErrorMessage = "Price must be between €0.01 and €100.")]
     public double Price { get; set; }
     public MealType MealType { get; set; }
     public Student? ReservedByStudent { get; set; }
+    [Required(ErrorMessage = "Select at least 1 product.")]
     public List<int>? SelectedProducts { get; set; }
     public List<ProductCheckBoxes> ProductCheckBoxes { get; set; } = new List<ProductCheckBoxes>();
 

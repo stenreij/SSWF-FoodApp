@@ -122,6 +122,7 @@ namespace FoodApp.Controllers
                 else
                 {
                     ViewBag.CustomError = "You have to be a student or employee at Avans to create an account.";
+                    return View(model);
                 }
             }
             ViewBag.CustomError = "Email/password incorrect!";

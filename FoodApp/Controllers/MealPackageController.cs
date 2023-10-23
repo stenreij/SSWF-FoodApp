@@ -5,6 +5,7 @@ using FoodApp.Models;
 using Infrastructure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Runtime.Intrinsics.X86;
 
 namespace FoodApp.Controllers
 {
@@ -53,7 +54,6 @@ namespace FoodApp.Controllers
             ViewBag.Canteens = canteens;
             return View(mealPackages);
         }
-
 
         [HttpGet]
         [Authorize(Roles = "student")]
@@ -187,8 +187,12 @@ namespace FoodApp.Controllers
         {
             try
             {
+                var employee = _employeeRepo.GetEmployeeByEmail(User.Identity.Name);
+                var canteens = _canteenRepo.GetCanteens();
+                var employeeLocation = employee.Location;
+                var canteenEmployee = canteens.FirstOrDefault(c => c.Location == employeeLocation);
+
                 var products = _productRepo.GetProducts();
-                var canteen = _canteenRepo.GetCanteenById(mealPackageViewModel.CanteenId);
                 var SelectedProducts = selectedProducts != null
                     ? products.Where(p => selectedProducts.Contains(p.Id)).ToList()
                     : new List<Product>();
@@ -198,39 +202,45 @@ namespace FoodApp.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    var currentTime = DateTime.Now;
-                    var timeDifference = mealPackageViewModel.PickUpDateTime - currentTime;
-
-                    if (timeDifference.TotalHours < 48 && mealPackageViewModel.PickUpDateTime >= currentTime)
+                    if (SelectedProducts.Any())
                     {
-                        var mealpackage = new MealPackage
+                        var currentTime = DateTime.Now;
+                        var timeDifference = mealPackageViewModel.PickUpDateTime - currentTime;
+
+                        if (timeDifference.TotalHours < 48 && mealPackageViewModel.PickUpDateTime >= currentTime)
                         {
-                            Name = mealPackageViewModel.Name,
-                            PickUpDateTime = mealPackageViewModel.PickUpDateTime,
-                            ExpireDateTime = mealPackageViewModel.ExpireDateTime,
-                            Price = mealPackageViewModel.Price,
-                            MealType = mealPackageViewModel.MealType,
-                            City = canteen.City,
-                            AdultsOnly = containsAlcohol,
-                            Canteen = canteen,
-                            Products = SelectedProducts,
-                        };
-                        if (mealPackageViewModel.ExpireDateTime > mealPackageViewModel.PickUpDateTime)
-                        {
-                            _mealPackageRepo.AddMealPackage(mealpackage);
-                            return RedirectToAction("MealOverview");
+                            var mealpackage = new MealPackage
+                            {
+                                Name = mealPackageViewModel.Name,
+                                PickUpDateTime = mealPackageViewModel.PickUpDateTime,
+                                ExpireDateTime = mealPackageViewModel.ExpireDateTime,
+                                Price = mealPackageViewModel.Price,
+                                MealType = mealPackageViewModel.MealType,
+                                City = canteenEmployee.City,
+                                AdultsOnly = containsAlcohol,
+                                Canteen = canteenEmployee,
+                                Products = SelectedProducts,
+                            };
+                            if (mealPackageViewModel.ExpireDateTime > mealPackageViewModel.PickUpDateTime)
+                            {
+                                _mealPackageRepo.AddMealPackage(mealpackage);
+                                return RedirectToAction("MealOverview");
+                            }
+                            else
+                            {
+                                ModelState.AddModelError("ExpireDateTime", "ExpireDate has to be after the PickUpDateTime.");
+                            }
                         }
                         else
                         {
-                            ModelState.AddModelError("ExpireDateTime", "ExpireDate has to be after the PickUpDateTime.");
+                            ModelState.AddModelError("PickUpDateTime", "PickUpDateTime can only be 2 days from now.");
                         }
                     }
                     else
                     {
-                        ModelState.AddModelError("PickUpDateTime", "PickUpDateTime can only be 2 days from now.");
+                        ModelState.AddModelError("SelectedProducts", "Select at least one product for the meal package.");
                     }
                 }
-                var canteens = _canteenRepo.GetCanteens();
                 mealPackageViewModel.Products = products.ToList();
                 ViewBag.Canteens = canteens;
                 return View(mealPackageViewModel);
@@ -263,56 +273,63 @@ namespace FoodApp.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    var canteen = _canteenRepo.GetCanteenById(mealPackageViewModel.CanteenId);
-
-                    var existingMealPackage = _mealPackageRepo.GetMealPackageById(mealPackageViewModel.Id);
-
-                    if (existingMealPackage == null)
+                    if (mealPackageViewModel.SelectedProducts != null && mealPackageViewModel.SelectedProducts.Any())
                     {
-                        return NotFound();
-                    }
+                        var canteen = _canteenRepo.GetCanteenById(mealPackageViewModel.CanteenId);
 
-                    var currentMealPackageProducts = _mealPackageRepo.GetMealPackageProducts(existingMealPackage.Id);
+                        var existingMealPackage = _mealPackageRepo.GetMealPackageById(mealPackageViewModel.Id);
 
-                    var productsToRemove = currentMealPackageProducts
-                        .Where(product => !mealPackageViewModel.SelectedProducts
-                        .Contains(product.Id))
-                        .ToList();
+                        if (existingMealPackage == null)
+                        {
+                            return NotFound();
+                        }
 
-                    foreach (var productToRemove in productsToRemove)
-                    {
-                        _mealPackageRepo.RemoveProductsFromMealPackage(existingMealPackage.Id, productToRemove.Id);
-                    }
+                        var currentMealPackageProducts = _mealPackageRepo.GetMealPackageProducts(existingMealPackage.Id);
 
-                    var productsToAdd = mealPackageViewModel.SelectedProducts
-                        .Where(productId => !currentMealPackageProducts
-                        .Any(product => product.Id == productId))
-                        .ToList();
+                        var productsToRemove = currentMealPackageProducts
+                            .Where(product => !mealPackageViewModel.SelectedProducts
+                            .Contains(product.Id))
+                            .ToList();
 
-                    foreach (var productId in productsToAdd)
-                    {
-                        _mealPackageRepo.AddProductToMealPackage(existingMealPackage.Id, productId);
-                    }
+                        foreach (var productToRemove in productsToRemove)
+                        {
+                            _mealPackageRepo.RemoveProductsFromMealPackage(existingMealPackage.Id, productToRemove.Id);
+                        }
 
-                    bool containsAlcohol = products.Any(p => mealPackageViewModel.SelectedProducts.Contains(p.Id) && p.ContainsAlcohol);
+                        var productsToAdd = mealPackageViewModel.SelectedProducts
+                            .Where(productId => !currentMealPackageProducts
+                            .Any(product => product.Id == productId))
+                            .ToList();
 
-                    existingMealPackage.Name = mealPackageViewModel.Name;
-                    existingMealPackage.PickUpDateTime = mealPackageViewModel.PickUpDateTime;
-                    existingMealPackage.ExpireDateTime = mealPackageViewModel.ExpireDateTime;
-                    existingMealPackage.Price = mealPackageViewModel.Price;
-                    existingMealPackage.MealType = mealPackageViewModel.MealType;
-                    existingMealPackage.City = canteen.City;
-                    existingMealPackage.AdultsOnly = containsAlcohol;
-                    existingMealPackage.Canteen = canteen;
+                        foreach (var productId in productsToAdd)
+                        {
+                            _mealPackageRepo.AddProductToMealPackage(existingMealPackage.Id, productId);
+                        }
 
-                    if (mealPackageViewModel.ExpireDateTime > mealPackageViewModel.PickUpDateTime)
-                    {
-                        _mealPackageRepo.EditMealPackage(existingMealPackage);
-                        return RedirectToAction("MealOverview");
+                        bool containsAlcohol = products.Any(p => mealPackageViewModel.SelectedProducts.Contains(p.Id) && p.ContainsAlcohol);
+
+                        existingMealPackage.Name = mealPackageViewModel.Name;
+                        existingMealPackage.PickUpDateTime = mealPackageViewModel.PickUpDateTime;
+                        existingMealPackage.ExpireDateTime = mealPackageViewModel.ExpireDateTime;
+                        existingMealPackage.Price = mealPackageViewModel.Price;
+                        existingMealPackage.MealType = mealPackageViewModel.MealType;
+                        existingMealPackage.City = canteen.City;
+                        existingMealPackage.AdultsOnly = containsAlcohol;
+                        existingMealPackage.Canteen = canteen;
+
+                        if (mealPackageViewModel.ExpireDateTime > mealPackageViewModel.PickUpDateTime)
+                        {
+                            _mealPackageRepo.EditMealPackage(existingMealPackage);
+                            return RedirectToAction("MealOverview");
+                        }
+                        else
+                        {
+                            ModelState.AddModelError("ExpireDateTime", "ExpireDate has to be after the PickUpDateTime.");
+                        }
                     }
                     else
                     {
-                        ModelState.AddModelError("ExpireDateTime", "ExpireDate has to be after the PickUpDateTime.");
+                        ModelState.AddModelError("SelectedProducts", "Select at least one product for the meal package.");
                     }
                 }
 
@@ -345,8 +362,6 @@ namespace FoodApp.Controllers
 
                 var mealPackages = _mealPackageRepo.GetAvailableMealPackages();
                 ViewBag.studentId = _studentRepo.GetStudentByEmail(User.Identity.Name).Id;
-                ViewBag.Students = _studentRepo.GetStudents();
-                ViewBag.Canteens = _canteenRepo.GetCanteens();
 
                 if (existingReservationDate.Any())
                 {
@@ -365,7 +380,7 @@ namespace FoodApp.Controllers
             catch (Exception e)
             {
                 ViewBag.CustomError = e.Message;
-                return RedirectToAction("MealOverview");
+                return RedirectToAction("MealOverview", e.Message);
             }
         }
 

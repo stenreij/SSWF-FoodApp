@@ -5,6 +5,7 @@
     {
         Bread,
         WarmMeal, 
+        Drinks,
         Beer,
         Wine,
     }

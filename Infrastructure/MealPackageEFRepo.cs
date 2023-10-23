@@ -143,5 +143,12 @@ namespace Infrastructure
             return mealPackage;
         }
 
+        public IEnumerable<MealPackage> GetMealPackagesByCanteenId(int canteenId)
+        {
+            return _context.MealPackages
+                .Include(mp => mp.Canteen)
+                .Where(mp => mp.Canteen.Id == canteenId)
+                .ToList();
+        }
     }
 }
