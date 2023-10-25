@@ -33,8 +33,8 @@
                         <th>ExpireDate</th>
                         <th>MealType</th>
                         <th>18+</th>
-                        <th></th>
-                        <th></th>
+                        <th>Details</th>
+                        <th>Reserve</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -55,7 +55,7 @@
                             <td>@mealPackage.MealType</td>
                             <td>@mealPackage.AdultsOnly</td>
                             <td>
-                                <a asp-controller="Pakket" asp-action="MealPackageDetails" asp-route-mealPackageId="@mealPackage.Id" class="btn btn-primary">Details</a>
+                                <a asp-controller="MealPackage" asp-action="MealPackageDetails" asp-route-id="@mealPackage.Id" class="btn btn-primary">Details</a>
                             </td>
                             <td>
                                 <form method="post" asp-controller="MealPackage" asp-action="ReserveMealPackage" asp-route-mealPackageId="@mealPackage.Id" asp-route-studentId="@ViewBag.StudentId">
@@ -80,8 +80,9 @@
                         <th>ExpireDate</th>
                         <th>MealType</th>
                         <th>18+</th>
-                        <th></th>
-                        <th></th>
+                        <th>Details</th>
+                        <th>Edit</th>
+                        <th>Delete</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -102,9 +103,10 @@
                             <td>@mealPackage.MealType</td>
                             <td>@mealPackage.AdultsOnly</td>
                             <td>
-                                <form method="post" asp-controller="MealPackage" asp-action="EditMealPackage" asp-route-mealPackageId="@mealPackage.Id">
-                                    <button type="submit" class="btn btn-primary">Edit</button>
-                                </form>
+                                <a asp-controller="MealPackage" asp-action="MealPackageDetails" asp-route-id="@mealPackage.Id" class="btn btn-primary">Details</a>
+                            </td>
+                            <td>
+                                <a asp-controller="MealPackage" asp-action="EditMealPackage" asp-route-id="@mealPackage.Id" class="btn btn-primary">Edit</a>
                             </td>
                             <td>
                                 <form method="post" action="@Url.Action("DeleteMealPackage", "mealPackage", new {    Id=mealPackage.Id    })">
@@ -127,8 +129,7 @@
                         <th>ExpireDate</th>
                         <th>MealType</th>
                         <th>18+</th>
-                        <th></th>
-                        <th></th>
+                        <th>Details</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -136,8 +137,8 @@
                     {
                         <tr>
                             <td>@mealPackage.Name</td>
-                            <td>@mealPackage.Price</td>
-                            <td>@mealPackage.City</td>
+                            <td>@string.Format("{0:C}", mealPackage.Price)</td>
+                                <td>@mealPackage.City</td>
                             <td>
                                 @if (mealPackage.Canteen != null)
                                 {
@@ -149,8 +150,8 @@
                             <td>@mealPackage.MealType</td>
                             <td>@mealPackage.AdultsOnly</td>
                             <td>
-                                <a asp-controller="Pakket" asp-action="PakketDetails" asp-route-mealPackageId="@mealPackage.Id" class="btn btn-primary">Info</a>
-                            </td>
+                                <a asp-controller="MealPackage" asp-action="MealPackageDetails" asp-route-id="@mealPackage.Id" class="btn btn-primary">Details</a>
+                            </td>                           
                         </tr>
                     }
                 </tbody>

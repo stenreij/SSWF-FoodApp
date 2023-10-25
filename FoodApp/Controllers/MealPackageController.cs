@@ -32,7 +32,7 @@ namespace FoodApp.Controllers
         }
 
         [HttpGet]
-        [Authorize]
+        [Authorize(Roles = "employee, student")]
         public IActionResult MealOverview()
         {
             var canteens = _canteenRepo.GetCanteens();
@@ -95,24 +95,30 @@ namespace FoodApp.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "student")]
+        [Authorize(Roles = "student, employee")]
         public IActionResult MealPackageDetails(int id)
         {
             try
             {
                 var mealPackage = _mealPackageRepo.GetMealPackageById(id);
                 var canteens = _canteenRepo.GetCanteens();
-                var studentId = _studentRepo.GetStudentByEmail(User.Identity.Name).Id;
-                ViewBag.studentId = studentId;
+                var students = _studentRepo.GetStudents();
 
                 if (mealPackage == null)
                 {
                     return NotFound();
                 }
 
+                if (User.IsInRole("Student"))
+                {
+                    var studentId = _studentRepo.GetStudentByEmail(User.Identity.Name).Id;
+                    ViewBag.StudentId = studentId;
+                }
+
                 var mealPackageProducts = _mealPackageRepo.GetMealPackageProducts(mealPackage.Id);
                 mealPackage.Products = mealPackageProducts.ToList();
 
+                ViewBag.Students = students;
                 ViewBag.Canteens = canteens;
                 return View(mealPackage);
             }
@@ -392,7 +398,6 @@ namespace FoodApp.Controllers
                 {
                     ViewBag.CustomError = "You have to be at least 18 to reserve this mealpackage.";
                     return View("MealOverview", viewModel);
-
                 }
 
                 if (existingReservationDate.Any())

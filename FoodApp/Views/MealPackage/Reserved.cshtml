@@ -40,10 +40,10 @@
                         <th>18+</th>
                         <th>PickUpDateTime</th>
                         <th>ExpireDateTime</th>
-                        <th>Reserved</th>
+                        <th>ReservedBy</th>
+                        <th>Details</th>
                         @if (User.IsInRole("student"))
                         {
-                            <th>Details</th>
                             <th>Cancel</th>
                         }                     
                     </tr>
@@ -61,12 +61,12 @@
                             <td>@mealPackage.PickUpDateTime.ToString("dd-MM-yyyy HH:mm")</td>
                             <td>@mealPackage.ExpireDateTime.ToString("dd-MM-yyyy HH:mm")</td>
                             <td>@mealPackage.ReservedByStudent.FirstName</td>
+                            <td>
+                                <a asp-controller="MealPackage" asp-action="MealPackageDetails" asp-route-id="@mealPackage.Id" class="btn btn-primary">Details</a>
+                            </td>
 
                             @if (User.IsInRole("student"))
                             {
-                                <td>
-                                    <a asp-controller="MealPackage" asp-action="MealPackageDetails" asp-route-id="@mealPackage.Id" class="btn btn-primary">Details</a>
-                                </td>
                                 <td>
                                     <form method="post" asp-controller="MealPackage" asp-action="CancelReservation" asp-route-mealPackageId="@mealPackage.Id" asp-route-studentId="@ViewBag.studentId">
                                         <button type="submit" class="btn btn-primary">Cancel</button>
