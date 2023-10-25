@@ -28,7 +28,7 @@
                                 <a class="nav-link text-dark" asp-area="" asp-controller="MealPackage" asp-action="MealOverview">Meal-Overview</a>
                             </li>
                         }
-                        @if (User.IsInRole("student"))
+                        @if (User.IsInRole("student") || User.IsInRole("employee"))
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="MealPackage" asp-action="Reserved">Reserved</a>

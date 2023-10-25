@@ -38,7 +38,15 @@ namespace Infrastructure
                 .First(p => p.Id == id);
         }
 
-        public IEnumerable<MealPackage> GetReservedMealPackages(int studentId)
+        public IEnumerable<MealPackage> GetReservedMealPackages()
+        {
+            return _context.MealPackages
+                .Where(p => p.ReservedByStudent != null)
+                .OrderBy(p => p.PickUpDateTime)
+                .ToList();
+        }
+
+        public IEnumerable<MealPackage> GetReservedMealPackagesByStudent(int studentId)
         {
             return _context.MealPackages
                 .Where(p => p.ReservedByStudent != null && p.ReservedByStudent.Id == studentId)
@@ -149,6 +157,19 @@ namespace Infrastructure
                 .Include(mp => mp.Canteen)
                 .Where(mp => mp.Canteen.Id == canteenId)
                 .ToList();
+        }
+
+        public void DeleteExpiredMealPackages(DateTime dateTiem)
+        {
+            var expiredMealPackages = _context.MealPackages
+                .Where(mp => mp.PickUpDateTime < dateTiem)
+                .ToList();
+
+            foreach (var mealPackage in expiredMealPackages)
+            {
+                _context.MealPackages.Remove(mealPackage);
+            }
+            _context.SaveChanges();
         }
     }
 }

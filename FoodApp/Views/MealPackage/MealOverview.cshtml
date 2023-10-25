@@ -1,5 +1,5 @@
 ﻿@using Core.Domain;
-@model List<MealPackage>
+@model OverviewViewModel
 
 @{
     ViewData["Title"] = "Overview MealPackages";
@@ -14,86 +14,148 @@
 <body>
     <div class="text-center">
         <h1>@ViewData["Title"]</h1>
-        @if (!string.IsNullOrEmpty(ViewBag.CustomError as string))
+        @if (User.IsInRole("student"))
         {
-            <div class="alert alert-danger">
-                @ViewBag.CustomError
-            </div>
-        }
-        <table>
-
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>City</th>
-                    <th>Canteen</th>
-                    <th>Price</th>
-                    <th>MealType</th>
-                    <th>18+</th>
-                    <th>PickUpDateTime</th>
-                    <th>ExpireDateTime</th>
-                    @if (User.IsInRole("student"))
-                    {
-                        <th>Details</th>
-                        <th>Reserve</th>
-                    }
-                    @if (User.IsInRole("employee"))
-                    {
-                        <th>Update</th>
-                        <th>Delete</th>
-                    }
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var mealPackage in Model)
-                {
+            @if (!string.IsNullOrEmpty(ViewBag.CustomError as string))
+            {
+                <div class="alert alert-danger text-center">
+                    @ViewBag.CustomError
+                </div>
+            }
+            <table>
+                <thead>
                     <tr>
-                        <td>@mealPackage.Name</td>
-                        <td>@mealPackage.Canteen.City</td>
-                        <td>@mealPackage.Canteen.CanteenName</td>
-                        <td>@string.Format("{0:C}", mealPackage.Price)</td>
-                        <td>@mealPackage.MealType</td>
-                        <td>@mealPackage.AdultsOnly</td>
-                        <td>@mealPackage.PickUpDateTime.ToString("dd-MM-yyyy HH:mm")</td>
-                        <td>@mealPackage.ExpireDateTime.ToString("dd-MM-yyyy HH:mm")</td>
-
-                        @if (User.IsInRole("student"))
-                        {
+                        <th>Name</th>
+                        <th>price</th>
+                        <th>City</th>
+                        <th>Canteen</th>
+                        <th>PickUpDate</th>
+                        <th>ExpireDate</th>
+                        <th>MealType</th>
+                        <th>18+</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var mealPackage in Model.StudentMealPackages)
+                    {
+                        <tr>
+                            <td>@mealPackage.Name</td>
+                            <td>@string.Format("{0:C}", mealPackage.Price)</td>
+                            <td>@mealPackage.City</td>
                             <td>
-                                <a asp-controller="MealPackage" asp-action="MealPackageDetails" asp-route-id="@mealPackage.Id" class="btn btn-primary">Details</a>
-                            </td>
-
-                            <td>
-                                @if (mealPackage.ReservedByStudent != null)
+                                @if (mealPackage.Canteen != null)
                                 {
-                                    @mealPackage.ReservedByStudent.FirstName
-                                }
-                                else
-                                {
-                                    <form method="post" asp-controller="MealPackage" asp-action="ReserveMealPackage" asp-route-mealPackageId="@mealPackage.Id" asp-route-studentId="@ViewBag.studentId">
-                                        <button type="submit" class="btn btn-primary">Reserve</button>
-                                    </form>
+                                    @mealPackage.Canteen.CanteenName
                                 }
                             </td>
-                        }
-
-                        @if (User.IsInRole("employee"))
-                        {
+                            <td>@mealPackage.PickUpDateTime</td>
+                            <td>@mealPackage.ExpireDateTime</td>
+                            <td>@mealPackage.MealType</td>
+                            <td>@mealPackage.AdultsOnly</td>
                             <td>
-                                <a asp-controller="MealPackage" asp-action="EditMealPackage" asp-route-id="@mealPackage.Id" class="btn btn-primary">Edit</a>
+                                <a asp-controller="Pakket" asp-action="MealPackageDetails" asp-route-mealPackageId="@mealPackage.Id" class="btn btn-primary">Details</a>
                             </td>
-
                             <td>
-                                <form method="post" action="@Url.Action("DeleteMealPackage", "MealPackage", new { id = mealPackage.Id })">
-                                    @Html.Hidden("id", mealPackage.Id)
-                                    <button type="submit" class="btn btn-primary">Delete</button>
+                                <form method="post" asp-controller="MealPackage" asp-action="ReserveMealPackage" asp-route-mealPackageId="@mealPackage.Id" asp-route-studentId="@ViewBag.StudentId">
+                                    <button type="submit" class="btn btn-primary">Reserve</button>
                                 </form>
                             </td>
-                        }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        @if (User.IsInRole("employee"))
+        {
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>price</th>
+                        <th>City</th>
+                        <th>Canteen</th>
+                        <th>PickUpDate</th>
+                        <th>ExpireDate</th>
+                        <th>MealType</th>
+                        <th>18+</th>
+                        <th></th>
+                        <th></th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach (var mealPackage in Model.CanteenMealPackages)
+                    {
+                        <tr>
+                            <td>@mealPackage.Name</td>
+                            <td>@string.Format("{0:C}", mealPackage.Price)</td>
+                            <td>@mealPackage.City</td>
+                            <td>
+                                @if (mealPackage.Canteen != null)
+                                {
+                                    @mealPackage.Canteen.CanteenName
+                                }
+                            </td>
+                            <td>@mealPackage.PickUpDateTime</td>
+                            <td>@mealPackage.ExpireDateTime</td>
+                            <td>@mealPackage.MealType</td>
+                            <td>@mealPackage.AdultsOnly</td>
+                            <td>
+                                <form method="post" asp-controller="MealPackage" asp-action="EditMealPackage" asp-route-mealPackageId="@mealPackage.Id">
+                                    <button type="submit" class="btn btn-primary">Edit</button>
+                                </form>
+                            </td>
+                            <td>
+                                <form method="post" action="@Url.Action("DeleteMealPackage", "mealPackage", new {    Id=mealPackage.Id    })">
+                                    @Html.Hidden("Id", mealPackage.Id)
+                                    <button type="submit" class="btn btn-primary">Delete</button>
+                                </form>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <h1>Other Canteens</h1>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>price</th>
+                        <th>City</th>
+                        <th>Canteen</th>
+                        <th>PickUpDate</th>
+                        <th>ExpireDate</th>
+                        <th>MealType</th>
+                        <th>18+</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var mealPackage in Model.OtherCanteenMealPackages)
+                    {
+                        <tr>
+                            <td>@mealPackage.Name</td>
+                            <td>@mealPackage.Price</td>
+                            <td>@mealPackage.City</td>
+                            <td>
+                                @if (mealPackage.Canteen != null)
+                                {
+                                    @mealPackage.Canteen.CanteenName
+                                }
+                            </td>
+                            <td>@mealPackage.PickUpDateTime</td>
+                            <td>@mealPackage.ExpireDateTime</td>
+                            <td>@mealPackage.MealType</td>
+                            <td>@mealPackage.AdultsOnly</td>
+                            <td>
+                                <a asp-controller="Pakket" asp-action="PakketDetails" asp-route-mealPackageId="@mealPackage.Id" class="btn btn-primary">Info</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
     </div>
 </body>
 </html>

@@ -16,7 +16,16 @@
         <h1>@ViewData["Title"]</h1>
         @if (!Model.Any())
         {
-            <p class="alert">You don't have any reservations at this moment.</p>
+            @if(User.IsInRole("student"))
+            {
+                            <p class="alert">You don't have any reservations at this moment.</p>
+
+            }
+            @if (User.IsInRole("employee"))
+            {
+                            <p class="alert">There are no reservations at this moment.</p>
+
+            }
         }
         else
         {
@@ -36,13 +45,7 @@
                         {
                             <th>Details</th>
                             <th>Cancel</th>
-                        }
-
-                        @if (User.IsInRole("employee"))
-                        {
-                            <th>Update</th>
-                            <th>Delete</th>
-                        }
+                        }                     
                     </tr>
                 </thead>
                 <tbody>
@@ -67,20 +70,6 @@
                                 <td>
                                     <form method="post" asp-controller="MealPackage" asp-action="CancelReservation" asp-route-mealPackageId="@mealPackage.Id" asp-route-studentId="@ViewBag.studentId">
                                         <button type="submit" class="btn btn-primary">Cancel</button>
-                                    </form>
-                                </td>
-                            }
-
-                            @if (User.IsInRole("employee"))
-                            {
-                                <td>
-                                    <a asp-controller="MealPackage" asp-action="EditMealPackage" asp-route-id="@mealPackage.Id" class="btn btn-primary">Edit</a>
-                                </td>
-
-                                <td>
-                                    <form method="post" action="@Url.Action("DeleteMealPackage", "MealPackage", new { id = mealPackage.Id })">
-                                        @Html.Hidden("id", mealPackage.Id)
-                                        <button type="submit" class="btn btn-primary">Delete</button>
                                     </form>
                                 </td>
                             }

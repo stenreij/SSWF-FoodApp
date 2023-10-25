@@ -35,44 +35,63 @@ namespace FoodApp.Controllers
         [Authorize]
         public IActionResult MealOverview()
         {
-            var mealPackages = _mealPackageRepo.GetAvailableMealPackages();
             var canteens = _canteenRepo.GetCanteens();
+            var currentTime = DateTime.Now;
+            _mealPackageRepo.DeleteExpiredMealPackages(currentTime);
             var students = _studentRepo.GetStudents();
+            var viewModel = new OverviewViewModel();
 
             if (User.IsInRole("student"))
             {
                 var studentId = _studentRepo.GetStudentByEmail(User.Identity.Name).Id;
                 ViewBag.studentId = studentId;
+                viewModel.StudentMealPackages = _mealPackageRepo.GetAvailableMealPackages().ToList();
             }
             else if (User.IsInRole("employee"))
             {
+                var employee = _employeeRepo.GetEmployeeByEmail(User.Identity.Name);
+                var employeeLocation = employee.Location;
+                var canteenEmployee = canteens.FirstOrDefault(c => c.Location == employeeLocation);
+                viewModel.CanteenMealPackages = _mealPackageRepo.GetAvailableMealPackages().Where(mp => mp.Canteen.Id == canteenEmployee.Id).ToList();
+                viewModel.OtherCanteenMealPackages = _mealPackageRepo.GetAvailableMealPackages().Where(mp => mp.Canteen.Id != canteenEmployee.Id).ToList();
                 var employeeId = _employeeRepo.GetEmployeeByEmail(User.Identity.Name).Id;
                 ViewBag.employeeId = employeeId;
             }
 
             ViewBag.Students = students;
             ViewBag.Canteens = canteens;
-            return View(mealPackages);
+            return View(viewModel);
         }
 
         [HttpGet]
-        [Authorize(Roles = "student")]
         public IActionResult Reserved()
         {
+            var canteens = _canteenRepo.GetCanteens();
+            var students = _studentRepo.GetStudents();
+            ViewBag.Students = students;
+            ViewBag.Canteens = canteens;
+
             if (User == null)
             {
                 return RedirectToAction("Index", "Home");
             }
-            var studentId = _studentRepo.GetStudentByEmail(User.Identity.Name).Id;
-            var mealPackage = _mealPackageRepo.GetReservedMealPackages(studentId);
 
-            var canteens = _canteenRepo.GetCanteens();
-            var students = _studentRepo.GetStudents();
+            if (User.IsInRole("student"))
+            {
+                var studentId = _studentRepo.GetStudentByEmail(User.Identity.Name).Id;
+                var mealPackage = _mealPackageRepo.GetReservedMealPackagesByStudent(studentId);
 
-            ViewBag.studentId = studentId;
-            ViewBag.Students = students;
-            ViewBag.Canteens = canteens;
-            return View(mealPackage);
+
+                ViewBag.studentId = studentId;
+                return View(mealPackage);
+
+            }
+            else if (User.IsInRole("employee"))
+            {
+                var mealPackage = _mealPackageRepo.GetReservedMealPackages();
+                return View(mealPackage);
+            }
+            return View("MealOverview");
         }
 
         [HttpGet]
@@ -355,24 +374,37 @@ namespace FoodApp.Controllers
             {
                 var mealPackage = _mealPackageRepo.GetMealPackageById(mealPackageId);
                 var reservationDate = mealPackage.PickUpDateTime.Date;
+                var studentBd = _studentRepo.GetStudentById(studentId).BirthDate;
+                var studentAge = DateTime.Now.Year - studentBd.Year;
+                var mealPackageAge = mealPackage.AdultsOnly;
+                var canteens = _canteenRepo.GetCanteens();
 
-                var existingReservationDate = _mealPackageRepo.GetReservedMealPackages(studentId)
+                var existingReservationDate = _mealPackageRepo.GetReservedMealPackagesByStudent(studentId)
                     .Where(mp => mp.PickUpDateTime.Date == reservationDate)
                     .ToList();
 
-                var mealPackages = _mealPackageRepo.GetAvailableMealPackages();
+                var viewModel = new OverviewViewModel();
+                viewModel.StudentMealPackages = _mealPackageRepo.GetAvailableMealPackages().ToList();
                 ViewBag.studentId = _studentRepo.GetStudentByEmail(User.Identity.Name).Id;
+                ViewBag.Canteens = canteens;
+
+                if (mealPackageAge == true && studentAge < 18)
+                {
+                    ViewBag.CustomError = "You have to be at least 18 to reserve this mealpackage.";
+                    return View("MealOverview", viewModel);
+
+                }
 
                 if (existingReservationDate.Any())
                 {
                     ViewBag.CustomError = "You already have reserved a mealpackage for this day.";
-                    return View("MealOverview", mealPackages);
+                    return View("MealOverview", viewModel);
                 }
 
                 if (!_mealPackageService.ReserveMealPackage(mealPackageId, studentId))
                 {
                     ViewBag.CustomError = "This mealpackage is not available at this moment.";
-                    return View("MealOverview", mealPackages);
+                    return View("MealOverview", viewModel);
                 }
 
                 return RedirectToAction("Reserved");
