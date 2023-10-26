@@ -103,7 +103,7 @@
                             <td>@mealPackage.MealType</td>
                             <td>@mealPackage.AdultsOnly</td>
                             <td>
-                                <a asp-controller="MealPackage" asp-action="MealPackageDetails" asp-route-id="@mealPackage.Id" class="btn btn-primary">Details</a>
+                                <a asp-controller="MealPackage" asp-action="MealPackageDetails" asp-route-mealPackageId="@mealPackage.Id" class="btn btn-primary">Details</a>
                             </td>
                             <td>
                                 <a asp-controller="MealPackage" asp-action="EditMealPackage" asp-route-id="@mealPackage.Id" class="btn btn-primary">Edit</a>
@@ -150,7 +150,7 @@
                             <td>@mealPackage.MealType</td>
                             <td>@mealPackage.AdultsOnly</td>
                             <td>
-                                <a asp-controller="MealPackage" asp-action="MealPackageDetails" asp-route-id="@mealPackage.Id" class="btn btn-primary">Details</a>
+                                <a asp-controller="MealPackage" asp-action="MealPackageDetails" asp-route-mealPackageId="@mealPackage.Id" class="btn btn-primary">Details</a>
                             </td>                           
                         </tr>
                     }

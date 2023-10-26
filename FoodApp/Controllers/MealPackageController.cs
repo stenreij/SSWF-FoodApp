@@ -3,6 +3,7 @@ using Core.Domain;
 using Core.DomainServices;
 using FoodApp.Models;
 using Infrastructure;
+using Infrastructure.Migrations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Runtime.Intrinsics.X86;
@@ -139,6 +140,18 @@ namespace FoodApp.Controllers
             var products = _productRepo.GetProducts();
             var canteens = _canteenRepo.GetCanteens();
 
+            var employee = _employeeRepo.GetEmployeeByEmail(User.Identity.Name);
+            var employeeLocation = employee.Location;
+            var canteenEmployee = canteens.FirstOrDefault(c => c.Location == employeeLocation);
+            var warmMealAvailable = canteenEmployee.WarmMeal;
+
+            var mealTypeValues = Enum.GetValues(typeof(MealType)).Cast<MealType>();
+
+            if (!warmMealAvailable == true)
+            {
+                mealTypeValues = mealTypeValues.Where(mt => mt != MealType.WarmMeal);
+            }
+
             var mealPackageViewModel = new MealPackageViewModel
             {
                 Products = products.ToList(),
@@ -146,6 +159,7 @@ namespace FoodApp.Controllers
                 ExpireDateTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 0, 0, 0)
             };
 
+            ViewBag.MealTypes = mealTypeValues;
             ViewBag.Canteens = canteens;
 
             return View(mealPackageViewModel);
@@ -216,6 +230,7 @@ namespace FoodApp.Controllers
                 var canteens = _canteenRepo.GetCanteens();
                 var employeeLocation = employee.Location;
                 var canteenEmployee = canteens.FirstOrDefault(c => c.Location == employeeLocation);
+                bool warmMeal = canteenEmployee.WarmMeal.Equals("True");
 
                 var products = _productRepo.GetProducts();
                 var SelectedProducts = selectedProducts != null
@@ -224,6 +239,11 @@ namespace FoodApp.Controllers
                 bool containsAlcohol = SelectedProducts.Any(p => p.ContainsAlcohol);
 
                 mealPackageViewModel.SelectedProducts = SelectedProducts.Select(p => p.Id).ToList();
+
+                if (warmMeal != true)
+                {
+
+                }
 
                 if (ModelState.IsValid)
                 {

@@ -37,7 +37,12 @@
         </div>
         <div class="mb-3">
             <label asp-for="MealType" class="form-label">Mealtype: </label>
-            <select asp-for="MealType" class="form-control" asp-items="Html.GetEnumSelectList<MealType>()"></select>
+            <select asp-for="MealType" class="form-control">
+                @foreach (var mealType in ViewBag.MealTypes)
+                {
+                    <option value="@mealType">@mealType</option>
+                }
+            </select>
         </div>
        
         <label class="form-label">Select Products:</label>
