@@ -62,7 +62,7 @@
                             <td>@mealPackage.ExpireDateTime.ToString("dd-MM-yyyy HH:mm")</td>
                             <td>@mealPackage.ReservedByStudent.FirstName</td>
                             <td>
-                                <a asp-controller="MealPackage" asp-action="MealPackageDetails" asp-route-id="@mealPackage.Id" class="btn btn-primary">Details</a>
+                                <a asp-controller="MealPackage" asp-action="MealPackageDetails" asp-route-mealPackageId="@mealPackage.Id" class="btn btn-primary">Details</a>
                             </td>
 
                             @if (User.IsInRole("student"))

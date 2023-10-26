@@ -96,11 +96,11 @@ namespace FoodApp.Controllers
 
         [HttpGet]
         [Authorize(Roles = "student, employee")]
-        public IActionResult MealPackageDetails(int id)
+        public IActionResult MealPackageDetails(int mealPackageId)
         {
             try
             {
-                var mealPackage = _mealPackageRepo.GetMealPackageById(id);
+                var mealPackage = _mealPackageRepo.GetMealPackageById(mealPackageId);
                 var canteens = _canteenRepo.GetCanteens();
                 var students = _studentRepo.GetStudents();
 
@@ -109,7 +109,7 @@ namespace FoodApp.Controllers
                     return NotFound();
                 }
 
-                if (User.IsInRole("Student"))
+                if (User.IsInRole("student"))
                 {
                     var studentId = _studentRepo.GetStudentByEmail(User.Identity.Name).Id;
                     ViewBag.StudentId = studentId;
@@ -417,7 +417,7 @@ namespace FoodApp.Controllers
             catch (Exception e)
             {
                 ViewBag.CustomError = e.Message;
-                return RedirectToAction("MealOverview", e.Message);
+                return RedirectToAction("MealOverview");
             }
         }
 
@@ -428,7 +428,7 @@ namespace FoodApp.Controllers
             var student = _studentRepo.GetStudentByEmail(User.Identity.Name);
             if (student.Id != studentId)
             {
-                return RedirectToAction("Reserved");
+                return RedirectToAction("MealOverview");
             }
 
             var mealPackage = _mealPackageRepo.GetMealPackageById(mealPackageId);

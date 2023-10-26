@@ -55,7 +55,7 @@
                             <td>@mealPackage.MealType</td>
                             <td>@mealPackage.AdultsOnly</td>
                             <td>
-                                <a asp-controller="MealPackage" asp-action="MealPackageDetails" asp-route-id="@mealPackage.Id" class="btn btn-primary">Details</a>
+                                <a asp-controller="MealPackage" asp-action="MealPackageDetails" asp-route-mealPackageId="@mealPackage.Id" class="btn btn-primary">Details</a>
                             </td>
                             <td>
                                 <form method="post" asp-controller="MealPackage" asp-action="ReserveMealPackage" asp-route-mealPackageId="@mealPackage.Id" asp-route-studentId="@ViewBag.StudentId">

@@ -38,6 +38,19 @@
                 <dt class="col-sm-3">Canteen:</dt>
                 <dd class="col-sm-9">@Model.Canteen.CanteenName</dd>
 
+                @if (User.IsInRole("employee"))
+                {
+                    <dt class="col-sm-3 products">Reserved By:</dt>
+                    if (Model.ReservedByStudent != null)
+                    {
+                        <dd class="col-sm-9 products">@Model.ReservedByStudent.FirstName @Model.ReservedByStudent.LastName</dd>
+                    }
+                    else
+                    {
+                        <dd class="col-sm-9 products">Mealpackage is not reserved yet.</dd>
+                    }
+                }               
+
                 <dt class="col-sm-3 products">Products:</dt>
                 <dd class="col-sm-9 products">
                     @foreach (var product in Model.Products)
@@ -57,7 +70,7 @@
                 }
                 else
                 {
-                    <form method="post" asp-controller="MealPackage" asp-action="CancelReservation" asp-route-mealPackageId="@Model.Id" asp-route-studentId="@ViewBag.StudentId">
+                    <form method="post" asp-controller="MealPackage" asp-action="CancelReservation" asp-route-mealPackageId="@Model.Id" asp-route-studentId="@ViewBag.studentId">
                         <button type="submit" class="btn btn-primary">Cancel</button>
                     </form>
                 }
