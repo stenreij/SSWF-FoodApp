@@ -159,10 +159,10 @@ namespace Infrastructure
                 .ToList();
         }
 
-        public void DeleteExpiredMealPackages(DateTime dateTiem)
+        public void DeleteExpiredMealPackages(DateTime dateTime)
         {
             var expiredMealPackages = _context.MealPackages
-                .Where(mp => mp.PickUpDateTime < dateTiem)
+                .Where(mp => mp.ExpireDateTime < dateTime)
                 .ToList();
 
             foreach (var mealPackage in expiredMealPackages)

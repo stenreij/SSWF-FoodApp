@@ -232,6 +232,12 @@ namespace FoodApp.Controllers
                 var canteenEmployee = canteens.FirstOrDefault(c => c.Location == employeeLocation);
                 bool warmMeal = canteenEmployee.WarmMeal.Equals("True");
 
+                var mealTypeValues = Enum.GetValues(typeof(MealType)).Cast<MealType>();
+                if (!warmMeal)
+                {
+                    mealTypeValues = mealTypeValues.Where(mt => mt != MealType.WarmMeal);
+                }
+
                 var products = _productRepo.GetProducts();
                 var SelectedProducts = selectedProducts != null
                     ? products.Where(p => selectedProducts.Contains(p.Id)).ToList()
@@ -239,11 +245,6 @@ namespace FoodApp.Controllers
                 bool containsAlcohol = SelectedProducts.Any(p => p.ContainsAlcohol);
 
                 mealPackageViewModel.SelectedProducts = SelectedProducts.Select(p => p.Id).ToList();
-
-                if (warmMeal != true)
-                {
-
-                }
 
                 if (ModelState.IsValid)
                 {
@@ -287,6 +288,9 @@ namespace FoodApp.Controllers
                     }
                 }
                 mealPackageViewModel.Products = products.ToList();
+
+                ViewBag.MealTypes = mealTypeValues;
+
                 ViewBag.Canteens = canteens;
                 return View(mealPackageViewModel);
             }
@@ -298,6 +302,7 @@ namespace FoodApp.Controllers
                 return View(mealPackageViewModel);
             }
         }
+
 
         [HttpPost]
         [Authorize(Roles = "employee")]
