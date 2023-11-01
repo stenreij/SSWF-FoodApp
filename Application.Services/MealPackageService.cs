@@ -5,26 +5,37 @@ namespace Application.Services
 {
     public class MealPackageService : IMealPackageService
     {
-        private readonly IMealPackageRepo _mealRepo;
+        private readonly IMealPackageRepo _mealPackageRepo;
+        private readonly IStudentRepo _studentRepo;
+        private readonly ICanteenRepo _canteenRepo;
 
-        public MealPackageService(IMealPackageRepo mealPackageRepo)
+        public MealPackageService(IMealPackageRepo mealPackageRepo, IStudentRepo studentRepo, ICanteenRepo canteenRepo)
         {
-            _mealRepo = mealPackageRepo;
+            _mealPackageRepo = mealPackageRepo;
+            _studentRepo = studentRepo;
+            _canteenRepo = canteenRepo;
         }
 
-        public IEnumerable<MealPackage> GetMealPackages()
-            => _mealRepo.GetMealPackages();
+        public IEnumerable<MealPackage> GetAvailableMealPackages()
+            => _mealPackageRepo.GetAvailableMealPackages()
+            .Where(m => m.ReservedByStudent == null);
+
+        public IEnumerable<MealPackage> GetReservedMealPackages()
+            => _mealPackageRepo.GetReservedMealPackages()
+            .Where(m => m.ReservedByStudent != null);
+
+
 
         public bool ReserveMealPackage(int mealPackageId, int studentId)
         {
-            var mealPackage = _mealRepo.GetMealPackageById(mealPackageId);
+            var mealPackage = _mealPackageRepo.GetMealPackageById(mealPackageId);
 
             if (mealPackage.ReservedByStudent != null)
             {
                 return false;
             }
 
-            _mealRepo.ReserveMealPackage(mealPackageId, studentId);
+            _mealPackageRepo.ReserveMealPackage(mealPackageId, studentId);
             return true;
         }
     }

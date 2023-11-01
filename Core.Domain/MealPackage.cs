@@ -12,7 +12,6 @@ namespace Core.Domain
         public City City { get; set; }
         [Required(ErrorMessage = "Canteen is required.")]
         public Canteen Canteen { get; set; } = null!;
-        //public int CanteenId { get; set; }
         [Required(ErrorMessage = "Pick up date/time is required.")]
         public DateTime PickUpDateTime { get; set; }
         [Required(ErrorMessage = "Expire date/time is required.")]
