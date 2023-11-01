@@ -56,6 +56,7 @@ namespace FoodApp.Controllers
                 viewModel.CanteenMealPackages = _mealPackageRepo.GetAvailableMealPackages().Where(mp => mp.Canteen.Id == canteenEmployee.Id).ToList();
                 viewModel.OtherCanteenMealPackages = _mealPackageRepo.GetAvailableMealPackages().Where(mp => mp.Canteen.Id != canteenEmployee.Id).ToList();
                 var employeeId = _employeeRepo.GetEmployeeByEmail(User.Identity.Name).Id;
+                viewModel.CanteenName = canteenEmployee.CanteenName;
                 ViewBag.employeeId = employeeId;
             }
 
@@ -69,6 +70,8 @@ namespace FoodApp.Controllers
         {
             var canteens = _canteenRepo.GetCanteens();
             var students = _studentRepo.GetStudents();
+            var currentTime = DateTime.Now;
+            _mealPackageRepo.DeleteExpiredMealPackages(currentTime);
             ViewBag.Students = students;
             ViewBag.Canteens = canteens;
 

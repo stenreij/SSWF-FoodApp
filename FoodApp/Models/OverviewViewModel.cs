@@ -7,5 +7,6 @@ namespace FoodApp.Models
         public List<MealPackage> CanteenMealPackages { get; set; }
         public List<MealPackage> OtherCanteenMealPackages { get; set; }
         public List<MealPackage> StudentMealPackages { get; set; }
+        public string? CanteenName { get; internal set; }
     }
 }
