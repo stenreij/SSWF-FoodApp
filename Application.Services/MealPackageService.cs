@@ -24,7 +24,19 @@ namespace Application.Services
             => _mealPackageRepo.GetReservedMealPackages()
             .Where(m => m.ReservedByStudent != null);
 
+        public IEnumerable<MealPackage> GetMealPackages()
+            => _mealPackageRepo.GetMealPackages();
 
+        public MealPackage GetMealPackageById(int id)
+            => _mealPackageRepo.GetMealPackageById(id);
+
+        public IEnumerable<MealPackage> GetMealPackagesByCanteenId(int id)
+            => _mealPackageRepo.GetMealPackagesByCanteenId(id)
+            .Where(m => m.Canteen.Id == id);
+
+        public IEnumerable<MealPackage> GetMealPackagesOtherCanteens(int id)
+            => _mealPackageRepo.GetMealPackages()
+            .Where(m => m.Canteen.Id != id);
 
         public bool ReserveMealPackage(int mealPackageId, int studentId)
         {

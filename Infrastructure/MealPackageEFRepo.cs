@@ -23,10 +23,9 @@ namespace Infrastructure
         public IEnumerable<MealPackage> GetAvailableMealPackages()
         {
             var mealPackages = _context.MealPackages
+                .OrderBy(p => p.PickUpDateTime)
                 .Where(p => p.ReservedByStudent == null)
                 .ToList();
-
-            mealPackages = mealPackages.OrderBy(p => p.PickUpDateTime).ToList();
 
             return mealPackages;
         }
