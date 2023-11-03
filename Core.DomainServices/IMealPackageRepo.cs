@@ -12,7 +12,7 @@ namespace Core.DomainServices
         MealPackage GetMealPackageById(int id);
         IEnumerable<MealPackage> GetMealPackagesByCanteenId(int id);
         MealPackage AddMealPackage(MealPackage mealPackage);
-        void EditMealPackage(MealPackage mealPackage);
+        MealPackage EditMealPackage(MealPackage mealPackage);
         void DeleteMealPackage(int id);
         void RemoveProductsFromMealPackage(int mealPackageId, int productId);
         void AddProductToMealPackage(int mealPackageId, int productId);

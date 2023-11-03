@@ -23,33 +23,32 @@ namespace Infrastructure
         public IEnumerable<MealPackage> GetAvailableMealPackages()
         {
             var mealPackages = _context.MealPackages
-                .OrderBy(p => p.PickUpDateTime)
-                .Where(p => p.ReservedByStudent == null)
+                .OrderBy(mp => mp.PickUpDateTime)
+                .Where(mp => mp.ReservedByStudent == null)
                 .ToList();
 
             return mealPackages;
         }
 
-
         public MealPackage GetMealPackageById(int id)
         {
             return _context.MealPackages
-                .First(p => p.Id == id);
+                .First(mp => mp.Id == id);
         }
 
         public IEnumerable<MealPackage> GetReservedMealPackages()
         {
             return _context.MealPackages
-                .Where(p => p.ReservedByStudent != null)
-                .OrderBy(p => p.PickUpDateTime)
+                .Where(mp => mp.ReservedByStudent != null)
+                .OrderBy(mp => mp.PickUpDateTime)
                 .ToList();
         }
 
         public IEnumerable<MealPackage> GetReservedMealPackagesByStudent(int studentId)
         {
             return _context.MealPackages
-                .Where(p => p.ReservedByStudent != null && p.ReservedByStudent.Id == studentId)
-                .OrderBy(p => p.PickUpDateTime)
+                .Where(mp => mp.ReservedByStudent != null && mp.ReservedByStudent.Id == studentId)
+                .OrderBy(mp => mp.PickUpDateTime)
                 .ToList();
         }
 
@@ -71,10 +70,11 @@ namespace Infrastructure
             }
         }
 
-        public void EditMealPackage(MealPackage mealPackage)
+        public MealPackage EditMealPackage(MealPackage mealPackage)
         {
             _context.MealPackages.Update(mealPackage);
             _context.SaveChanges();
+            return mealPackage;
         }
 
         public IEnumerable<Product> GetMealPackageProducts(int mealPackageId)
