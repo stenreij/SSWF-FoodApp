@@ -48,7 +48,7 @@ namespace Application.Services
             {
                 throw new ArgumentException("Pickup date must be before expiration date.");
             }
-            if(mealPackage.PickUpDateTime > DateTime.Now.AddDays(2))
+            if (mealPackage.PickUpDateTime > DateTime.Now.AddDays(2))
             {
                 throw new ArgumentException("Pickup date must be within 2 days.");
             }
@@ -79,16 +79,43 @@ namespace Application.Services
             return mealPackage;
         }
 
+        public bool DeleteMealPackage(int id)
+        {
+            var mealPakcage = _mealPackageRepo.GetMealPackageById(id);
+            if (mealPakcage.ReservedByStudent != null)
+            {
+                _mealPackageRepo.DeleteMealPackage(id);
+                return false;
+            }
+            _mealPackageRepo.DeleteMealPackage(id);
+            return true;
+        }
+
 
 
 
         public bool ReserveMealPackage(int mealPackageId, int studentId)
         {
             var mealPackage = _mealPackageRepo.GetMealPackageById(mealPackageId);
+            var student = _studentRepo.GetStudentById(studentId);
 
             if (mealPackage.ReservedByStudent != null)
             {
                 return false;
+            }
+
+            if (student.BirthDate.Date > mealPackage.PickUpDateTime.AddYears(-18) && mealPackage.AdultsOnly)
+            {
+                throw new ArgumentException("You have to be at least 18 to reserve this mealpackage.");
+            }
+
+            var reservedMealPackagesForStudent = _mealPackageRepo.GetReservedMealPackagesByStudent(studentId);
+            var reservedForSameDay = reservedMealPackagesForStudent
+                .Any(mp => mp.PickUpDateTime.Date == mealPackage.PickUpDateTime.Date);
+
+            if (reservedForSameDay == true)
+            {
+                throw new ArgumentException("You have already reserved a mealpackage for this day.");
             }
 
             _mealPackageRepo.ReserveMealPackage(mealPackageId, studentId);

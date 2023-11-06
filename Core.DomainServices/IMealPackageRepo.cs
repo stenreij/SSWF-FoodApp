@@ -18,6 +18,6 @@ namespace Core.DomainServices
         void AddProductToMealPackage(int mealPackageId, int productId);
         void DeleteExpiredMealPackages(DateTime dateTime);
         IEnumerable<Product> GetMealPackageProducts(int mealPackageId);
-        MealPackage ReserveMealPackage(int mealPackageId, int studentId);       
+        MealPackage? ReserveMealPackage(int mealPackageId, int studentId);       
     }
 }

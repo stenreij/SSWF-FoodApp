@@ -16,8 +16,8 @@ namespace ApplicationServicesTests
                 Id = 1,
                 Name = "Fruit + sapje",
                 Price = 2.25,
-                PickUpDateTime = new DateTime(2023, 11, 10, 12, 0, 0),
-                ExpireDateTime = new DateTime(2023, 11, 12, 12, 0, 0),
+                PickUpDateTime = DateTime.Now.AddDays(1),
+                ExpireDateTime = DateTime.Now.AddDays(2),
                 City = City.Breda,
                 AdultsOnly = false,
                 Products = new List<Product>(),
@@ -37,8 +37,8 @@ namespace ApplicationServicesTests
                 Id = 2,
                 Name = "Tosti + water",
                 Price = 2.50,
-                PickUpDateTime = new DateTime(2023, 11, 13, 12, 0, 0),
-                ExpireDateTime = new DateTime(2023, 11, 15, 12, 0, 0),
+                PickUpDateTime = DateTime.Now.AddDays(1),
+                ExpireDateTime = DateTime.Now.AddDays(2),
                 City = City.Tilburg,
                 AdultsOnly = false,
                 Products = new List<Product>(),
@@ -67,8 +67,8 @@ namespace ApplicationServicesTests
                 Id = 3,
                 Name = "Groentesoep + broodjes",
                 Price = 4.50,
-                PickUpDateTime = new DateTime(2023, 11, 14, 16, 0, 0),
-                ExpireDateTime = new DateTime(2023, 11, 15, 12, 0, 0),
+                PickUpDateTime = DateTime.Now.AddDays(2),
+                ExpireDateTime = DateTime.Now.AddDays(3),
                 City = City.Den_Bosch,
                 AdultsOnly = false,
                 Products = new List<Product>(),
@@ -96,9 +96,8 @@ namespace ApplicationServicesTests
             {
                 Id = 4,
                 Name = "Panini + frisdrank",
-                Price = 4.75,
-                PickUpDateTime = new DateTime(2023, 11, 15, 16, 0, 0),
-                ExpireDateTime = new DateTime(2023, 11, 16, 12, 0, 0),
+                PickUpDateTime = DateTime.Now.AddDays(1),
+                ExpireDateTime = DateTime.Now.AddDays(2),
                 City = City.Den_Bosch,
                 AdultsOnly = false,
                 Products = new List<Product>(),
@@ -329,7 +328,7 @@ namespace ApplicationServicesTests
         }
 
         [Fact]
-        public void AddMealPackageInValidPickUpDateTime()
+        public void AddMealPackageInvalidPickUpDateTime()
         {
             var mealPackageRepoMock = new Mock<IMealPackageRepo>();
             var studentRepoMock = new Mock<IStudentRepo>();
@@ -370,7 +369,7 @@ namespace ApplicationServicesTests
         }
 
         [Fact]
-        public void AddMealPackageInValidPickUpDateTimeLaterThanExpireDateTime()
+        public void AddMealPackageInvalidPickUpDateTimeLaterThanExpireDateTime()
         {
             var mealPackageRepoMock = new Mock<IMealPackageRepo>();
             var studentRepoMock = new Mock<IStudentRepo>();
@@ -412,7 +411,7 @@ namespace ApplicationServicesTests
         }
 
         [Fact]
-        public void AddMealPackageInValidNoProducts()
+        public void AddMealPackageInvalidNoProducts()
         {
             var mealPackageRepoMock = new Mock<IMealPackageRepo>();
             var studentRepoMock = new Mock<IStudentRepo>();
@@ -519,7 +518,6 @@ namespace ApplicationServicesTests
             };
 
             mealPackageRepoMock.Setup(m => m.GetMealPackageById(101)).Returns(mealPackage);
-
             mealPackageRepoMock.Setup(m => m.EditMealPackage(mealPackageUpdated)).Returns(mealPackageUpdated);
 
 
@@ -531,7 +529,220 @@ namespace ApplicationServicesTests
             Assert.Equal(1.00 , updatedMealPackage.Price);
         }
 
+        [Fact]
+        public void UpdateMealPackageInvalidPickUpDateTime()
+        {
+            var mealPackageRepoMock = new Mock<IMealPackageRepo>();
+            var studentRepoMock = new Mock<IStudentRepo>();
+            var canteenRepoMock = new Mock<ICanteenRepo>();
 
+            var mealPackageService = new MealPackageService(mealPackageRepoMock.Object, studentRepoMock.Object, canteenRepoMock.Object);
+
+            var mealPackage = new MealPackage()
+            {
+                Id = 101,
+                Name = "Hartige broodjes",
+                Price = 3.50,
+                PickUpDateTime = DateTime.Now.AddDays(1),
+                ExpireDateTime = DateTime.Now.AddDays(2),
+                City = City.Breda,
+                AdultsOnly = false,
+                Products = new List<Product>
+                {
+                    new Product
+                    {
+                        Name = "Bolletje",
+                        ContainsAlcohol = false,
+                        PhotoUrl = "https://www.google.com/imgres?imgurl=https%3A%2F%2Fmegafoodstunter.nl%2Fwp-content%2Fuploads%2F2023%2F08%2Fpistolet-wit.jpg&tbnid=jAMccVyusQl81M&vet=12ahUKEwiLgoK00eiBAxWziP0HHQswDTkQMygAegQIARBP..i&imgrefurl=https%3A%2F%2Fmegafoodstunter.nl%2Fwinkel%2Fbakkerij%2Fbrood%2Fpistolet-wit-75x70-gram%2F&docid=Mr_bEd8psnSF8M&w=1000&h=1000&q=pistolet&ved=2ahUKEwiLgoK00eiBAxWziP0HHQswDTkQMygAegQIARBP"
+                    },
+                },
+                MealType = MealType.Bread,
+                Canteen = new Canteen
+                {
+                    Id = 1,
+                    CanteenName = "Canteen 1",
+                    City = City.Breda,
+                    Location = Location.La,
+                },
+                ReservedByStudent = null,
+            };
+
+            var mealPackageUpdated = new MealPackage()
+            {
+                Id = 101,
+                Name = "Croissants",
+                Price = 1.00,
+                PickUpDateTime = DateTime.Now.AddDays(4),
+                ExpireDateTime = DateTime.Now.AddDays(7),
+                City = City.Breda,
+                AdultsOnly = false,
+                Products = new List<Product>
+                {
+                    new Product
+                    {
+                        Name = "Croissant",
+                        ContainsAlcohol = false,
+                        PhotoUrl = "https://www.google.com/imgres?imgurl=https%3A%2F%2Fmegafoodstunter.nl%2Fwp-content%2Fuploads%2F2023%2F08%2Fpistolet-wit.jpg&tbnid=jAMccVyusQl81M&vet=12ahUKEwiLgoK00eiBAxWziP0HHQswDTkQMygAegQIARBP..i&imgrefurl=https%3A%2F%2Fmegafoodstunter.nl%2Fwinkel%2Fbakkerij%2Fbrood%2Fpistolet-wit-75x70-gram%2F&docid=Mr_bEd8psnSF8M&w=1000&h=1000&q=pistolet&ved=2ahUKEwiLgoK00eiBAxWziP0HHQswDTkQMygAegQIARBP"
+                    },
+                },
+                MealType = MealType.Bread,
+                Canteen = new Canteen
+                {
+                    Id = 1,
+                    CanteenName = "LALA",
+                    City = City.Breda,
+                    Location = Location.La,
+                },
+                ReservedByStudent = null,
+            };
+
+            mealPackageRepoMock.Setup(m => m.GetMealPackageById(101)).Returns(mealPackage);
+            mealPackageRepoMock.Setup(m => m.EditMealPackage(mealPackageUpdated)).Returns(mealPackageUpdated);
+         
+            var exception = Assert.Throws<ArgumentException>(() => mealPackageService.AddMealPackage(mealPackageUpdated));
+            Assert.Equal("Pickup date must be within 2 days.", exception.Message);
+        }
+
+        [Fact]
+        public void UpdateMealPackageInvalidPickUpDateTimeLaterThanExpireDateTime()
+        {
+            var mealPackageRepoMock = new Mock<IMealPackageRepo>();
+            var studentRepoMock = new Mock<IStudentRepo>();
+            var canteenRepoMock = new Mock<ICanteenRepo>();
+
+            var mealPackageService = new MealPackageService(mealPackageRepoMock.Object, studentRepoMock.Object, canteenRepoMock.Object);
+
+            var mealPackage = new MealPackage()
+            {
+                Id = 101,
+                Name = "Hartige broodjes",
+                Price = 3.50,
+                PickUpDateTime = DateTime.Now.AddDays(1),
+                ExpireDateTime = DateTime.Now.AddDays(2),
+                City = City.Breda,
+                AdultsOnly = false,
+                Products = new List<Product>
+                {
+                    new Product
+                    {
+                        Name = "Bolletje",
+                        ContainsAlcohol = false,
+                        PhotoUrl = "https://www.google.com/imgres?imgurl=https%3A%2F%2Fmegafoodstunter.nl%2Fwp-content%2Fuploads%2F2023%2F08%2Fpistolet-wit.jpg&tbnid=jAMccVyusQl81M&vet=12ahUKEwiLgoK00eiBAxWziP0HHQswDTkQMygAegQIARBP..i&imgrefurl=https%3A%2F%2Fmegafoodstunter.nl%2Fwinkel%2Fbakkerij%2Fbrood%2Fpistolet-wit-75x70-gram%2F&docid=Mr_bEd8psnSF8M&w=1000&h=1000&q=pistolet&ved=2ahUKEwiLgoK00eiBAxWziP0HHQswDTkQMygAegQIARBP"
+                    },
+                },
+                MealType = MealType.Bread,
+                Canteen = new Canteen
+                {
+                    Id = 1,
+                    CanteenName = "Canteen 1",
+                    City = City.Breda,
+                    Location = Location.La,
+                },
+                ReservedByStudent = null,
+            };
+
+            var mealPackageUpdated = new MealPackage()
+            {
+                Id = 101,
+                Name = "Croissants",
+                Price = 1.00,
+                PickUpDateTime = DateTime.Now.AddDays(2),
+                ExpireDateTime = DateTime.Now.AddDays(1),
+                City = City.Breda,
+                AdultsOnly = false,
+                Products = new List<Product>
+                {
+                    new Product
+                    {
+                        Name = "Croissant",
+                        ContainsAlcohol = false,
+                        PhotoUrl = "https://www.google.com/imgres?imgurl=https%3A%2F%2Fmegafoodstunter.nl%2Fwp-content%2Fuploads%2F2023%2F08%2Fpistolet-wit.jpg&tbnid=jAMccVyusQl81M&vet=12ahUKEwiLgoK00eiBAxWziP0HHQswDTkQMygAegQIARBP..i&imgrefurl=https%3A%2F%2Fmegafoodstunter.nl%2Fwinkel%2Fbakkerij%2Fbrood%2Fpistolet-wit-75x70-gram%2F&docid=Mr_bEd8psnSF8M&w=1000&h=1000&q=pistolet&ved=2ahUKEwiLgoK00eiBAxWziP0HHQswDTkQMygAegQIARBP"
+                    },
+                },
+                MealType = MealType.Bread,
+                Canteen = new Canteen
+                {
+                    Id = 1,
+                    CanteenName = "LALA",
+                    City = City.Breda,
+                    Location = Location.La,
+                },
+                ReservedByStudent = null,
+            };
+
+            mealPackageRepoMock.Setup(m => m.GetMealPackageById(101)).Returns(mealPackage);
+
+            mealPackageRepoMock.Setup(m => m.EditMealPackage(mealPackageUpdated)).Returns(mealPackageUpdated);
+
+            var exception = Assert.Throws<ArgumentException>(() => mealPackageService.AddMealPackage(mealPackageUpdated));
+            Assert.Equal("Pickup date must be before expiration date.", exception.Message);
+        }
+
+        [Fact]
+        public void UpdateMealPackageInvalidNoProducts()
+        {
+            var mealPackageRepoMock = new Mock<IMealPackageRepo>();
+            var studentRepoMock = new Mock<IStudentRepo>();
+            var canteenRepoMock = new Mock<ICanteenRepo>();
+
+            var mealPackageService = new MealPackageService(mealPackageRepoMock.Object, studentRepoMock.Object, canteenRepoMock.Object);
+
+            var mealPackage = new MealPackage()
+            {
+                Id = 101,
+                Name = "Hartige broodjes",
+                Price = 3.50,
+                PickUpDateTime = DateTime.Now.AddDays(1),
+                ExpireDateTime = DateTime.Now.AddDays(2),
+                City = City.Breda,
+                AdultsOnly = false,
+                Products = new List<Product>
+                {
+                    new Product
+                    {
+                        Name = "Bolletje",
+                        ContainsAlcohol = false,
+                        PhotoUrl = "https://www.google.com/imgres?imgurl=https%3A%2F%2Fmegafoodstunter.nl%2Fwp-content%2Fuploads%2F2023%2F08%2Fpistolet-wit.jpg&tbnid=jAMccVyusQl81M&vet=12ahUKEwiLgoK00eiBAxWziP0HHQswDTkQMygAegQIARBP..i&imgrefurl=https%3A%2F%2Fmegafoodstunter.nl%2Fwinkel%2Fbakkerij%2Fbrood%2Fpistolet-wit-75x70-gram%2F&docid=Mr_bEd8psnSF8M&w=1000&h=1000&q=pistolet&ved=2ahUKEwiLgoK00eiBAxWziP0HHQswDTkQMygAegQIARBP"
+                    },
+                },
+                MealType = MealType.Bread,
+                Canteen = new Canteen
+                {
+                    Id = 1,
+                    CanteenName = "Canteen 1",
+                    City = City.Breda,
+                    Location = Location.La,
+                },
+                ReservedByStudent = null,
+            };
+
+            var mealPackageUpdated = new MealPackage()
+            {
+                Id = 101,
+                Name = "Croissants",
+                Price = 1.00,
+                PickUpDateTime = DateTime.Now.AddDays(2),
+                ExpireDateTime = DateTime.Now.AddDays(3),
+                City = City.Breda,
+                AdultsOnly = false,
+                Products = new List<Product>(),
+                MealType = MealType.Bread,
+                Canteen = new Canteen
+                {
+                    Id = 1,
+                    CanteenName = "LALA",
+                    City = City.Breda,
+                    Location = Location.La,
+                },
+                ReservedByStudent = null,
+            };
+
+            mealPackageRepoMock.Setup(m => m.GetMealPackageById(101)).Returns(mealPackage);
+            mealPackageRepoMock.Setup(m => m.EditMealPackage(mealPackageUpdated)).Returns(mealPackageUpdated);
+
+            var exception = Assert.Throws<ArgumentException>(() => mealPackageService.AddMealPackage(mealPackageUpdated));
+            Assert.Equal("At least one product must be added to the meal package.", exception.Message);
+        }
 
         //--------------------------------------------------------------------------------------------------------------
         //--------------------------------------------------------------------------------------------------------------
@@ -539,6 +750,101 @@ namespace ApplicationServicesTests
         //--------------------------------------------------------------------------------------------------------------
         //--------------------------------------------------------------------------------------------------------------
 
+        [Fact]
+        public void DeleteMealPackageValid()
+        {
+            var mealPackageRepoMock = new Mock<IMealPackageRepo>();
+            var studentRepoMock = new Mock<IStudentRepo>();
+            var canteenRepoMock = new Mock<ICanteenRepo>();
+
+            var mealPackageService = new MealPackageService(mealPackageRepoMock.Object, studentRepoMock.Object, canteenRepoMock.Object);
+
+            var mealPackage = new MealPackage()
+            {
+                Id = 101,
+                Name = "Hartige broodjes",
+                Price = 3.50,
+                PickUpDateTime = DateTime.Now.AddDays(1),
+                ExpireDateTime = DateTime.Now.AddDays(2),
+                City = City.Breda,
+                AdultsOnly = false,
+                Products = new List<Product>
+                {
+                    new Product
+                    {
+                        Name = "Bolletje",
+                        ContainsAlcohol = false,
+                        PhotoUrl = "https://www.google.com/imgres?imgurl=https%3A%2F%2Fmegafoodstunter.nl%2Fwp-content%2Fuploads%2F2023%2F08%2Fpistolet-wit.jpg&tbnid=jAMccVyusQl81M&vet=12ahUKEwiLgoK00eiBAxWziP0HHQswDTkQMygAegQIARBP..i&imgrefurl=https%3A%2F%2Fmegafoodstunter.nl%2Fwinkel%2Fbakkerij%2Fbrood%2Fpistolet-wit-75x70-gram%2F&docid=Mr_bEd8psnSF8M&w=1000&h=1000&q=pistolet&ved=2ahUKEwiLgoK00eiBAxWziP0HHQswDTkQMygAegQIARBP"
+                    },
+                },
+                MealType = MealType.Bread,
+                Canteen = new Canteen
+                {
+                    Id = 1,
+                    CanteenName = "Canteen 1",
+                    City = City.Breda,
+                    Location = Location.La,
+                },
+                ReservedByStudent = null,
+            };
+
+            mealPackageRepoMock.Setup(m => m.GetMealPackageById(101)).Returns(mealPackage);
+            var deletedMealPackage = mealPackageService.DeleteMealPackage(101);
+            Assert.True(deletedMealPackage);
+        }
+
+        [Fact]
+        public void DeleteMealPackageInvalidAlreadyReserved()
+        {
+            var mealPackageRepoMock = new Mock<IMealPackageRepo>();
+            var studentRepoMock = new Mock<IStudentRepo>();
+            var canteenRepoMock = new Mock<ICanteenRepo>();
+
+            var mealPackageService = new MealPackageService(mealPackageRepoMock.Object, studentRepoMock.Object, canteenRepoMock.Object);
+
+            var mealPackage = new MealPackage()
+            {
+                Id = 101,
+                Name = "Hartige broodjes",
+                Price = 3.50,
+                PickUpDateTime = DateTime.Now.AddDays(1),
+                ExpireDateTime = DateTime.Now.AddDays(2),
+                City = City.Breda,
+                AdultsOnly = false,
+                Products = new List<Product>
+                {
+                    new Product
+                    {
+                        Name = "Bolletje",
+                        ContainsAlcohol = false,
+                        PhotoUrl = "https://www.google.com/imgres?imgurl=https%3A%2F%2Fmegafoodstunter.nl%2Fwp-content%2Fuploads%2F2023%2F08%2Fpistolet-wit.jpg&tbnid=jAMccVyusQl81M&vet=12ahUKEwiLgoK00eiBAxWziP0HHQswDTkQMygAegQIARBP..i&imgrefurl=https%3A%2F%2Fmegafoodstunter.nl%2Fwinkel%2Fbakkerij%2Fbrood%2Fpistolet-wit-75x70-gram%2F&docid=Mr_bEd8psnSF8M&w=1000&h=1000&q=pistolet&ved=2ahUKEwiLgoK00eiBAxWziP0HHQswDTkQMygAegQIARBP"
+                    },
+                },
+                MealType = MealType.Bread,
+                Canteen = new Canteen
+                {
+                    Id = 1,
+                    CanteenName = "Canteen 1",
+                    City = City.Breda,
+                    Location = Location.La,
+                },
+                ReservedByStudent = new Student
+                {
+                    Id = 2,
+                    FirstName = "Freek",
+                    LastName = "Vonk",
+                    StudentNr = 2175709,
+                    BirthDate = new DateTime(2000, 10, 28),
+                    Email = "freek@mail.com",
+                    PhoneNr = 0612345678,
+                    StudyCity = City.Den_Bosch,
+                },
+            };
+
+            mealPackageRepoMock.Setup(m => m.GetMealPackageById(101)).Returns(mealPackage);
+            var mealPackageToDelete = mealPackageService.DeleteMealPackage(101);
+            Assert.False(mealPackageToDelete);
+        }
 
 
         //--------------------------------------------------------------------------------------------------------------
@@ -547,7 +853,124 @@ namespace ApplicationServicesTests
         //--------------------------------------------------------------------------------------------------------------
         //--------------------------------------------------------------------------------------------------------------
 
+        [Fact]
+        public void ReserveMealPackageValid()
+        {
+            var mealPackageRepoMock = new Mock<IMealPackageRepo>();
+            var studentRepoMock = new Mock<IStudentRepo>();
+            var canteenRepoMock = new Mock<ICanteenRepo>();
 
+            var mealPackageService = new MealPackageService(mealPackageRepoMock.Object, studentRepoMock.Object, canteenRepoMock.Object);
+
+            var mealPackage = new MealPackage()
+            {
+                Id = 101,
+                Name = "Hartige broodjes",
+                Price = 3.50,
+                PickUpDateTime = DateTime.Now.AddDays(2),
+                ExpireDateTime = DateTime.Now.AddDays(3),
+                City = City.Breda,
+                AdultsOnly = false,
+                Products = new List<Product>
+                {
+                    new Product
+                    {
+                        Name = "Bolletje",
+                        ContainsAlcohol = false,
+                        PhotoUrl = "https://www.google.com/imgres?imgurl=https%3A%2F%2Fmegafoodstunter.nl%2Fwp-content%2Fuploads%2F2023%2F08%2Fpistolet-wit.jpg&tbnid=jAMccVyusQl81M&vet=12ahUKEwiLgoK00eiBAxWziP0HHQswDTkQMygAegQIARBP..i&imgrefurl=https%3A%2F%2Fmegafoodstunter.nl%2Fwinkel%2Fbakkerij%2Fbrood%2Fpistolet-wit-75x70-gram%2F&docid=Mr_bEd8psnSF8M&w=1000&h=1000&q=pistolet&ved=2ahUKEwiLgoK00eiBAxWziP0HHQswDTkQMygAegQIARBP"
+                    },
+                },
+                MealType = MealType.Bread,
+                Canteen = new Canteen
+                {
+                    Id = 1,
+                    CanteenName = "Canteen 1",
+                    City = City.Breda,
+                    Location = Location.La,
+                },
+                ReservedByStudent = null,
+            };
+
+            var student = new Student()
+            {
+                Id = 2020,
+                FirstName = "Leonardo",
+                LastName = "Da Vinci",
+                Email = "leo@mail.com",
+                BirthDate = new DateTime(1960, 08, 08),
+                StudentNr = 1235479,
+                StudyCity = City.Breda,
+                PhoneNr = 0612345678,
+            };
+
+            mealPackageRepoMock.Setup(m => m.GetMealPackageById(101)).Returns(mealPackage);
+            studentRepoMock.Setup(s => s.GetStudentById(2020)).Returns(student);
+
+            var mealPackageToReserve = mealPackageService.ReserveMealPackage(101, 2020);
+            Assert.Equal("Leonardo", student.FirstName);
+            Assert.True(mealPackageToReserve);
+        }
+
+        [Fact]
+        public void ReserveMealPackageInvalidAlreadyReservedMealPackageForThatDay()
+        {
+            var mealPackageRepoMock = new Mock<IMealPackageRepo>();
+            var studentRepoMock = new Mock<IStudentRepo>();
+            var canteenRepoMock = new Mock<ICanteenRepo>();
+
+            var mealPackageService = new MealPackageService(mealPackageRepoMock.Object, studentRepoMock.Object, canteenRepoMock.Object);
+
+            var mealPackage = new MealPackage()
+            {
+                Id = 101,
+                Name = "Hartige broodjes",
+                Price = 3.50,
+                PickUpDateTime = DateTime.Now.AddDays(2),
+                ExpireDateTime = DateTime.Now.AddDays(3),
+                City = City.Breda,
+                AdultsOnly = false,
+                Products = new List<Product>
+                {
+                    new Product
+                    {
+                        Name = "Bolletje",
+                        ContainsAlcohol = false,
+                        PhotoUrl = "https://www.google.com/imgres?imgurl=https%3A%2F%2Fmegafoodstunter.nl%2Fwp-content%2Fuploads%2F2023%2F08%2Fpistolet-wit.jpg&tbnid=jAMccVyusQl81M&vet=12ahUKEwiLgoK00eiBAxWziP0HHQswDTkQMygAegQIARBP..i&imgrefurl=https%3A%2F%2Fmegafoodstunter.nl%2Fwinkel%2Fbakkerij%2Fbrood%2Fpistolet-wit-75x70-gram%2F&docid=Mr_bEd8psnSF8M&w=1000&h=1000&q=pistolet&ved=2ahUKEwiLgoK00eiBAxWziP0HHQswDTkQMygAegQIARBP"
+                    },
+                },
+                MealType = MealType.Bread,
+                Canteen = new Canteen
+                {
+                    Id = 1,
+                    CanteenName = "Canteen 1",
+                    City = City.Breda,
+                    Location = Location.La,
+                },
+                ReservedByStudent = null,
+            };
+
+            var student = new Student()
+            {
+                Id = 1,
+                FirstName = "Sten",
+                LastName = "Reijerse", 
+                Email = "sten@mail.com",
+                BirthDate = new DateTime(2000, 10, 28), 
+                StudentNr = 2175709,                                    
+                StudyCity = City.Breda,
+                PhoneNr = 0612345678,
+            };
+
+            mealPackageRepoMock.Setup(m => m.GetMealPackageById(101)).Returns(mealPackage);
+            mealPackageRepoMock.Setup(m => m.GetReservedMealPackagesByStudent(1)).Returns(_mealPackageList);
+            studentRepoMock.Setup(s => s.GetStudentById(1)).Returns(student);
+
+            var reservedMealPackagesStudent = mealPackageService.GetReservedMealPackagesByStudent(1);
+
+            var exception = Assert.Throws<ArgumentException>(() => mealPackageService.ReserveMealPackage(mealPackage.Id, student.Id));
+            Assert.Equal("You have already reserved a mealpackage for this day.", exception.Message);
+            Assert.Null(mealPackage.ReservedByStudent);
+        }
 
         //--------------------------------------------------------------------------------------------------------------
         //--------------------------------------------------------------------------------------------------------------
