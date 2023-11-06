@@ -92,8 +92,6 @@ namespace Application.Services
         }
 
 
-
-
         public bool ReserveMealPackage(int mealPackageId, int studentId)
         {
             var mealPackage = _mealPackageRepo.GetMealPackageById(mealPackageId);
@@ -101,7 +99,7 @@ namespace Application.Services
 
             if (mealPackage.ReservedByStudent != null)
             {
-                return false;
+                throw new ArgumentException("This mealpackage is already reserved.");
             }
 
             if (student.BirthDate.Date > mealPackage.PickUpDateTime.AddYears(-18) && mealPackage.AdultsOnly)
@@ -118,8 +116,24 @@ namespace Application.Services
                 throw new ArgumentException("You have already reserved a mealpackage for this day.");
             }
 
+            mealPackage.ReservedByStudent = student;
             _mealPackageRepo.ReserveMealPackage(mealPackageId, studentId);
             return true;
         }
+
+        public bool CancelReservation(int mealPackageId, int studentId)
+        {
+            var mealPackage = _mealPackageRepo.GetMealPackageById(mealPackageId);
+            var student = _studentRepo.GetStudentById(studentId);
+
+            if (mealPackage.ReservedByStudent != null && mealPackage.ReservedByStudent.Id == student.Id)
+            {
+                mealPackage.ReservedByStudent = null; 
+                _mealPackageRepo.CancelReservation(mealPackageId, studentId);
+                return true;
+            }
+            throw new ArgumentException("You're not allowed to cancel this reservation.");
+        }
+
     }
 }

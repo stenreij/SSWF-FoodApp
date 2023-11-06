@@ -150,6 +150,34 @@ namespace Infrastructure
             return mealPackage;
         }
 
+        public MealPackage CancelReservation(int mealPackageId, int studentId)
+        {
+            var mealPackage = _context.MealPackages
+                .Include(mp => mp.Products)
+                .Include(mp => mp.ReservedByStudent)
+                .FirstOrDefault(mp => mp.Id == mealPackageId);
+
+            if (mealPackage == null)
+            {
+                throw new NullReferenceException("MealPackage not found");
+            }
+
+            if (mealPackage.ReservedByStudent == null)
+            {
+                throw new Exception("You can't cancel this reservation");
+            }
+
+            if (mealPackage.ReservedByStudent.Id != studentId)
+            {
+                throw new Exception("You are not allowed to cancel this reservation");
+            }
+
+            mealPackage.ReservedByStudent = null;
+            _context.SaveChanges();
+
+            return mealPackage;
+        }
+
         public IEnumerable<MealPackage> GetMealPackagesByCanteenId(int canteenId)
         {
             return _context.MealPackages
