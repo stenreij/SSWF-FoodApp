@@ -404,8 +404,11 @@ namespace FoodApp.Controllers
         [Authorize(Roles = "student")]
         public IActionResult ReserveMealPackage(int mealPackageId, int studentId)
         {
+          
             try
             {
+                var viewModel = new OverviewViewModel();
+                viewModel.StudentMealPackages = _mealPackageRepo.GetAvailableMealPackages().ToList();
                 var mealPackage = _mealPackageRepo.GetMealPackageById(mealPackageId);
                 var reservationDate = mealPackage.PickUpDateTime.Date;
                 var studentBd = _studentRepo.GetStudentById(studentId).BirthDate;
@@ -415,10 +418,8 @@ namespace FoodApp.Controllers
 
                 var existingReservationDate = _mealPackageRepo.GetReservedMealPackagesByStudent(studentId)
                     .Where(mp => mp.PickUpDateTime.Date == reservationDate)
-                    .ToList();
-
-                var viewModel = new OverviewViewModel();
-                viewModel.StudentMealPackages = _mealPackageRepo.GetAvailableMealPackages().ToList();
+                    .ToList();              
+                
                 ViewBag.studentId = _studentRepo.GetStudentByEmail(User.Identity.Name).Id;
                 ViewBag.Canteens = canteens;
 
@@ -431,6 +432,12 @@ namespace FoodApp.Controllers
                 if (existingReservationDate.Any())
                 {
                     ViewBag.CustomError = "You already have reserved a mealpackage for this day.";
+                    return View("MealOverview", viewModel);
+                }
+
+                if (mealPackage.ReservedByStudent != null)
+                {
+                    ViewBag.CustomError = "This mealpackage is already reserved.";
                     return View("MealOverview", viewModel);
                 }
 

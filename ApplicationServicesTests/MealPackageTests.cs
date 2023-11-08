@@ -903,14 +903,18 @@ namespace ApplicationServicesTests
                 PhoneNr = 0612345678,
             };
 
-            mealPackageRepoMock.Setup(m => m.GetMealPackageById(101)).Returns(mealPackage);
-            studentRepoMock.Setup(s => s.GetStudentById(2020)).Returns(student);
+            studentRepoMock.Setup(repo => repo.GetStudentById(It.IsAny<int>())).Returns(student);
+            mealPackageRepoMock.Setup(repo => repo.GetMealPackageById(It.IsAny<int>())).Returns(mealPackage);
+            mealPackageRepoMock.Setup(repo => repo.ReserveMealPackage(It.IsAny<int>(), It.IsAny<int>())).Callback((int mpId, int studentId) =>
+            {
+                mealPackage.ReservedByStudent = student;
+            });
 
             var mealPackageToReserve = mealPackageService.ReserveMealPackage(101, 2020);
             Assert.Equal("Leonardo", student.FirstName);
             Assert.True(mealPackageToReserve);
             Assert.Equal("Leonardo", mealPackage.ReservedByStudent.FirstName);
-            Assert.Equal(student, mealPackage.ReservedByStudent);
+            Assert.Equal(student, mealPackage.ReservedByStudent); 
         }
 
         [Fact]

@@ -116,7 +116,6 @@ namespace Application.Services
                 throw new ArgumentException("You have already reserved a mealpackage for this day.");
             }
 
-            mealPackage.ReservedByStudent = student;
             _mealPackageRepo.ReserveMealPackage(mealPackageId, studentId);
             return true;
         }
