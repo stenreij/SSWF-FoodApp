@@ -1,5 +1,5 @@
 ﻿using Core.Domain;
-using Core.DomainServices;
+using Core.DomainServices.Interfaces;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 

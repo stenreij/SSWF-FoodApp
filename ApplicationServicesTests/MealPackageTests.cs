@@ -1,10 +1,12 @@
-﻿using Application.Services;
+﻿using Core.DomainServices;
 using Core.Domain;
-using Core.DomainServices;
+
 using Moq;
 using Xunit;
+using Core.DomainServices.Interfaces;
+using Core.DomainServices.Services;
 
-namespace ApplicationServicesTests
+namespace Core.DomainServices.Tests
 {
     public class MealPackageTests
     {
@@ -280,6 +282,7 @@ namespace ApplicationServicesTests
         //Add MealPackages Tests----------------------------------------------------------------------------------------
         //--------------------------------------------------------------------------------------------------------------
         //--------------------------------------------------------------------------------------------------------------
+
         [Fact]
         public void AddMealPackageValid()
         {
@@ -323,6 +326,7 @@ namespace ApplicationServicesTests
             var addedMealPackage = mealPackageService.AddMealPackage(newMealPackage);
             Assert.NotNull(addedMealPackage);
             Assert.Equal(101, addedMealPackage.Id);
+
             Assert.Equal("Hartige broodjes", addedMealPackage.Name);
             Assert.Equal("Bolletje", addedMealPackage.Products.ElementAt(0).Name);
         }
@@ -914,7 +918,7 @@ namespace ApplicationServicesTests
             Assert.Equal("Leonardo", student.FirstName);
             Assert.True(mealPackageToReserve);
             Assert.Equal("Leonardo", mealPackage.ReservedByStudent.FirstName);
-            Assert.Equal(student, mealPackage.ReservedByStudent); 
+            Assert.Equal(student, mealPackage.ReservedByStudent);
         }
 
         [Fact]

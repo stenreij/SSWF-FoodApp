@@ -1,10 +1,11 @@
 ﻿using Core.Domain;
-namespace Core.DomainServices
+
+namespace Core.DomainServices.Interfaces
 {
-    public  interface IProductRepo
+    public interface IProductRepo
     {
         IEnumerable<Product> GetProducts();
         Product GetProductById(int id);
-        
+
     }
 }

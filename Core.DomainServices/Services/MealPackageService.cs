@@ -1,7 +1,8 @@
-﻿using Core.Domain;
-using Core.DomainServices;
+﻿using Application.Services;
+using Core.Domain;
+using Core.DomainServices.Interfaces;
 
-namespace Application.Services
+namespace Core.DomainServices.Services
 {
     public class MealPackageService : IMealPackageService
     {
@@ -127,7 +128,7 @@ namespace Application.Services
 
             if (mealPackage.ReservedByStudent != null && mealPackage.ReservedByStudent.Id == student.Id)
             {
-                mealPackage.ReservedByStudent = null; 
+                mealPackage.ReservedByStudent = null;
                 _mealPackageRepo.CancelReservation(mealPackageId, studentId);
                 return true;
             }

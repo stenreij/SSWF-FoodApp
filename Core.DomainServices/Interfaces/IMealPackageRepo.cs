@@ -1,9 +1,9 @@
-﻿using Core.Domain; 
+﻿using Core.Domain;
 
-namespace Core.DomainServices
+namespace Core.DomainServices.Interfaces
 
 {
-    public  interface IMealPackageRepo
+    public interface IMealPackageRepo
     {
         IEnumerable<MealPackage> GetMealPackages();
         IEnumerable<MealPackage> GetAvailableMealPackages();
@@ -18,7 +18,7 @@ namespace Core.DomainServices
         void AddProductToMealPackage(int mealPackageId, int productId);
         void DeleteExpiredMealPackages(DateTime dateTime);
         IEnumerable<Product> GetMealPackageProducts(int mealPackageId);
-        MealPackage? ReserveMealPackage(int mealPackageId, int studentId);   
+        MealPackage? ReserveMealPackage(int mealPackageId, int studentId);
         MealPackage? CancelReservation(int mealPackageId, int studentId);
     }
 }

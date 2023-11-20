@@ -1,6 +1,6 @@
 ﻿using Application.Services;
 using Core.Domain;
-using Core.DomainServices;
+using Core.DomainServices.Interfaces;
 using FoodApp.Models;
 using Infrastructure;
 using Infrastructure.Migrations;

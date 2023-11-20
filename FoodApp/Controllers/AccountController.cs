@@ -1,4 +1,4 @@
-﻿using Core.DomainServices;
+﻿using Core.DomainServices.Interfaces;
 using FoodApp.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
