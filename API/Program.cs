@@ -1,9 +1,7 @@
+using API.GraphQL;
 using Core.DomainServices.Interfaces;
 using Infrastructure;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using HotChocolate;
-using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,11 +16,9 @@ builder.Services.AddScoped<IMealPackageRepo, MealPackageEFRepo>();
 builder.Services.AddDbContext<FoodAppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddDbContext<FoodAppIdentityDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("IdentityConnection")));
-
-builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = false)
-    .AddEntityFrameworkStores<FoodAppIdentityDbContext>();
+builder.Services.AddGraphQLServer()
+    .AddQueryType<QueryType>()
+    .AddType<MealPackageType>();
 
 var app = builder.Build();
 
@@ -32,6 +28,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+
+app.MapGraphQL();
 
 app.UseHttpsRedirection();
 

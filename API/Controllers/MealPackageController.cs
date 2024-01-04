@@ -1,8 +1,6 @@
 using Core.Domain;
 using Core.DomainServices.Interfaces;
-using HotChocolate;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace API.Controllers
 {
@@ -16,7 +14,6 @@ namespace API.Controllers
         {
             _mealPackageRepository = mealPackageRepository;
         }
-
 
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<MealPackage>), 200)]
@@ -92,5 +89,25 @@ namespace API.Controllers
                 return StatusCode(500, "Internal Server Error");
             }
         }
+
+        [HttpGet("graphql")]
+        [ProducesResponseType(typeof(IEnumerable<MealPackage>), 200)]
+        [ProducesResponseType(500)]
+        public IActionResult GetAllMealPackagesGraphQL()
+        {
+            var mealPackages = _mealPackageRepository.GetMealPackages();
+            return Ok(new { Data = mealPackages });
+        }
+
+        [HttpPost("graphql")]
+        public IActionResult GraphQL([FromBody] GraphQLQuery query)
+        {
+            return Ok(new { Data = _mealPackageRepository.ExecuteQuery(query.Query) });
+        }
+    }
+
+    public class GraphQLQuery
+    {
+        public string Query { get; set; }
     }
 }

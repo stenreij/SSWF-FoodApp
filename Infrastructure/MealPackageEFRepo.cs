@@ -198,5 +198,10 @@ namespace Infrastructure
             }
             _context.SaveChanges();
         }
+
+        public object ExecuteQuery(string query)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
