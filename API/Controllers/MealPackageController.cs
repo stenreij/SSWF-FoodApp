@@ -24,24 +24,6 @@ namespace API.Controllers
             return Ok(mealPackages);
         }
 
-        [HttpGet("available")]
-        [ProducesResponseType(typeof(IEnumerable<MealPackage>), 200)]
-        [ProducesResponseType(500)]
-        public IActionResult GetAvailableMealPackages()
-        {
-            var mealPackages = _mealPackageRepository.GetAvailableMealPackages();
-            return Ok(mealPackages);
-        }
-
-        [HttpGet("reserved")]
-        [ProducesResponseType(typeof(IEnumerable<MealPackage>), 200)]
-        [ProducesResponseType(500)]
-        public IActionResult GetReservedMealPackages()
-        {
-            var mealPackages = _mealPackageRepository.GetReservedMealPackages();
-            return Ok(mealPackages);
-        }
-
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(MealPackage), 200)]
         [ProducesResponseType(404)]
@@ -99,15 +81,5 @@ namespace API.Controllers
             return Ok(new { Data = mealPackages });
         }
 
-        [HttpPost("graphql")]
-        public IActionResult GraphQL([FromBody] GraphQLQuery query)
-        {
-            return Ok(new { Data = _mealPackageRepository.ExecuteQuery(query.Query) });
-        }
-    }
-
-    public class GraphQLQuery
-    {
-        public string Query { get; set; }
     }
 }

@@ -12,13 +12,15 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddGraphQL();
 builder.Services.AddScoped<IMealPackageRepo, MealPackageEFRepo>();
+builder.Services.AddScoped<ICanteenRepo, CanteenEFRepo>();
 
 builder.Services.AddDbContext<FoodAppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddGraphQLServer()
     .AddQueryType<QueryType>()
-    .AddType<MealPackageType>();
+    .AddType<MealPackageType>()
+    .AddType<CanteenType>();
 
 var app = builder.Build();
 

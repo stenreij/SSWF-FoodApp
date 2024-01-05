@@ -9,10 +9,10 @@ namespace API.GraphQL
     public class QueryType
     {
         [UsePaging]
-        public IQueryable<MealPackage> GetMealPackages([Service] IMealPackageRepo mealPackageRepo) =>
+        public IEnumerable<MealPackage> GetMealPackages([Service] IMealPackageRepo mealPackageRepo, [Service] ICanteenRepo canteenRepo) =>
         mealPackageRepo.GetMealPackages().AsQueryable();
-        [UsePaging]
-        public MealPackage GetMealPackageById(int id, [Service] IMealPackageRepo mealPackageRepo) =>
+ 
+        public MealPackage GetMealPackageById(int id, [Service] IMealPackageRepo mealPackageRepo, [Service] ICanteenRepo canteenRepo) =>
         mealPackageRepo.GetMealPackageById(id);
     }
 }
