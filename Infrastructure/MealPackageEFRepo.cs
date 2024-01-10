@@ -17,17 +17,21 @@ namespace Infrastructure
 
         public IEnumerable<MealPackage> GetMealPackages()
         {
-            return _context.MealPackages.ToList();
+            return _context.MealPackages
+                .Include(m => m.Canteen)
+                .Include(m => m.Products)
+                .OrderBy(mp => mp.PickUpDateTime)
+                .ToList();
         }
 
         public IEnumerable<MealPackage> GetAvailableMealPackages()
         {
-            var mealPackages = _context.MealPackages
+            return _context.MealPackages
+                .Include(m => m.Canteen)
+                .Include(m => m.Products)
                 .OrderBy(mp => mp.PickUpDateTime)
                 .Where(mp => mp.ReservedByStudent == null)
                 .ToList();
-
-            return mealPackages;
         }
 
         public MealPackage GetMealPackageById(int id)
@@ -39,6 +43,9 @@ namespace Infrastructure
         public IEnumerable<MealPackage> GetReservedMealPackages()
         {
             return _context.MealPackages
+                .Include(m => m.Canteen)
+                .Include(m => m.Products)
+                .OrderBy(mp => mp.PickUpDateTime)
                 .Where(mp => mp.ReservedByStudent != null)
                 .OrderBy(mp => mp.PickUpDateTime)
                 .ToList();

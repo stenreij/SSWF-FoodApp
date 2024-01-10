@@ -1,5 +1,7 @@
 using API.GraphQL;
+using Application.Services;
 using Core.DomainServices.Interfaces;
+using Core.DomainServices.Services;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,6 +15,10 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddGraphQL();
 builder.Services.AddScoped<IMealPackageRepo, MealPackageEFRepo>();
 builder.Services.AddScoped<ICanteenRepo, CanteenEFRepo>();
+builder.Services.AddScoped<IStudentRepo, StudentEFRepo>();
+builder.Services.AddScoped<IEmployeeRepo, EmployeeEFRepo>();
+builder.Services.AddScoped<IProductRepo, ProductEFRepo>();
+builder.Services.AddScoped<IMealPackageService, MealPackageService>();
 
 builder.Services.AddDbContext<FoodAppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
