@@ -14,5 +14,6 @@ namespace API.GraphQL
  
         public MealPackage GetMealPackageById(int id, [Service] IMealPackageRepo mealPackageRepo, [Service] ICanteenRepo canteenRepo) =>
         mealPackageRepo.GetMealPackageById(id);
+
     }
 }

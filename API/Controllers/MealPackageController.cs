@@ -3,6 +3,7 @@ using Core.Domain;
 using Core.DomainServices.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Infrastructure;
+using API.DTO;
 
 namespace API.Controllers
 {
@@ -10,16 +11,25 @@ namespace API.Controllers
     [Route("api/[controller]")]
     public class MealPackageController : ControllerBase
     {
-        private readonly IMealPackageService _mealPackageService;
+        private readonly IMealPackageRepo _mealPackageRepo;
         private readonly ILogger<MealPackageController> _logger;
+        private readonly IStudentRepo _studentRepo;
+        private readonly ICanteenRepo _canteenRepo;
+        private readonly IMealPackageService _mealPackageService;
 
         public MealPackageController(
-            IMealPackageService mealPackageService,
-            ILogger<MealPackageController> logger
+            IMealPackageRepo mealPackageRepo,
+            ILogger<MealPackageController> logger,
+            IStudentRepo studentRepo,
+            ICanteenRepo canteenRepo,
+            IMealPackageService mealPackageService
             )
         {
-            _mealPackageService = mealPackageService;
+            _mealPackageRepo = mealPackageRepo;
             _logger = logger;
+            _studentRepo = studentRepo;
+            _canteenRepo = canteenRepo;
+            _mealPackageService = mealPackageService;
         }
 
         [HttpGet]
@@ -27,165 +37,88 @@ namespace API.Controllers
         [ProducesResponseType(500)]
         public IActionResult GetMealPackages()
         {
-            _logger.LogInformation("GetMealPackages() aangeroepen");
+            _logger.LogInformation("GetMealPackages() called");
             try
             {
-                var mealPackages = _mealPackageService.GetMealPackages();
+                var mealPackages = _mealPackageRepo.GetMealPackages();
                 return Ok(mealPackages);
             }
             catch (Exception ex)
             {
-                return BadRequest(new { Success = false, Message = ex.Message });
+                return BadRequest(new { Success = false, Error = ex.Message });
             }
         }
 
-        [HttpGet("available")]
-        [ProducesResponseType(typeof(IEnumerable<MealPackage>), 200)]
-        [ProducesResponseType(500)]
-        public IActionResult GetAvailableMealPackages()
-        {
-            _logger.LogInformation("GetAvailableMealPackages() aangeroepen");
-            try
-            {
-                var mealPackages = _mealPackageService.GetAvailableMealPackages();
-                return Ok(mealPackages);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { Success = false, Message = ex.Message });
-            }
-        }
-
-        [HttpGet("reserved")]
+        [HttpGet("Reserved")]
         [ProducesResponseType(typeof(IEnumerable<MealPackage>), 200)]
         [ProducesResponseType(500)]
         public IActionResult GetReservedMealPackages()
         {
-            _logger.LogInformation("GetReservedMealPackages() aangeroepen");
+            _logger.LogInformation("GetReservedMealPackages() called");
             try
             {
-                var mealPackages = _mealPackageService.GetReservedMealPackages();
-                return Ok(mealPackages);
+                var reservedMealPackages = _mealPackageRepo.GetReservedMealPackages();
+                return Ok(reservedMealPackages);
             }
             catch (Exception ex)
             {
-                return BadRequest(new { Success = false, Message = ex.Message });
+                return BadRequest(new { Success = false, Error = ex.Message });
             }
         }
 
+        [HttpPost("Reserve")]
+        [ProducesResponseType(201)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
+        public IActionResult ReserveMealPackage([FromBody] ReserveMealPackageRequest request)
+        {
+            try
+            {
+                if (request == null)
+                {
+                    return BadRequest(new { error = "Invalid JSON payload." });
+                }
 
-        //[HttpGet("{id}")]
-        //[ProducesResponseType(typeof(MealPackage), 200)]
-        //[ProducesResponseType(404)]
-        //[ProducesResponseType(500)]
-        //[ProducesErrorResponseType(typeof(void))]
-        //public IActionResult GetMealPackageById(int id)
-        //{
-        //    try
-        //    {
-        //        var mealPackage = _mealPackageRepository.GetMealPackageById(id);
+                var studentBd = _studentRepo.GetStudentById(request.studentId).BirthDate;
+                var mealPackage = _mealPackageRepo.GetMealPackageById(request.mealPackageId);
 
-        //        if (mealPackage == null)
-        //        {
-        //            return NotFound("MealPackage not found");
-        //        }
+                var reservationDate = mealPackage.PickUpDateTime.Date;
 
-        //        return Ok(mealPackage);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return StatusCode(500, "Internal Server Error");
-        //    }
-        //}
+                var studentAge = DateTime.Now.Year - studentBd.Year;
+                var mealPackageAge = mealPackage.AdultsOnly;
+                var canteens = _canteenRepo.GetCanteens();
 
-        //[HttpGet("reserved/student/{id}")]
-        //[ProducesResponseType(typeof(MealPackage), 200)]
-        //[ProducesResponseType(404)]
-        //[ProducesResponseType(500)]
-        //[ProducesErrorResponseType(typeof(void))]
-        //public IActionResult GetReservedByStudentId(int id)
-        //{
-        //    try
-        //    {
-        //        var mealPackage = _mealPackageRepository.GetReservedMealPackagesByStudent(id);
+                var existingReservationDate = _mealPackageRepo.GetReservedMealPackagesByStudent(request.studentId)
+                    .Where(mp => mp.PickUpDateTime.Date == reservationDate)
+                    .ToList();
 
-        //        if (mealPackage == null)
-        //        {
-        //            return NotFound("MealPackage not found");
-        //        }
+                if (mealPackageAge && studentAge < 18)
+                {
+                    return BadRequest(new { error = "You have to be at least 18 to reserve this mealpackage." });
+                }
 
-        //        return Ok(mealPackage);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return StatusCode(500, "Internal Server Error");
-        //    }
-        //}
+                if (existingReservationDate.Any())
+                {
+                    return BadRequest(new { error = "You already have reserved a mealpackage for this day." });
+                }
 
-        //[HttpGet("graphql")]
-        //[ProducesResponseType(typeof(IEnumerable<MealPackage>), 200)]
-        //[ProducesResponseType(500)]
-        //public IActionResult GetAllMealPackagesGraphQL()
-        //{
-        //    var mealPackages = _mealPackageRepository.GetMealPackages();
-        //    return Ok(new { Data = mealPackages });
-        //}
-        //[HttpGet("{id}")]
-        //[ProducesResponseType(typeof(MealPackage), 200)]
-        //[ProducesResponseType(404)]
-        //[ProducesResponseType(500)]
-        //[ProducesErrorResponseType(typeof(void))]
-        //public IActionResult GetMealPackageById(int id)
-        //{
-        //    try
-        //    {
-        //        var mealPackage = _mealPackageRepository.GetMealPackageById(id);
+                if (mealPackage.ReservedByStudent != null)
+                {
+                    return BadRequest(new { error = "This mealpackage is already reserved." });
+                }
 
-        //        if (mealPackage == null)
-        //        {
-        //            return NotFound("MealPackage not found");
-        //        }
+                if (!_mealPackageService.ReserveMealPackage(request.mealPackageId, request.studentId))
+                {
+                    return BadRequest(new { error = "This mealpackage is not available at this moment." });
+                }
 
-        //        return Ok(mealPackage);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return StatusCode(500, "Internal Server Error");
-        //    }
-        //}
-
-        //[HttpGet("reserved/student/{id}")]
-        //[ProducesResponseType(typeof(MealPackage), 200)]
-        //[ProducesResponseType(404)]
-        //[ProducesResponseType(500)]
-        //[ProducesErrorResponseType(typeof(void))]
-        //public IActionResult GetReservedByStudentId(int id)
-        //{
-        //    try
-        //    {
-        //        var mealPackage = _mealPackageRepository.GetReservedMealPackagesByStudent(id);
-
-        //        if (mealPackage == null)
-        //        {
-        //            return NotFound("MealPackage not found");
-        //        }
-
-        //        return Ok(mealPackage);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return StatusCode(500, "Internal Server Error");
-        //    }
-        //}
-
-        //[HttpGet("graphql")]
-        //[ProducesResponseType(typeof(IEnumerable<MealPackage>), 200)]
-        //[ProducesResponseType(500)]
-        //public IActionResult GetAllMealPackagesGraphQL()
-        //{
-        //    var mealPackages = _mealPackageRepository.GetMealPackages();
-        //    return Ok(new { Data = mealPackages });
-        //}
-
+                return Ok(new { message = "Reservation successful." });
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Error in ReserveMealPackage: {e}");
+                return BadRequest(new { error = e.Message });
+            }
+        }
     }
 }
