@@ -20,5 +20,6 @@ namespace Core.DomainServices.Interfaces
         IEnumerable<Product> GetMealPackageProducts(int mealPackageId);
         MealPackage? ReserveMealPackage(int mealPackageId, int studentId);
         MealPackage? CancelReservation(int mealPackageId, int studentId);
+        object ExecuteQuery(string query);
     }
 }

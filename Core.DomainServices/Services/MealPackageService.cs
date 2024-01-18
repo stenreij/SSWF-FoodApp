@@ -1,6 +1,8 @@
 ﻿using Application.Services;
 using Core.Domain;
 using Core.DomainServices.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace Core.DomainServices.Services
 {
@@ -9,8 +11,14 @@ namespace Core.DomainServices.Services
         private readonly IMealPackageRepo _mealPackageRepo;
         private readonly IStudentRepo _studentRepo;
         private readonly ICanteenRepo _canteenRepo;
+        private readonly IProductRepo _productRepo;
 
-        public MealPackageService(IMealPackageRepo mealPackageRepo, IStudentRepo studentRepo, ICanteenRepo canteenRepo)
+        public MealPackageService(
+            IMealPackageRepo mealPackageRepo, 
+            IStudentRepo studentRepo, 
+            ICanteenRepo canteenRepo,
+            IProductRepo productRepo
+            )
         {
             _mealPackageRepo = mealPackageRepo;
             _studentRepo = studentRepo;

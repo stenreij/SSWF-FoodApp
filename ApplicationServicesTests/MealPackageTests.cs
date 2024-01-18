@@ -135,8 +135,9 @@ namespace Core.DomainServices.Tests
             var mealPackageRepoMock = new Mock<IMealPackageRepo>();
             var studentRepoMock = new Mock<IStudentRepo>();
             var canteenRepoMock = new Mock<ICanteenRepo>();
+            var productRepoMock = new Mock<IProductRepo>();
 
-            var mealPackageService = new MealPackageService(mealPackageRepoMock.Object, studentRepoMock.Object, canteenRepoMock.Object);
+            var mealPackageService = new MealPackageService(mealPackageRepoMock.Object, studentRepoMock.Object, canteenRepoMock.Object, productRepoMock.Object);
             mealPackageRepoMock.Setup(m => m.GetMealPackages()).Returns(_mealPackageList);
 
             var mealPackages = mealPackageService.GetMealPackages();
@@ -154,8 +155,9 @@ namespace Core.DomainServices.Tests
             var mealPackageRepoMock = new Mock<IMealPackageRepo>();
             var studentRepoMock = new Mock<IStudentRepo>();
             var canteenRepoMock = new Mock<ICanteenRepo>();
+            var productRepoMock = new Mock<IProductRepo>();
 
-            var mealPackageService = new MealPackageService(mealPackageRepoMock.Object, studentRepoMock.Object, canteenRepoMock.Object);
+            var mealPackageService = new MealPackageService(mealPackageRepoMock.Object, studentRepoMock.Object, canteenRepoMock.Object, productRepoMock.Object);
             mealPackageRepoMock.Setup(m => m.GetAvailableMealPackages()).Returns(_mealPackageList);
 
             var availableMealPackages = mealPackageService.GetAvailableMealPackages();
@@ -170,8 +172,10 @@ namespace Core.DomainServices.Tests
             var mealPackageRepoMock = new Mock<IMealPackageRepo>();
             var studentRepoMock = new Mock<IStudentRepo>();
             var canteenRepoMock = new Mock<ICanteenRepo>();
+            var productRepoMock = new Mock<IProductRepo>();
 
-            var mealPackageService = new MealPackageService(mealPackageRepoMock.Object, studentRepoMock.Object, canteenRepoMock.Object);
+
+            var mealPackageService = new MealPackageService(mealPackageRepoMock.Object, studentRepoMock.Object, canteenRepoMock.Object, productRepoMock.Object);
             mealPackageRepoMock.Setup(m => m.GetReservedMealPackages()).Returns(_mealPackageList);
 
             var reservedMealPackages = mealPackageService.GetReservedMealPackages();
@@ -188,6 +192,8 @@ namespace Core.DomainServices.Tests
             var mealPackageRepoMock = new Mock<IMealPackageRepo>();
             var studentRepoMock = new Mock<IStudentRepo>();
             var canteenRepoMock = new Mock<ICanteenRepo>();
+            var productRepoMock = new Mock<IProductRepo>();
+
 
             var mealPackageToReturn = new MealPackage
             {
@@ -210,7 +216,7 @@ namespace Core.DomainServices.Tests
                 ReservedByStudent = null,
             };
 
-            var mealPackageService = new MealPackageService(mealPackageRepoMock.Object, studentRepoMock.Object, canteenRepoMock.Object);
+            var mealPackageService = new MealPackageService(mealPackageRepoMock.Object, studentRepoMock.Object, canteenRepoMock.Object, productRepoMock.Object);
             mealPackageRepoMock.Setup(m => m.GetMealPackageById(1)).Returns(mealPackageToReturn);
 
             var mealPackageById = mealPackageService.GetMealPackageById(1);
@@ -225,8 +231,10 @@ namespace Core.DomainServices.Tests
             var mealPackageRepoMock = new Mock<IMealPackageRepo>();
             var studentRepoMock = new Mock<IStudentRepo>();
             var canteenRepoMock = new Mock<ICanteenRepo>();
+            var productRepoMock = new Mock<IProductRepo>();
 
-            var mealPackageService = new MealPackageService(mealPackageRepoMock.Object, studentRepoMock.Object, canteenRepoMock.Object);
+
+            var mealPackageService = new MealPackageService(mealPackageRepoMock.Object, studentRepoMock.Object, canteenRepoMock.Object, productRepoMock.Object);
             mealPackageRepoMock.Setup(m => m.GetMealPackagesByCanteenId(3)).Returns(_mealPackageList);
 
             var mealPackagesCanteen = mealPackageService.GetMealPackagesByCanteenId(3);
@@ -244,8 +252,10 @@ namespace Core.DomainServices.Tests
             var mealPackageRepoMock = new Mock<IMealPackageRepo>();
             var studentRepoMock = new Mock<IStudentRepo>();
             var canteenRepoMock = new Mock<ICanteenRepo>();
+            var productRepoMock = new Mock<IProductRepo>();
 
-            var mealPackageService = new MealPackageService(mealPackageRepoMock.Object, studentRepoMock.Object, canteenRepoMock.Object);
+
+            var mealPackageService = new MealPackageService(mealPackageRepoMock.Object, studentRepoMock.Object, canteenRepoMock.Object, productRepoMock.Object);
             mealPackageRepoMock.Setup(m => m.GetMealPackages()).Returns(_mealPackageList);
 
             var mealPackagesCanteen = mealPackageService.GetMealPackagesOtherCanteens(3);
@@ -263,8 +273,10 @@ namespace Core.DomainServices.Tests
             var mealPackageRepoMock = new Mock<IMealPackageRepo>();
             var studentRepoMock = new Mock<IStudentRepo>();
             var canteenRepoMock = new Mock<ICanteenRepo>();
+            var productRepoMock = new Mock<IProductRepo>();
 
-            var mealPackageService = new MealPackageService(mealPackageRepoMock.Object, studentRepoMock.Object, canteenRepoMock.Object);
+
+            var mealPackageService = new MealPackageService(mealPackageRepoMock.Object, studentRepoMock.Object, canteenRepoMock.Object, productRepoMock.Object);
             mealPackageRepoMock.Setup(m => m.GetReservedMealPackagesByStudent(2)).Returns(_mealPackageList);
 
             var reservedMealPackagesStudent = mealPackageService.GetReservedMealPackagesByStudent(2);
@@ -289,8 +301,9 @@ namespace Core.DomainServices.Tests
             var mealPackageRepoMock = new Mock<IMealPackageRepo>();
             var studentRepoMock = new Mock<IStudentRepo>();
             var canteenRepoMock = new Mock<ICanteenRepo>();
+            var productRepoMock = new Mock<IProductRepo>();
 
-            var mealPackageService = new MealPackageService(mealPackageRepoMock.Object, studentRepoMock.Object, canteenRepoMock.Object);
+            var mealPackageService = new MealPackageService(mealPackageRepoMock.Object, studentRepoMock.Object, canteenRepoMock.Object, productRepoMock.Object);
 
             var newMealPackage = new MealPackage
             {
@@ -337,8 +350,10 @@ namespace Core.DomainServices.Tests
             var mealPackageRepoMock = new Mock<IMealPackageRepo>();
             var studentRepoMock = new Mock<IStudentRepo>();
             var canteenRepoMock = new Mock<ICanteenRepo>();
+            var productRepoMock = new Mock<IProductRepo>();
 
-            var mealPackageService = new MealPackageService(mealPackageRepoMock.Object, studentRepoMock.Object, canteenRepoMock.Object);
+
+            var mealPackageService = new MealPackageService(mealPackageRepoMock.Object, studentRepoMock.Object, canteenRepoMock.Object, productRepoMock.Object);
 
             var newMealPackage = new MealPackage
             {
@@ -378,8 +393,10 @@ namespace Core.DomainServices.Tests
             var mealPackageRepoMock = new Mock<IMealPackageRepo>();
             var studentRepoMock = new Mock<IStudentRepo>();
             var canteenRepoMock = new Mock<ICanteenRepo>();
+            var productRepoMock = new Mock<IProductRepo>();
 
-            var mealPackageService = new MealPackageService(mealPackageRepoMock.Object, studentRepoMock.Object, canteenRepoMock.Object);
+
+            var mealPackageService = new MealPackageService(mealPackageRepoMock.Object, studentRepoMock.Object, canteenRepoMock.Object, productRepoMock.Object);
 
             var newMealPackage = new MealPackage
             {
@@ -420,8 +437,10 @@ namespace Core.DomainServices.Tests
             var mealPackageRepoMock = new Mock<IMealPackageRepo>();
             var studentRepoMock = new Mock<IStudentRepo>();
             var canteenRepoMock = new Mock<ICanteenRepo>();
+            var productRepoMock = new Mock<IProductRepo>();
 
-            var mealPackageService = new MealPackageService(mealPackageRepoMock.Object, studentRepoMock.Object, canteenRepoMock.Object);
+
+            var mealPackageService = new MealPackageService(mealPackageRepoMock.Object, studentRepoMock.Object, canteenRepoMock.Object, productRepoMock.Object);
 
             var newMealPackage = new MealPackage
             {
@@ -460,8 +479,10 @@ namespace Core.DomainServices.Tests
             var mealPackageRepoMock = new Mock<IMealPackageRepo>();
             var studentRepoMock = new Mock<IStudentRepo>();
             var canteenRepoMock = new Mock<ICanteenRepo>();
+            var productRepoMock = new Mock<IProductRepo>();
 
-            var mealPackageService = new MealPackageService(mealPackageRepoMock.Object, studentRepoMock.Object, canteenRepoMock.Object);
+
+            var mealPackageService = new MealPackageService(mealPackageRepoMock.Object, studentRepoMock.Object, canteenRepoMock.Object, productRepoMock.Object);
 
             var mealPackage = new MealPackage()
             {
@@ -539,8 +560,10 @@ namespace Core.DomainServices.Tests
             var mealPackageRepoMock = new Mock<IMealPackageRepo>();
             var studentRepoMock = new Mock<IStudentRepo>();
             var canteenRepoMock = new Mock<ICanteenRepo>();
+            var productRepoMock = new Mock<IProductRepo>();
 
-            var mealPackageService = new MealPackageService(mealPackageRepoMock.Object, studentRepoMock.Object, canteenRepoMock.Object);
+
+            var mealPackageService = new MealPackageService(mealPackageRepoMock.Object, studentRepoMock.Object, canteenRepoMock.Object, productRepoMock.Object);
 
             var mealPackage = new MealPackage()
             {
@@ -613,8 +636,10 @@ namespace Core.DomainServices.Tests
             var mealPackageRepoMock = new Mock<IMealPackageRepo>();
             var studentRepoMock = new Mock<IStudentRepo>();
             var canteenRepoMock = new Mock<ICanteenRepo>();
+            var productRepoMock = new Mock<IProductRepo>();
 
-            var mealPackageService = new MealPackageService(mealPackageRepoMock.Object, studentRepoMock.Object, canteenRepoMock.Object);
+
+            var mealPackageService = new MealPackageService(mealPackageRepoMock.Object, studentRepoMock.Object, canteenRepoMock.Object, productRepoMock.Object);
 
             var mealPackage = new MealPackage()
             {
@@ -688,8 +713,10 @@ namespace Core.DomainServices.Tests
             var mealPackageRepoMock = new Mock<IMealPackageRepo>();
             var studentRepoMock = new Mock<IStudentRepo>();
             var canteenRepoMock = new Mock<ICanteenRepo>();
+            var productRepoMock = new Mock<IProductRepo>();
 
-            var mealPackageService = new MealPackageService(mealPackageRepoMock.Object, studentRepoMock.Object, canteenRepoMock.Object);
+
+            var mealPackageService = new MealPackageService(mealPackageRepoMock.Object, studentRepoMock.Object, canteenRepoMock.Object, productRepoMock.Object);
 
             var mealPackage = new MealPackage()
             {
@@ -760,8 +787,10 @@ namespace Core.DomainServices.Tests
             var mealPackageRepoMock = new Mock<IMealPackageRepo>();
             var studentRepoMock = new Mock<IStudentRepo>();
             var canteenRepoMock = new Mock<ICanteenRepo>();
+            var productRepoMock = new Mock<IProductRepo>();
 
-            var mealPackageService = new MealPackageService(mealPackageRepoMock.Object, studentRepoMock.Object, canteenRepoMock.Object);
+
+            var mealPackageService = new MealPackageService(mealPackageRepoMock.Object, studentRepoMock.Object, canteenRepoMock.Object, productRepoMock.Object);
 
             var mealPackage = new MealPackage()
             {
@@ -803,8 +832,10 @@ namespace Core.DomainServices.Tests
             var mealPackageRepoMock = new Mock<IMealPackageRepo>();
             var studentRepoMock = new Mock<IStudentRepo>();
             var canteenRepoMock = new Mock<ICanteenRepo>();
+            var productRepoMock = new Mock<IProductRepo>();
 
-            var mealPackageService = new MealPackageService(mealPackageRepoMock.Object, studentRepoMock.Object, canteenRepoMock.Object);
+
+            var mealPackageService = new MealPackageService(mealPackageRepoMock.Object, studentRepoMock.Object, canteenRepoMock.Object, productRepoMock.Object);
 
             var mealPackage = new MealPackage()
             {
@@ -863,8 +894,10 @@ namespace Core.DomainServices.Tests
             var mealPackageRepoMock = new Mock<IMealPackageRepo>();
             var studentRepoMock = new Mock<IStudentRepo>();
             var canteenRepoMock = new Mock<ICanteenRepo>();
+            var productRepoMock = new Mock<IProductRepo>();
 
-            var mealPackageService = new MealPackageService(mealPackageRepoMock.Object, studentRepoMock.Object, canteenRepoMock.Object);
+
+            var mealPackageService = new MealPackageService(mealPackageRepoMock.Object, studentRepoMock.Object, canteenRepoMock.Object, productRepoMock.Object);
 
             var mealPackage = new MealPackage()
             {
@@ -927,8 +960,9 @@ namespace Core.DomainServices.Tests
             var mealPackageRepoMock = new Mock<IMealPackageRepo>();
             var studentRepoMock = new Mock<IStudentRepo>();
             var canteenRepoMock = new Mock<ICanteenRepo>();
+            var productRepoMock = new Mock<IProductRepo>();
 
-            var mealPackageService = new MealPackageService(mealPackageRepoMock.Object, studentRepoMock.Object, canteenRepoMock.Object);
+            var mealPackageService = new MealPackageService(mealPackageRepoMock.Object, studentRepoMock.Object, canteenRepoMock.Object, productRepoMock.Object);
 
             var mealPackage = new MealPackage()
             {
@@ -988,8 +1022,10 @@ namespace Core.DomainServices.Tests
             var mealPackageRepoMock = new Mock<IMealPackageRepo>();
             var studentRepoMock = new Mock<IStudentRepo>();
             var canteenRepoMock = new Mock<ICanteenRepo>();
+            var productRepoMock = new Mock<IProductRepo>();
 
-            var mealPackageService = new MealPackageService(mealPackageRepoMock.Object, studentRepoMock.Object, canteenRepoMock.Object);
+
+            var mealPackageService = new MealPackageService(mealPackageRepoMock.Object, studentRepoMock.Object, canteenRepoMock.Object, productRepoMock.Object);
 
             var mealPackage = new MealPackage()
             {
@@ -1049,8 +1085,9 @@ namespace Core.DomainServices.Tests
             var mealPackageRepoMock = new Mock<IMealPackageRepo>();
             var studentRepoMock = new Mock<IStudentRepo>();
             var canteenRepoMock = new Mock<ICanteenRepo>();
+            var productRepoMock = new Mock<IProductRepo>();
 
-            var mealPackageService = new MealPackageService(mealPackageRepoMock.Object, studentRepoMock.Object, canteenRepoMock.Object);
+            var mealPackageService = new MealPackageService(mealPackageRepoMock.Object, studentRepoMock.Object, canteenRepoMock.Object, productRepoMock.Object);
 
             var mealPackage = new MealPackage()
             {
@@ -1125,8 +1162,10 @@ namespace Core.DomainServices.Tests
             var mealPackageRepoMock = new Mock<IMealPackageRepo>();
             var studentRepoMock = new Mock<IStudentRepo>();
             var canteenRepoMock = new Mock<ICanteenRepo>();
+            var productRepoMock = new Mock<IProductRepo>();
 
-            var mealPackageService = new MealPackageService(mealPackageRepoMock.Object, studentRepoMock.Object, canteenRepoMock.Object);
+
+            var mealPackageService = new MealPackageService(mealPackageRepoMock.Object, studentRepoMock.Object, canteenRepoMock.Object, productRepoMock.Object);
 
             var mealPackage = new MealPackage()
             {
@@ -1194,8 +1233,9 @@ namespace Core.DomainServices.Tests
             var mealPackageRepoMock = new Mock<IMealPackageRepo>();
             var studentRepoMock = new Mock<IStudentRepo>();
             var canteenRepoMock = new Mock<ICanteenRepo>();
+            var productRepoMock = new Mock<IProductRepo>();
 
-            var mealPackageService = new MealPackageService(mealPackageRepoMock.Object, studentRepoMock.Object, canteenRepoMock.Object);
+            var mealPackageService = new MealPackageService(mealPackageRepoMock.Object, studentRepoMock.Object, canteenRepoMock.Object, productRepoMock.Object);
 
             var mealPackage = new MealPackage()
             {
@@ -1264,8 +1304,9 @@ namespace Core.DomainServices.Tests
             var mealPackageRepoMock = new Mock<IMealPackageRepo>();
             var studentRepoMock = new Mock<IStudentRepo>();
             var canteenRepoMock = new Mock<ICanteenRepo>();
+            var productRepoMock = new Mock<IProductRepo>();
 
-            var mealPackageService = new MealPackageService(mealPackageRepoMock.Object, studentRepoMock.Object, canteenRepoMock.Object);
+            var mealPackageService = new MealPackageService(mealPackageRepoMock.Object, studentRepoMock.Object, canteenRepoMock.Object, productRepoMock.Object);
 
             var mealPackage = new MealPackage()
             {
