@@ -20,6 +20,7 @@ namespace Infrastructure
             return _context.MealPackages
                 .Include(m => m.Canteen)
                 .Include(m => m.Products)
+                .Include(m => m.ReservedByStudent)
                 .OrderBy(mp => mp.PickUpDateTime)
                 .ToList();
         }
@@ -45,6 +46,7 @@ namespace Infrastructure
             return _context.MealPackages
                 .Include(m => m.Canteen)
                 .Include(m => m.Products)
+                .Include(m => m.ReservedByStudent)
                 .OrderBy(mp => mp.PickUpDateTime)
                 .Where(mp => mp.ReservedByStudent != null)
                 .OrderBy(mp => mp.PickUpDateTime)

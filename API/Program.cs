@@ -26,9 +26,13 @@ builder.Services.AddDbContext<FoodAppDbContext>(options =>
 builder.Services.AddGraphQLServer()
     .AddQueryType<QueryType>()
     .AddType<MealPackageType>()
-    .AddType<CanteenType>();
+    .AddType<CanteenType>()
+    .AddType<StudentType>()
+    .AddType<ProductType>();
 
 var app = builder.Build();
+
+app.UseRouting();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -37,8 +41,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-
-app.MapGraphQL();
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapGraphQL("/graphql");
+});
 
 app.UseHttpsRedirection();
 
