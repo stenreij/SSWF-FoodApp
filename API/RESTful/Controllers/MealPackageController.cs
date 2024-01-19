@@ -3,9 +3,9 @@ using Core.Domain;
 using Core.DomainServices.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Infrastructure;
-using API.DTO;
+using API.RESTful.DTO;
 
-namespace API.Controllers
+namespace API.RESTful.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]

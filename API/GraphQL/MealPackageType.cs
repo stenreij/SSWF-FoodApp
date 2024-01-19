@@ -12,6 +12,7 @@ namespace API.GraphQL
             descriptor.Field(m => m.Id).Type<IdType>().Name("id");
             descriptor.Field(m => m.Name).Type<StringType>().Name("name");
             descriptor.Field(m => m.Price).Type<DecimalType>().Name("price");
+            descriptor.Field(m => m.PickUpDateTime).Type<DateTimeType>().Name("PickUpDateTime");
             descriptor.Field(m => m.Canteen)
                     .Type<CanteenType>()
                     .Name("canteen")
