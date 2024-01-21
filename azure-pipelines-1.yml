@@ -38,3 +38,12 @@ steps:
     PathtoPublish: '$(build.artifactStagingDirectory)'
     ArtifactName: 'drop'
     publishLocation: 'Container'
+
+- task: AzureWebApp@1
+  inputs:
+    azureSubscription: 'Afs'  
+    appName: 'FoodAppSR'  
+    package: '$(build.artifactStagingDirectory)\WebApp.zip'
+    deployToSlotOrASE: false
+    enableCustomDeployment: true
+    deploymentSlot: 'Production'
