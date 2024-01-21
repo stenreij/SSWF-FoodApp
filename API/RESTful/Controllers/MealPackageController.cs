@@ -67,7 +67,7 @@ namespace API.RESTful.Controllers
         }
 
         [HttpPost("Reserve")]
-        [ProducesResponseType(201)]
+        [ProducesResponseType(200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
         public IActionResult ReserveMealPackage([FromBody] ReserveMealPackageRequest request)

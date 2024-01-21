@@ -11,6 +11,7 @@ namespace API.GraphQL
             descriptor.Field(p => p.Id).Type<IdType>().Name("Id");
             descriptor.Field(p => p.Name).Type<StringType>().Name("Name");
             descriptor.Field(p => p.ContainsAlcohol).Type<BooleanType>().Name("ContainsAlcohol");
+            descriptor.Field(p => p.PhotoUrl).Type<StringType>().Name("PhotoUrl");
         }
     }
 }
