@@ -41,9 +41,9 @@ steps:
 
 - task: AzureWebApp@1
   inputs:
+    ConnectionType: 'AzureRM'
     azureSubscription: 'AfS'  
-    appName: 'FoodAppSR'  
-    package: '$(build.artifactStagingDirectory)\WebApp.zip'
-    deployToSlotOrASE: false
-    enableCustomDeployment: true
-    deploymentSlot: 'Production'
+    appName: 'FoodAppSR' 
+    appType: 'webApp'
+    WebAppName: 'FoodAppSR'  
+    packageForLinux: '$(build.artifactStagingDirectory)\WebApp.zip'
