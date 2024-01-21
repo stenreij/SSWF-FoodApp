@@ -41,7 +41,7 @@ steps:
 
 - task: AzureWebApp@1
   inputs:
-    azureSubscription: 'Afs'  
+    azureSubscription: 'AfS'  
     appName: 'FoodAppSR'  
     package: '$(build.artifactStagingDirectory)\WebApp.zip'
     deployToSlotOrASE: false
