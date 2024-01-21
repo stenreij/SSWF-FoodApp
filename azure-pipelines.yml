@@ -32,3 +32,12 @@ steps:
   inputs:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
+
+
+- task: AzureRmWebAppDeployment@4
+  inputs:
+    ConnectionType: 'AzureRM'
+    AzureSubscription: 'AfS'
+    appType: 'webApp'
+    WebAppName: 'FoodAppSR'  
+    packageForLinux: '$(build.artifactStagingDirectory)\WebApp.zip'
