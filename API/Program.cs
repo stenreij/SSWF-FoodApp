@@ -20,9 +20,25 @@ builder.Services.AddScoped<IEmployeeRepo, EmployeeEFRepo>();
 builder.Services.AddScoped<IProductRepo, ProductEFRepo>();
 builder.Services.AddScoped<IMealPackageService, MealPackageService>();
 
-builder.Services.AddDbContext<FoodAppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+// Configure database connection strings
+var defaultConnection = string.Empty;
 
+if (builder.Environment.IsDevelopment())
+{
+    // Use local connection string during development
+    defaultConnection = builder.Configuration.GetConnectionString("LocalDefaultConnection");
+}
+else
+{
+    // Use environment variable for production connection
+    defaultConnection = Environment.GetEnvironmentVariable("DefaultConnection");
+}
+
+// Register DbContext with appropriate connection string
+builder.Services.AddDbContext<FoodAppDbContext>(options =>
+    options.UseSqlServer(defaultConnection));
+
+// Configure GraphQL services
 builder.Services.AddGraphQLServer()
     .AddQueryType<QueryType>()
     .AddType<MealPackageType>()
@@ -47,9 +63,7 @@ app.UseEndpoints(endpoints =>
 });
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();

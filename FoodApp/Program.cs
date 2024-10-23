@@ -15,7 +15,7 @@ cultureInfo.NumberFormat.NumberDecimalSeparator = ".";
 CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
 CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
 
-// Add services to the container.
+// Add services to the container
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IMealPackageService, MealPackageService>();
 builder.Services.AddScoped<IMealPackageRepo, MealPackageEFRepo>();
@@ -24,24 +24,40 @@ builder.Services.AddScoped<ICanteenRepo, CanteenEFRepo>();
 builder.Services.AddScoped<IStudentRepo, StudentEFRepo>();
 builder.Services.AddScoped<IEmployeeRepo, EmployeeEFRepo>();
 
+// Configure database connection strings
+var defaultConnection = string.Empty;
+var identityConnection = string.Empty;
+
+if (builder.Environment.IsDevelopment())
+{
+    // Use local connection strings from appsettings.json during development
+    defaultConnection = builder.Configuration.GetConnectionString("LocalDefaultConnection");
+    identityConnection = builder.Configuration.GetConnectionString("LocalIdentityConnection");
+}
+else
+{
+    // Use environment variables for production connections
+    defaultConnection = Environment.GetEnvironmentVariable("DefaultConnection");
+    identityConnection = Environment.GetEnvironmentVariable("IdentityConnection");
+}
+
+// Register DbContext with appropriate connection string
 builder.Services.AddDbContext<FoodAppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(defaultConnection));
 
 builder.Services.AddDbContext<FoodAppIdentityDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("IdentityConnection")));
+    options.UseSqlServer(identityConnection));
 
+// Add Identity services
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddEntityFrameworkStores<FoodAppIdentityDbContext>();
-        
-
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configure the HTTP request pipeline
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
