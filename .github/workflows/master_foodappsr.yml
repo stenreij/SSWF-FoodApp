@@ -69,6 +69,12 @@ jobs:
           name: api 
           path: ./APIArtifact
 
+      - name: List Files in FoodAppArtifact
+        run: ls ./FoodAppArtifact
+
+      - name: List Files in APIArtifact
+        run: ls ./APIArtifact
+
       - name: Login to Azure
         uses: azure/login@v2
         with:
