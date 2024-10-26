@@ -78,7 +78,7 @@ jobs:
         id: deploy-to-foodapp
         uses: azure/webapps-deploy@v2
         with:
-          app-name: 'foodappsr' 
+          app-name: 'avansfoodappsr' 
           slot-name: 'Production'
           package: ${{env.DOTNET_ROOT}}/FoodApp  
 
@@ -86,6 +86,6 @@ jobs:
         id: deploy-to-api
         uses: azure/webapps-deploy@v2
         with:
-          app-name: 'api'  
+          app-name: 'avansfoodappsrapi'  
           slot-name: 'Production'
           package: ${{env.DOTNET_ROOT}}/API
