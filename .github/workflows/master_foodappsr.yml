@@ -30,10 +30,10 @@ jobs:
             dotnet test --configuration Release --no-build --logger "console;verbosity=detailed" 
 
       - name: dotnet publish FoodApp
-        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/FoodApp
+        run: dotnet publish FoodApp/FoodApp.csproj -c Release -o ${{env.DOTNET_ROOT}}/FoodApp
 
       - name: dotnet publish API
-        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/API  
+        run: dotnet publish API/API.csproj -c Release -o ${{env.DOTNET_ROOT}}/API  
 
       - name: Upload artifact for FoodApp deployment
         uses: actions/upload-artifact@v3
@@ -68,6 +68,12 @@ jobs:
         with:
           name: api 
           path: ./APIArtifact
+
+      - name: List Files in FoodAppArtifact
+        run: ls ./FoodAppArtifact
+
+      - name: List Files in APIArtifact
+        run: ls ./APIArtifact
 
       - name: Login to Azure
         uses: azure/login@v2
