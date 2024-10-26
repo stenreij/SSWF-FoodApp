@@ -61,11 +61,13 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: foodappsr  
+          path: ./FoodAppArtifact
 
       - name: Download artifact from build job (API)
         uses: actions/download-artifact@v3
         with:
           name: api 
+          path: ./APIArtifact
 
       - name: Login to Azure
         uses: azure/login@v2
@@ -80,7 +82,7 @@ jobs:
         with:
           app-name: 'avansfoodappsr' 
           slot-name: 'Production'
-          package: ${{env.DOTNET_ROOT}}/FoodApp  
+          package: ./FoodAppArtifact  
 
       - name: Deploy API to Azure Web App
         id: deploy-to-api
@@ -88,4 +90,4 @@ jobs:
         with:
           app-name: 'avansfoodappsrapi'  
           slot-name: 'Production'
-          package: ${{env.DOTNET_ROOT}}/API
+          package: ./APIArtifact
