@@ -33,24 +33,24 @@ jobs:
         run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/FoodApp
 
       - name: dotnet publish API
-        run: dotnet publish ./path/to/your/api/project -c Release -o ${{env.DOTNET_ROOT}}/API  # Zorg ervoor dat dit pad correct is
+        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/API  
 
       - name: Upload artifact for FoodApp deployment
         uses: actions/upload-artifact@v3
         with:
-          name: foodappsr  # Dit kan blijven zoals het is
+          name: foodappsr  
 
       - name: Upload artifact for API deployment
         uses: actions/upload-artifact@v3
         with:
-          name: api  # Dit kan blijven zoals het is
+          name: api  
 
   deploy:
     runs-on: windows-latest
     needs: build
     environment:
       name: 'Production'
-      url: ${{ steps.deploy-to-foodapp.outputs.webapp-url }}  # Zorg ervoor dat dit correct is
+      url: ${{ steps.deploy-to-foodapp.outputs.webapp-url }}  
     permissions:
       id-token: write 
 
