@@ -38,12 +38,14 @@ jobs:
       - name: Upload artifact for FoodApp deployment
         uses: actions/upload-artifact@v3
         with:
-          name: foodappsr  
+          name: foodappsr 
+          path: ${{env.DOTNET_ROOT}}/FoodApp
 
       - name: Upload artifact for API deployment
         uses: actions/upload-artifact@v3
         with:
           name: api  
+          path: ${{env.DOTNET_ROOT}}/API
 
   deploy:
     runs-on: windows-latest
