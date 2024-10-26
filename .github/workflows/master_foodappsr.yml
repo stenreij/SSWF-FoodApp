@@ -1,7 +1,6 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
+# Workflow for deploying both FoodApp (Web App) and API project
 
-name: Build and deploy ASP.Net Core app to Azure Web App - FoodAppSR
+name: Build and deploy ASP.Net Core apps to Azure Web Apps - FoodApp & API
 
 on:
   push:
@@ -30,30 +29,42 @@ jobs:
             echo "Running unit tests..."
             dotnet test --configuration Release --no-build --logger "console;verbosity=detailed" 
 
-      - name: dotnet publish
-        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
+      - name: dotnet publish FoodApp
+        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/FoodApp
 
-      - name: Upload artifact for deployment job
+      - name: dotnet publish API
+        run: dotnet publish ./path/to/your/api/project -c Release -o ${{env.DOTNET_ROOT}}/API  # Zorg ervoor dat dit pad correct is
+
+      - name: Upload artifact for FoodApp deployment
         uses: actions/upload-artifact@v3
         with:
-          name: .net-app
-          path: ${{env.DOTNET_ROOT}}/myapp
+          name: foodappsr  # Dit kan blijven zoals het is
+
+      - name: Upload artifact for API deployment
+        uses: actions/upload-artifact@v3
+        with:
+          name: api  # Dit kan blijven zoals het is
 
   deploy:
     runs-on: windows-latest
     needs: build
     environment:
       name: 'Production'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+      url: ${{ steps.deploy-to-foodapp.outputs.webapp-url }}  # Zorg ervoor dat dit correct is
     permissions:
-      id-token: write #This is required for requesting the JWT
+      id-token: write 
 
     steps:
-      - name: Download artifact from build job
+      - name: Download artifact from build job (FoodApp)
         uses: actions/download-artifact@v3
         with:
-          name: .net-app
-      
+          name: foodappsr  
+
+      - name: Download artifact from build job (API)
+        uses: actions/download-artifact@v3
+        with:
+          name: api 
+
       - name: Login to Azure
         uses: azure/login@v2
         with:
@@ -61,11 +72,18 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_37EA4F686BA347B397AE3C01F10C7D40 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_F68EDC77859946889E817C791748FEB2 }}
 
-      - name: Deploy to Azure Web App
-        id: deploy-to-webapp
+      - name: Deploy FoodApp to Azure Web App
+        id: deploy-to-foodapp
         uses: azure/webapps-deploy@v2
         with:
-          app-name: 'avansfoodappsr'
+          app-name: 'foodappsr' 
           slot-name: 'Production'
-          package: .
-          
+          package: ${{env.DOTNET_ROOT}}/FoodApp  
+
+      - name: Deploy API to Azure Web App
+        id: deploy-to-api
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'api'  
+          slot-name: 'Production'
+          package: ${{env.DOTNET_ROOT}}/API
