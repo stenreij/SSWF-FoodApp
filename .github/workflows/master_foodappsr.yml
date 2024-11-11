@@ -111,10 +111,12 @@ jobs:
           path: ./IdentityMigrationBundle
 
       # Voer migraties uit voor FoodAppDB
-      - name: Apply Migrations to FoodAppDB
+      - name: Apply Migrations to FoodAppDB with Verbose Logging
         shell: pwsh
         run: |
-          & "./FoodAppMigrationBundle/bundle" --connection=$env:AZURE_CONNECTIONSTRING_FOODAPPDB
+          Write-Host "Starting migration with verbose output..."
+          & "./FoodAppMigrationBundle/bundle" --connection=$env:AZURE_CONNECTIONSTRING_FOODAPPDB --verbose
+          Write-Host "Migration finished."
         env:
           AZURE_CONNECTIONSTRING_FOODAPPDB: ${{ secrets.AZURE_CONNECTIONSTRING_FOODAPPDB }}
 
