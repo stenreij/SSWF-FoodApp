@@ -29,12 +29,12 @@ jobs:
             echo "Running unit tests..."
             dotnet test --configuration Release --no-build --logger "console;verbosity=detailed" 
 
-        # Maak de tool-manifest en installeer dotnet-ef
+      # Maak de tool-manifest en installeer dotnet-ef globaal
       - name: Create .NET Tool Manifest
         run: dotnet new tool-manifest --output .
 
-      - name: Install dotnet-ef tool
-        run: dotnet tool install dotnet-ef
+      - name: Install dotnet-ef globally
+        run: dotnet tool install --global dotnet-ef --version 8.0.10
 
       # Migration bundle voor FoodAppDB
       - name: Bundle Migrations for FoodAppDB
@@ -114,7 +114,7 @@ jobs:
       - name: Apply Migrations to FoodAppDB
         run: |
           echo "Applying migrations for FoodAppDB..."
-          dotnet tool run dotnet-ef database update --connection "$AZURE_CONNECTIONSTRING_FOODAPPDB"
+          dotnet ef database update --connection "$AZURE_CONNECTIONSTRING_FOODAPPDB"
         env:
           AZURE_CONNECTIONSTRING_FOODAPPDB: ${{ secrets.AZURE_CONNECTIONSTRING_FOODAPPDB }}
 
@@ -122,7 +122,7 @@ jobs:
       - name: Apply Migrations to IdentityDB
         run: |
           echo "Applying migrations for IdentityDB..."
-          dotnet tool run dotnet-ef database update --connection "$AZURE_CONNECTIONSTRING_IDENTITYDB"
+          dotnet ef database update --connection "$AZURE_CONNECTIONSTRING_IDENTITYDB"
         env:
           AZURE_CONNECTIONSTRING_IDENTITYDB: ${{ secrets.AZURE_CONNECTIONSTRING_IDENTITYDB }}
 
