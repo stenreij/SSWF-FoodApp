@@ -113,16 +113,14 @@ jobs:
       # Voer migraties uit voor FoodAppDB
       - name: Apply Migrations to FoodAppDB
         run: |
-          chmod +x ./FoodAppMigrationBundle/bundle
-          ./FoodAppMigrationBundle/bundle --connection="$AZURE_CONNECTIONSTRING_FOODAPPDB"
+          dotnet ef database update --connection "$AZURE_CONNECTIONSTRING_FOODAPPDB"
         env:
           AZURE_CONNECTIONSTRING_FOODAPPDB: ${{ secrets.AZURE_CONNECTIONSTRING_FOODAPPDB }}
 
       # Voer migraties uit voor IdentityDB
       - name: Apply Migrations to IdentityDB
         run: |
-          chmod +x ./IdentityMigrationBundle/bundle
-          ./IdentityMigrationBundle/bundle --connection="$AZURE_CONNECTIONSTRING_IDENTITYDB"
+          dotnet ef database update --connection "$AZURE_CONNECTIONSTRING_IDENTITYDB"
         env:
           AZURE_CONNECTIONSTRING_IDENTITYDB: ${{ secrets.AZURE_CONNECTIONSTRING_IDENTITYDB }}
 
