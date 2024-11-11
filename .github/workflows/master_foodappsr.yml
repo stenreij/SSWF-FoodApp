@@ -74,11 +74,18 @@ jobs:
           path: ./APIArtifact
 
       # Voer migraties uit voor FoodAppDB
-      - name: Apply Migrations for FoodAppDB
+      - name: Install dotnet-ef globally
+        run: dotnet tool install --global dotnet-ef --version 8.0.10
+  
+      - name: Apply Migrations with PowerShell
+        shell: pwsh
         run: |
-          echo "Applying migrations for FoodAppDB..."
-          dotnet ef database update --context FoodAppDbContext --configuration Release --verbose --connection ${{ secrets.AZURE_CONNECTIONSTRING_FOODAPPDB }}
-
+          $connectionString = $env:AZURE_CONNECTIONSTRING_FOODAPPDB
+          Write-Host "Applying migrations for FoodAppDB..."
+          dotnet ef database update --context FoodAppDbContext --configuration Release --verbose --connection $connectionString
+        env:
+          AZURE_CONNECTIONSTRING_FOODAPPDB: ${{ secrets.AZURE_CONNECTIONSTRING_FOODAPPDB }}
+    
       # Voer migraties uit voor IdentityDB
       - name: Apply Migrations to IdentityDB
         run: |
