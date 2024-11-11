@@ -113,8 +113,8 @@ jobs:
       # Voer migraties uit voor FoodAppDB
       - name: Apply Migrations to FoodAppDB
         run: |
-          cho "Applying migrations for FoodAppDB from bundle..."
-          dotnet ef migrations apply --bundle D:\a\SSWF-FoodApp\SSWF-FoodApp\FoodApp\migration_bundle_foodappdb\bundle --connection "$AZURE_CONNECTIONSTRING_FOODAPPDB"
+          echo "Applying migrations for FoodAppDB from bundle..."
+          dotnet ef migrations apply --bundle ./FoodAppMigrationBundle/bundle --connection "$AZURE_CONNECTIONSTRING_FOODAPPDB"
         env:
           AZURE_CONNECTIONSTRING_FOODAPPDB: ${{ secrets.AZURE_CONNECTIONSTRING_FOODAPPDB }}
 
