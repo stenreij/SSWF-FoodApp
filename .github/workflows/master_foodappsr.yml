@@ -77,12 +77,12 @@ jobs:
       - name: Install dotnet-ef globally
         run: dotnet tool install --global dotnet-ef --version 8.0.10
   
-      - name: Apply Migrations with PowerShell
+      - name: Apply Migrations for FoodAppDB
         shell: pwsh
         run: |
           $connectionString = $env:AZURE_CONNECTIONSTRING_FOODAPPDB
           Write-Host "Applying migrations for FoodAppDB..."
-          dotnet ef database update --context FoodAppDbContext --configuration Release --verbose --connection $connectionString
+          dotnet ef database update --context FoodAppDbContext --configuration Release --verbose --connection $connectionString --project ./Infrastructure/Infrastructure.csproj --startup-project ./FoodApp/FoodApp.csproj
         env:
           AZURE_CONNECTIONSTRING_FOODAPPDB: ${{ secrets.AZURE_CONNECTIONSTRING_FOODAPPDB }}
     
