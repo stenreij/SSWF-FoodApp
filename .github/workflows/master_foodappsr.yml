@@ -38,7 +38,7 @@ jobs:
 
       # Migration bundle voor FoodAppDB
       - name: Bundle Migrations for FoodAppDB
-        run: dotnet ef migrations bundle --self-contained -s ${{ github.workspace }}/FoodApp/Infrastructure -p ${{ github.workspace }}/FoodApp -c FoodApp.Infrastructure.FoodAppDbContext -o ${{ github.workspace }}/FoodApp/migration_bundle_foodappdb/bundle
+        run: dotnet ef migrations bundle --self-contained -s ${{ github.workspace }}/FoodApp -p ${{ github.workspace }}/FoodApp -c FoodAppDbContext -o ${{ github.workspace }}/FoodApp/migration_bundle_foodappdb/bundle
 
       # Migration bundle voor FoodAppIdentityDB
       - name: Bundle Migrations for IdentityDB
