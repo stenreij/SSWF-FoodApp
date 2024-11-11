@@ -29,33 +29,9 @@ jobs:
             echo "Running unit tests..."
             dotnet test --configuration Release --no-build --logger "console;verbosity=detailed" 
 
-      # Maak de tool-manifest en installeer dotnet-ef globaal
-      - name: Create .NET Tool Manifest
-        run: dotnet new tool-manifest --output .
-
+      #Install dotnet-ef globally
       - name: Install dotnet-ef globally
         run: dotnet tool install --global dotnet-ef --version 8.0.10
-
-      # Migration bundle voor FoodAppDB
-      - name: Bundle Migrations for FoodAppDB
-        run: dotnet ef migrations bundle --self-contained -s ${{ github.workspace }}/FoodApp -p ${{ github.workspace }}/FoodApp -c FoodAppDbContext -o ${{ github.workspace }}/FoodApp/migration_bundle_foodappdb/bundle
-
-      # Migration bundle voor FoodAppIdentityDB
-      - name: Bundle Migrations for IdentityDB
-        run: dotnet ef migrations bundle --self-contained -s ${{ github.workspace }}/FoodApp -p ${{ github.workspace }}/FoodApp -c FoodAppIdentityDbContext -o ${{ github.workspace }}/FoodApp/migration_bundle_identitydb/bundle
-
-      # Publish beide migration bundles als artifacts
-      - name: Publish Migrations Bundle Artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: EfMigrationsBundle_FoodAppDB
-          path: ${{ github.workspace }}/FoodApp/migration_bundle_foodappdb
-
-      - name: Publish Identity Migrations Bundle Artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: EfMigrationsBundle_IdentityDB
-          path: ${{ github.workspace }}/FoodApp/migration_bundle_identitydb
 
       - name: dotnet publish FoodApp
         run: dotnet publish FoodApp/FoodApp.csproj -c Release -o ${{env.DOTNET_ROOT}}/FoodApp
@@ -97,36 +73,11 @@ jobs:
           name: api 
           path: ./APIArtifact
 
-      # Download Migration Bundles for FoodAppDB and IdentityDB
-      - name: Download Migration Bundle for FoodAppDB
-        uses: actions/download-artifact@v3
-        with:
-          name: EfMigrationsBundle_FoodAppDB
-          path: ./FoodAppMigrationBundle
-
-      - name: Download Migration Bundle for IdentityDB
-        uses: actions/download-artifact@v3
-        with:
-          name: EfMigrationsBundle_IdentityDB
-          path: ./IdentityMigrationBundle
-
       # Voer migraties uit voor FoodAppDB
-      - name: Apply Migrations with Exit Code Check and Log Output
-        shell: pwsh
+      - name: Apply Migrations for FoodAppDB
         run: |
-          Write-Host "Starting migration with verbose output..."
-          $result = & "./FoodAppMigrationBundle/bundle" --connection=$env:AZURE_CONNECTIONSTRING_FOODAPPDB --verbose
-          Write-Host "Migration output: $result"
-          $exitCode = $LASTEXITCODE
-          Write-Host "Migration finished with exit code: $exitCode"
-          if ($exitCode -ne 0) {
-            Write-Host "Migration failed with exit code $exitCode."
-            exit $exitCode
-          } else {
-          Write-Host "Migration completed successfully with exit code $exitCode."
-          }
-        env:
-          AZURE_CONNECTIONSTRING_FOODAPPDB: ${{ secrets.AZURE_CONNECTIONSTRING_FOODAPPDB }}
+          echo "Applying migrations for FoodAppDB..."
+          dotnet ef database update --context FoodAppDbContext --configuration Release --verbose --connection ${{ secrets.AZURE_CONNECTIONSTRING_FOODAPPDB }}
 
       # Voer migraties uit voor IdentityDB
       - name: Apply Migrations to IdentityDB
