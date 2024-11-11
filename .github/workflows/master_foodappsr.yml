@@ -81,6 +81,23 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_37EA4F686BA347B397AE3C01F10C7D40 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_F68EDC77859946889E817C791748FEB2 }}
 
+      # Voer SQL-migraties uit voor FoodAppDB
+      - name: Apply Migrations for FoodAppDB
+        run: |
+          dotnet tool install --global dotnet-ef
+          dotnet ef database update --context FoodAppDbContext --configuration Release --connection "${{ secrets.FOODAPPDB_CONNECTION_STRING }}"
+        env:
+          FOODAPPDB_CONNECTION_STRING: ${{ secrets.AZURE_CONNECTIONSTRING_FOODAPPDB }}
+        working-directory: ./FoodApp
+
+      # Voer SQL-migraties uit voor IdentityDB
+      - name: Apply Migrations for IdentityDB
+        run: |
+          dotnet ef database update --context IdentityDbContext --configuration Release --connection "${{ secrets.IDENTITYDB_CONNECTION_STRING }}"
+        env:
+          IDENTITYDB_CONNECTION_STRING: ${{ secrets.AZURE_CONNECTIONSTRING_IDENTITYDB }}
+        working-directory: ./FoodApp
+
       - name: Deploy FoodApp to Azure Web App
         id: deploy-to-foodapp
         uses: azure/webapps-deploy@v2
