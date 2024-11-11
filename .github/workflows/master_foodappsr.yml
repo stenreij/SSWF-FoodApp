@@ -86,7 +86,6 @@ jobs:
         run: |
           dotnet tool install --global dotnet-ef --version 8.*
           dotnet tool restore
-          cd ./FoodApp
           dotnet ef database update --context FoodAppDbContext --configuration Release --connection "${{ secrets.FOODAPPDB_CONNECTION_STRING }}"
         env:
           FOODAPPDB_CONNECTION_STRING: ${{ secrets.FOODAPPDB_CONNECTION_STRING }}
