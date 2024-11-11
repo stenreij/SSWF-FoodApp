@@ -29,6 +29,34 @@ jobs:
             echo "Running unit tests..."
             dotnet test --configuration Release --no-build --logger "console;verbosity=detailed" 
 
+        # Maak de tool-manifest en installeer dotnet-ef
+      - name: Create .NET Tool Manifest
+        run: dotnet new tool-manifest --output .
+
+      - name: Install dotnet-ef tool
+        run: dotnet tool install dotnet-ef
+
+      # Migration bundle voor FoodAppDB
+      - name: Bundle Migrations for FoodAppDB
+        run: dotnet ef migrations bundle --self-contained -s $(Build.SourcesDirectory)/FoodApp -p $(Build.SourcesDirectory)/FoodApp -c FoodAppDbContext -o $(Build.SourcesDirectory)/FoodApp/migration_bundle_foodappdb/bundle
+
+      # Migration bundle voor IdentityDB
+      - name: Bundle Migrations for IdentityDB
+        run: dotnet ef migrations bundle --self-contained -s $(Build.SourcesDirectory)/FoodApp -p $(Build.SourcesDirectory)/FoodApp -c IdentityDbContext -o $(Build.SourcesDirectory)/FoodApp/migration_bundle_identitydb/bundle
+
+      # Publish beide migration bundles als artifacts
+      - name: Publish Migrations Bundle Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: EfMigrationsBundle_FoodAppDB
+          path: $(Build.SourcesDirectory)/FoodApp/migration_bundle_foodappdb
+
+      - name: Publish Identity Migrations Bundle Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: EfMigrationsBundle_IdentityDB
+          path: $(Build.SourcesDirectory)/FoodApp/migration_bundle_identitydb
+
       - name: dotnet publish FoodApp
         run: dotnet publish FoodApp/FoodApp.csproj -c Release -o ${{env.DOTNET_ROOT}}/FoodApp
 
@@ -68,6 +96,35 @@ jobs:
         with:
           name: api 
           path: ./APIArtifact
+
+      # Download Migration Bundles for FoodAppDB and IdentityDB
+      - name: Download Migration Bundle for FoodAppDB
+        uses: actions/download-artifact@v3
+        with:
+          name: EfMigrationsBundle_FoodAppDB
+          path: ./FoodAppMigrationBundle
+
+      - name: Download Migration Bundle for IdentityDB
+        uses: actions/download-artifact@v3
+        with:
+          name: EfMigrationsBundle_IdentityDB
+          path: ./IdentityMigrationBundle
+
+      # Voer migraties uit voor FoodAppDB
+      - name: Apply Migrations to FoodAppDB
+        run: |
+          chmod +x ./FoodAppMigrationBundle/bundle
+          ./FoodAppMigrationBundle/bundle --connection="$AZURE_CONNECTIONSTRING_FOODAPPDB"
+        env:
+          AZURE_CONNECTIONSTRING_FOODAPPDB: ${{ secrets.AZURE_CONNECTIONSTRING_FOODAPPDB }}
+
+      # Voer migraties uit voor IdentityDB
+      - name: Apply Migrations to IdentityDB
+        run: |
+          chmod +x ./IdentityMigrationBundle/bundle
+          ./IdentityMigrationBundle/bundle --connection="$AZURE_CONNECTIONSTRING_IDENTITYDB"
+        env:
+          AZURE_CONNECTIONSTRING_IDENTITYDB: ${{ secrets.AZURE_CONNECTIONSTRING_IDENTITYDB }}
 
       - name: List Files in FoodAppArtifact
         run: ls ./FoodAppArtifact
