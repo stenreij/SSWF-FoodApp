@@ -118,6 +118,7 @@ jobs:
         env:
           AZURE_CONNECTIONSTRING_FOODAPPDB: ${{ secrets.AZURE_CONNECTIONSTRING_FOODAPPDB }}
 
+
       # Voer migraties uit voor IdentityDB
       - name: Apply Migrations to IdentityDB
         run: |
