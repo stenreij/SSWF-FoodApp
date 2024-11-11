@@ -112,6 +112,7 @@ jobs:
 
       # Voer migraties uit voor FoodAppDB
       - name: Apply Migrations to FoodAppDB
+        shell: pwsh
         run: |
           & "./FoodAppMigrationBundle/bundle" --connection=$env:AZURE_CONNECTIONSTRING_FOODAPPDB
         env:
@@ -120,8 +121,7 @@ jobs:
       # Voer migraties uit voor IdentityDB
       - name: Apply Migrations to IdentityDB
         run: |
-          echo "Applying migrations for IdentityDB..."
-          dotnet ef database update --connection "$AZURE_CONNECTIONSTRING_IDENTITYDB"
+          & "./IdentityMigrationBundle/bundle" --connection=$env:AZURE_CONNECTIONSTRING_IDENTITYDB
         env:
           AZURE_CONNECTIONSTRING_IDENTITYDB: ${{ secrets.AZURE_CONNECTIONSTRING_IDENTITYDB }}
 
