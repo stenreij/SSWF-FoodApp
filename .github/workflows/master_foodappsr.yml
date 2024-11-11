@@ -82,11 +82,11 @@ jobs:
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_F68EDC77859946889E817C791748FEB2 }}
 
       # Voer SQL-migraties uit voor FoodAppDB
-      - name: Apply Migrations for FoodAppDB (Infrastructure)
+      - name: Apply Migrations for FoodAppDB
         run: |
           dotnet tool install --global dotnet-ef --version 8.*
           dotnet tool restore
-          dotnet ef database update --context FoodAppDbContext --configuration Release --connection "${{ secrets.FOODAPPDB_CONNECTION_STRING }}" --project ./Infrastructure/Infrastructure.csproj --startup-project ./FoodApp/FoodApp.csproj
+          dotnet ef database update --context FoodAppDbContext --configuration Release --connection "${{ secrets.FOODAPPDB_CONNECTION_STRING }}" --project ./FoodApp/FoodApp.csproj
         env:
           FOODAPPDB_CONNECTION_STRING: ${{ secrets.AZURE_CONNECTIONSTRING_FOODAPPDB }}
 
