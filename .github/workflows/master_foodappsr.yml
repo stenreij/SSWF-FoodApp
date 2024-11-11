@@ -113,11 +113,10 @@ jobs:
       # Voer migraties uit voor FoodAppDB
       - name: Apply Migrations to FoodAppDB
         run: |
-          echo "Applying migrations for FoodAppDB..."
-          dotnet ef database update --project ${{ github.workspace }}/Infrastructure/Infrastructure.csproj --context FoodAppDbContext --connection "$AZURE_CONNECTIONSTRING_FOODAPPDB"
+          cho "Applying migrations for FoodAppDB from bundle..."
+          dotnet ef migrations apply --bundle D:\a\SSWF-FoodApp\SSWF-FoodApp\FoodApp\migration_bundle_foodappdb\bundle --connection "$AZURE_CONNECTIONSTRING_FOODAPPDB"
         env:
           AZURE_CONNECTIONSTRING_FOODAPPDB: ${{ secrets.AZURE_CONNECTIONSTRING_FOODAPPDB }}
-
 
       # Voer migraties uit voor IdentityDB
       - name: Apply Migrations to IdentityDB
