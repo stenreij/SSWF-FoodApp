@@ -38,24 +38,24 @@ jobs:
 
       # Migration bundle voor FoodAppDB
       - name: Bundle Migrations for FoodAppDB
-        run: dotnet ef migrations bundle --self-contained -s $(Build.SourcesDirectory)/FoodApp -p $(Build.SourcesDirectory)/FoodApp -c FoodAppDbContext -o $(Build.SourcesDirectory)/FoodApp/migration_bundle_foodappdb/bundle
+        run: dotnet ef migrations bundle --self-contained -s ${{ github.workspace }}/FoodApp -p ${{ github.workspace }}/FoodApp -c FoodAppDbContext -o ${{ github.workspace }}/FoodApp/migration_bundle_foodappdb/bundle
 
       # Migration bundle voor IdentityDB
       - name: Bundle Migrations for IdentityDB
-        run: dotnet ef migrations bundle --self-contained -s $(Build.SourcesDirectory)/FoodApp -p $(Build.SourcesDirectory)/FoodApp -c IdentityDbContext -o $(Build.SourcesDirectory)/FoodApp/migration_bundle_identitydb/bundle
+        run: dotnet ef migrations bundle --self-contained -s ${{ github.workspace }}/FoodApp -p ${{ github.workspace }}/FoodApp -c IdentityDbContext -o ${{ github.workspace }}/FoodApp/migration_bundle_identitydb/bundle
 
       # Publish beide migration bundles als artifacts
       - name: Publish Migrations Bundle Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: EfMigrationsBundle_FoodAppDB
-          path: $(Build.SourcesDirectory)/FoodApp/migration_bundle_foodappdb
+          path: ${{ github.workspace }}/FoodApp/migration_bundle_foodappdb
 
       - name: Publish Identity Migrations Bundle Artifact
         uses: actions/upload-artifact@v3
         with:
           name: EfMigrationsBundle_IdentityDB
-          path: $(Build.SourcesDirectory)/FoodApp/migration_bundle_identitydb
+          path: ${{ github.workspace }}/FoodApp/migration_bundle_identitydb
 
       - name: dotnet publish FoodApp
         run: dotnet publish FoodApp/FoodApp.csproj -c Release -o ${{env.DOTNET_ROOT}}/FoodApp
