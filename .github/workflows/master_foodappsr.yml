@@ -114,7 +114,7 @@ jobs:
       - name: Apply Migrations to FoodAppDB
         run: |
           echo "Applying migrations for FoodAppDB..."
-          dotnet ef database update --project ${{ github.workspace }}/FoodApp/Infrastructure/Infrastructure.csproj --context FoodAppDbContext --connection "$AZURE_CONNECTIONSTRING_FOODAPPDB"
+          dotnet ef database update --project ${{ github.workspace }}/Infrastructure/Infrastructure.csproj --context FoodAppDbContext --connection "$AZURE_CONNECTIONSTRING_FOODAPPDB"
         env:
           AZURE_CONNECTIONSTRING_FOODAPPDB: ${{ secrets.AZURE_CONNECTIONSTRING_FOODAPPDB }}
 
