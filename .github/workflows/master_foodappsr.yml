@@ -29,10 +29,6 @@ jobs:
             echo "Running unit tests..."
             dotnet test --configuration Release --no-build --logger "console;verbosity=detailed" 
 
-      #Install dotnet-ef globally
-      - name: Install dotnet-ef globally
-        run: dotnet tool install --global dotnet-ef --version 8.0.10
-
       - name: dotnet publish FoodApp
         run: dotnet publish FoodApp/FoodApp.csproj -c Release -o ${{env.DOTNET_ROOT}}/FoodApp
 
@@ -74,17 +70,12 @@ jobs:
           path: ./APIArtifact
 
       # Voer migraties uit voor FoodAppDB
-      - name: Install dotnet-ef globally
-        run: dotnet tool install --global dotnet-ef --version 8.0.10
-  
       - name: Apply Migrations for FoodAppDB
-        shell: pwsh
         run: |
-          $connectionString = $env:AZURE_CONNECTIONSTRING_FOODAPPDB
+          dotnet tool install --global dotnet-ef --version 8.0.x
+          dotnet tool restore
           Write-Host "Applying migrations for FoodAppDB..."
-          dotnet ef database update --context FoodAppDbContext --configuration Release --verbose --connection $connectionString --project ./Infrastructure/Infrastructure.csproj --startup-project ./FoodApp/FoodApp.csproj
-        env:
-          AZURE_CONNECTIONSTRING_FOODAPPDB: ${{ secrets.AZURE_CONNECTIONSTRING_FOODAPPDB }}
+          dotnet ef database update --context FoodAppDbContext --configuration Release --verbose --connection '${{ secrets.AZURE.CONNECTIONSTRING.FOODAPPDB }}' --project ./Infrastructure/Infrastructure.csproj --startup-project ./FoodApp/FoodApp.csproj
     
       # Voer migraties uit voor IdentityDB
       - name: Apply Migrations to IdentityDB
