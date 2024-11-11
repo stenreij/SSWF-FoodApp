@@ -84,11 +84,12 @@ jobs:
       # Voer SQL-migraties uit voor FoodAppDB
       - name: Apply Migrations for FoodAppDB
         run: |
-          dotnet tool install --global dotnet-ef
+          dotnet tool install --global dotnet-ef --version 8.*
+          dotnet tool restore
+          cd ./FoodApp
           dotnet ef database update --context FoodAppDbContext --configuration Release --connection "${{ secrets.FOODAPPDB_CONNECTION_STRING }}"
         env:
-          FOODAPPDB_CONNECTION_STRING: ${{ secrets.AZURE_CONNECTIONSTRING_FOODAPPDB }}
-        working-directory: ./FoodApp
+          FOODAPPDB_CONNECTION_STRING: ${{ secrets.FOODAPPDB_CONNECTION_STRING }}
 
       # Voer SQL-migraties uit voor IdentityDB
       - name: Apply Migrations for IdentityDB
