@@ -40,9 +40,9 @@ jobs:
       - name: Bundle Migrations for FoodAppDB
         run: dotnet ef migrations bundle --self-contained -s ${{ github.workspace }}/FoodApp -p ${{ github.workspace }}/FoodApp -c FoodAppDbContext -o ${{ github.workspace }}/FoodApp/migration_bundle_foodappdb/bundle
 
-      # Migration bundle voor IdentityDB
+      # Migration bundle voor FoodAppIdentityDB
       - name: Bundle Migrations for IdentityDB
-        run: dotnet ef migrations bundle --self-contained -s ${{ github.workspace }}/FoodApp -p ${{ github.workspace }}/FoodApp -c IdentityDbContext -o ${{ github.workspace }}/FoodApp/migration_bundle_identitydb/bundle
+        run: dotnet ef migrations bundle --self-contained -s ${{ github.workspace }}/FoodApp -p ${{ github.workspace }}/FoodApp -c FoodAppIdentityDbContext -o ${{ github.workspace }}/FoodApp/migration_bundle_identitydb/bundle
 
       # Publish beide migration bundles als artifacts
       - name: Publish Migrations Bundle Artifacts
