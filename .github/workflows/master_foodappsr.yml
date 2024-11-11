@@ -111,12 +111,19 @@ jobs:
           path: ./IdentityMigrationBundle
 
       # Voer migraties uit voor FoodAppDB
-      - name: Apply Migrations to FoodAppDB with Verbose Logging
+      - name: Apply Migrations to FoodAppDB with Exit Code Check
         shell: pwsh
         run: |
           Write-Host "Starting migration with verbose output..."
           & "./FoodAppMigrationBundle/bundle" --connection=$env:AZURE_CONNECTIONSTRING_FOODAPPDB --verbose
-          Write-Host "Migration finished."
+          $exitCode = $LASTEXITCODE
+          Write-Host "Migration finished with exit code: $exitCode"
+          if ($exitCode -ne 0) {
+            Write-Host "Migration failed with exit code $exitCode."
+            exit $exitCode
+          } else {
+          Write-Host "Migration completed successfully with exit code $exitCode."
+          }
         env:
           AZURE_CONNECTIONSTRING_FOODAPPDB: ${{ secrets.AZURE_CONNECTIONSTRING_FOODAPPDB }}
 
