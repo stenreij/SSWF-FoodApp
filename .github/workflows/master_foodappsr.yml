@@ -81,6 +81,12 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_37EA4F686BA347B397AE3C01F10C7D40 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_F68EDC77859946889E817C791748FEB2 }}
 
+      - name: Install dotnet-ef tool
+        run: dotnet tool install --global dotnet-ef
+
+      - name: Add dotnet tools to PATH
+        run: echo "::add-path::${{ runner.tool_cache }}/.dotnet/tools"
+
       # Nieuwe stap om migraties voor FoodAppDb toe te passen
       - name: Apply migrations for FoodAppDb
         run: dotnet ef database update --project Infrastructure/Infrastructure.csproj --context FoodAppDbContext
