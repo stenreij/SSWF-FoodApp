@@ -89,13 +89,13 @@ jobs:
 
       # Nieuwe stap om migraties voor FoodAppDb toe te passen
       - name: Apply migrations for FoodAppDb
-        run: dotnet ef database update --project SSWF-FoodApp/Infrastructure.csproj --context FoodAppDbContext
+        run: dotnet ef database update --project Infrastructure.csproj --context FoodAppDbContext
         env:
           AZURE_SQL_CONNECTIONSTRING: ${{ secrets.AZURE_CONNECTIONSTRING_FOODAPPDB }}
 
       # Nieuwe stap om migraties voor FoodAppIdentityDb toe te passen
       - name: Apply migrations for FoodAppIdentityDb
-        run: dotnet ef database update --project SSWF-FoodApp/Infrastructure.csproj --context FoodAppIdentityDbContext
+        run: dotnet ef database update --project Infrastructure.csproj --context FoodAppIdentityDbContext
         env:
           AZURE_SQL_CONNECTIONSTRING: ${{ secrets.AZURE_CONNECTIONSTRING_IDENTITYDB }}
 
