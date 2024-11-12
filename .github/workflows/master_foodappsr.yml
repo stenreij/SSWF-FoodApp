@@ -81,22 +81,17 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_37EA4F686BA347B397AE3C01F10C7D40 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_F68EDC77859946889E817C791748FEB2 }}
 
-      # Voer SQL-migraties uit voor FoodAppDB
-      - name: Apply Migrations for FoodAppDB
-        run: |
-          dotnet tool install --global dotnet-ef --version 8.*
-          dotnet tool restore
-          dotnet ef database update --context FoodAppDbContext --configuration Release --connection "${{ secrets.FOODAPPDB_CONNECTION_STRING }}" --project ./FoodApp/FoodApp.csproj
+      # Nieuwe stap om migraties voor FoodAppDb toe te passen
+      - name: Apply migrations for FoodAppDb
+        run: dotnet ef database update --project Infrastructure/Infrastructure.csproj --context FoodAppDbContext
         env:
-          FOODAPPDB_CONNECTION_STRING: ${{ secrets.AZURE_CONNECTIONSTRING_FOODAPPDB }}
+          AZURE_SQL_CONNECTIONSTRING: ${{ secrets.AZURE_CONNECTIONSTRING_FOODAPPDB }}
 
-      # Voer SQL-migraties uit voor IdentityDB
-      - name: Apply Migrations for IdentityDB
-        run: |
-          dotnet ef database update --context IdentityDbContext --configuration Release --connection "${{ secrets.IDENTITYDB_CONNECTION_STRING }}"
+      # Nieuwe stap om migraties voor FoodAppIdentityDb toe te passen
+      - name: Apply migrations for FoodAppIdentityDb
+        run: dotnet ef database update --project Infrastructure/Infrastructure.csproj --context FoodAppIdentityDbContext
         env:
-          IDENTITYDB_CONNECTION_STRING: ${{ secrets.AZURE_CONNECTIONSTRING_IDENTITYDB }}
-        working-directory: ./FoodApp
+          AZURE_SQL_CONNECTIONSTRING: ${{ secrets.AZURE_CONNECTIONSTRING_IDENTITYDB }}
 
       - name: Deploy FoodApp to Azure Web App
         id: deploy-to-foodapp
