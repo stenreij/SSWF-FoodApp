@@ -115,6 +115,9 @@ jobs:
       - name: Add dotnet tools to PATH
         run: echo "${{ runner.tool_cache }}/.dotnet/tools" >> $GITHUB_PATH
 
+      - name: Build the Infrastructure project
+        run: dotnet build D:\a\SSWF-FoodApp\SSWF-FoodApp\InfrastructureArtifact\Infrastructure.csproj
+
       # Nieuwe stap om migraties voor FoodAppDb toe te passen
       - name: Apply migrations for FoodAppDb
         run: dotnet ef database update --project D:\a\SSWF-FoodApp\SSWF-FoodApp\InfrastructureArtifact\Infrastructure.csproj --context FoodAppDbContext --no-restore
