@@ -53,7 +53,7 @@ jobs:
       - name: Upload artifact for Infrastructure deployment
         uses: actions/upload-artifact@v3
         with:
-          name: api  
+          name: infrastructure  
           path: ${{env.DOTNET_ROOT}}/Infrastructure
 
   deploy:
@@ -81,7 +81,7 @@ jobs:
       - name: Download artifact from build job (Infrastructure)
         uses: actions/download-artifact@v3
         with:
-          name: api 
+          name: infrastructure 
           path: ./InfrastructureArtifact
 
       - name: List Files in FoodAppArtifact
