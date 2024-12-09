@@ -35,6 +35,12 @@ jobs:
       - name: dotnet publish API
         run: dotnet publish API/API.csproj -c Release -o ${{env.DOTNET_ROOT}}/API  
 
+      - name: dotnet publish Core.Domain
+        run: dotnet publish Core.Domain/Core.Domain.csproj -c Release -o ${{env.DOTNET_ROOT}}/Core.Domain
+
+      - name: dotnet publish Core.DomainServices
+        run: dotnet publish Core.DomainServices/Core.DomainServices.csproj -c Release -o ${{env.DOTNET_ROOT}}/Core.DomainServices
+
       - name: dotnet publish Infrastructure
         run: dotnet publish Infrastructure/Infrastructure.csproj -c Release -o ${{env.DOTNET_ROOT}}/Infrastructure
 
@@ -49,6 +55,18 @@ jobs:
         with:
           name: api  
           path: ${{env.DOTNET_ROOT}}/API
+
+      - name: Upload Core.Domain artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: core-domain
+          path: ./Core.Domain/**
+
+      - name: Upload Core.DomainServices artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: core-domainservices
+          path: ./Core.DomainServices/**
 
       - name: Upload artifact for Infrastructure deployment
         uses: actions/upload-artifact@v3
@@ -83,6 +101,18 @@ jobs:
         with:
           name: api 
           path: ./APIArtifact
+
+      - name: Download Core.Domain artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: core-domain
+          path: ./Core.Domain
+
+      - name: Download Core.DomainServices artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: core-domainservices
+          path: ./Core.DomainServices
 
       - name: Download artifact from build job (Infrastructure)
         uses: actions/download-artifact@v3
