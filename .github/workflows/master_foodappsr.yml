@@ -75,6 +75,9 @@ jobs:
       - name: List Files in APIArtifact
         run: ls ./APIArtifact
 
+      - name: Cuurent Path/Location
+        run: pwd
+
       - name: Login to Azure
         uses: azure/login@v2
         with:
