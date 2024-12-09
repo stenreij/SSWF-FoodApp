@@ -93,7 +93,7 @@ jobs:
 
       # Nieuwe stap om migraties voor FoodAppDb toe te passen
       - name: Apply migrations for FoodAppDb
-        run: dotnet ef database update --project ./FoodAppArtifact/Infrastructure/Infrastructure.csproj --context FoodAppDbContext
+        run: dotnet ef database update --project D:\a\SSWF-FoodApp\SSWF-FoodApp\FoodAppArtifact\Infrastructure\Infrastructure.csproj --context FoodAppDbContext
         env:
           AZURE_SQL_CONNECTIONSTRINGFOODAPPDB: ${{ secrets.AZURE_CONNECTIONSTRING_FOODAPPDB }}
 
