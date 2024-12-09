@@ -54,7 +54,13 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: infrastructure  
-          path: ${{env.DOTNET_ROOT}}/Infrastructure
+          path: ./Infrastructure/**
+
+      - name: Controleer inhoud van Infrastructure artifact
+        run: |
+          echo "Inhoud van Infrastructure:"
+          ls -R ./InfrastructureArtifact
+
 
   deploy:
     runs-on: windows-latest
