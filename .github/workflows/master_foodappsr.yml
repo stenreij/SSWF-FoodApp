@@ -75,13 +75,13 @@ jobs:
           name: infrastructure  
           path: ./Infrastructure/**
 
-      - name: Controleer inhoud van FoodApp & Infrastructure artifact
+      - name: Controleer Content FoodAppArtifact
         run: |
           echo "Inhoud van FoodApp:"
           ls -R ./FoodAppArtifact
-          
-          |
-          
+
+      - name: Check Content InfrastructureArtifact
+        run: |
           echo "Inhoud van Infrastructure:"
           ls -R ./InfrastructureArtifact
 
