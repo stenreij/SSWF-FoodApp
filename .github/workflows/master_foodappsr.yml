@@ -48,7 +48,8 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: foodappsr 
-          path: ${{env.DOTNET_ROOT}}/FoodApp
+          #path: ${{env.DOTNET_ROOT}}/FoodApp
+          path: ./FoodApp/**
 
       - name: Upload artifact for API deployment
         uses: actions/upload-artifact@v3
@@ -74,11 +75,15 @@ jobs:
           name: infrastructure  
           path: ./Infrastructure/**
 
-      - name: Controleer inhoud van Infrastructure artifact
+      - name: Controleer inhoud van FoodApp & Infrastructure artifact
         run: |
+          echo "Inhoud van FoodApp:"
+          ls -R ./FoodAppArtifact
+          
+          |
+          
           echo "Inhoud van Infrastructure:"
           ls -R ./InfrastructureArtifact
-
 
   deploy:
     runs-on: windows-latest
@@ -150,9 +155,7 @@ jobs:
 
       # Nieuwe stap om migraties voor FoodAppDb toe te passen
       - name: Apply migrations for FoodAppDb
-        #run: dotnet ef database update --project D:\a\SSWF-FoodApp\SSWF-FoodApp\InfrastructureArtifact\Infrastructure.csproj --context FoodAppDbContext
-        run: dotnet ef database update --project D:\a\SSWF-FoodApp\SSWF-FoodApp\InfrastructureArtifact\Infrastructure.csproj --startup-project D:\a\SSWF-FoodApp\SSWF-FoodApp\FoodAppArtifact\FoodApp.csproj --context FoodAppDbContext
-
+        run: dotnet ef database update --project D:\a\SSWF-FoodApp\SSWF-FoodApp\InfrastructureArtifact\Infrastructure.csproj --context FoodAppDbContext
         env:
           AZURE_SQL_CONNECTIONSTRINGFOODAPPDB: ${{ secrets.AZURE_CONNECTIONSTRING_FOODAPPDB }}
 
