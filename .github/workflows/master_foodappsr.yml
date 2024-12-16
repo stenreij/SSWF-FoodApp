@@ -44,12 +44,18 @@ jobs:
       - name: dotnet publish Infrastructure
         run: dotnet publish Infrastructure/Infrastructure.csproj -c Release -o ${{env.DOTNET_ROOT}}/Infrastructure
 
-      - name: Upload artifact for FoodApp deployment
+      - name: Upload artifact for FoodApp migrations
         uses: actions/upload-artifact@v3
         with:
           name: foodappsr 
           #path: ${{env.DOTNET_ROOT}}/FoodApp
           path: ./FoodApp/**
+
+      - name: Upload FoodAppArtifact 
+        uses: actions/upload-artifact@v3
+        with:
+          name: foodappsar
+          path: ${{env.DOTNET_ROOT}}/FoodApp
 
       - name: Upload artifact for API deployment
         uses: actions/upload-artifact@v3
@@ -75,16 +81,6 @@ jobs:
           name: infrastructure  
           path: ./Infrastructure/**
 
-      - name: Controleer Content FoodAppArtifact
-        run: |
-          echo "Inhoud van FoodApp:"
-          ls -R ./FoodAppArtifact
-
-      - name: Check Content InfrastructureArtifact
-        run: |
-          echo "Inhoud van Infrastructure:"
-          ls -R ./InfrastructureArtifact
-
   deploy:
     runs-on: windows-latest
     needs: build
@@ -100,6 +96,12 @@ jobs:
         with:
           name: foodappsr  
           path: ./FoodAppArtifact
+
+      - name: Download artifact from build job (FoodApp2)
+        uses: actions/download-artifact@v3
+        with:
+          name: foodappsar  
+          path: ./FoodAppArtifactSR
 
       - name: Download artifact from build job (API)
         uses: actions/download-artifact@v3
@@ -127,6 +129,9 @@ jobs:
 
       - name: List Files in FoodAppArtifact
         run: ls ./FoodAppArtifact
+
+      - name: List Files in FoodAppArtifactSR
+        run: ls ./FoodAppArtifactSR
 
       - name: List Files in APIArtifact
         run: ls ./APIArtifact
@@ -171,7 +176,7 @@ jobs:
         with:
           app-name: 'avansfoodappsr' 
           slot-name: 'Production'
-          package: ./FoodAppArtifact  
+          package: ./FoodAppArtifactSR  
 
       - name: Deploy API to Azure Web App
         id: deploy-to-api
