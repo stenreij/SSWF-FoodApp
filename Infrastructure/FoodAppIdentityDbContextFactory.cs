@@ -10,7 +10,7 @@ namespace Infrastructure
         {
             var optionsBuilder = new DbContextOptionsBuilder<FoodAppIdentityDbContext>();
 
-            var connectionString = Environment.GetEnvironmentVariable("AZURE_SQL_CONNECTIONSTRINGFOODAPPIDENTITYDB");
+            var connectionString = Environment.GetEnvironmentVariable("AZURE_SQL_CONNECTIONSTRINGIDENTITYDB");
 
             if (string.IsNullOrEmpty(connectionString))
             {
