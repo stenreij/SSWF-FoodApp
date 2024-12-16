@@ -161,7 +161,7 @@ jobs:
 
       # Nieuwe stap om migraties voor FoodAppIdentityDb toe te passen
       - name: Apply migrations for FoodAppIdentityDb
-        run: dotnet ef database update --project D:\a\SSWF-FoodApp\SSWF-FoodApp\InfrastructureArtifact\Infrastructure.csproj --context FoodAppIdentityDbContext --no-restore
+        run: dotnet ef database update --project D:\a\SSWF-FoodApp\SSWF-FoodApp\InfrastructureArtifact\Infrastructure.csproj --context FoodAppIdentityDbContext
         env:
           AZURE_SQL_CONNECTIONSTRINGIDENTITYDB: ${{ secrets.AZURE_CONNECTIONSTRING_IDENTITYDB }}
 
