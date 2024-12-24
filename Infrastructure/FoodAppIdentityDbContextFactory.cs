@@ -14,7 +14,7 @@ namespace Infrastructure
 
             if (string.IsNullOrEmpty(connectionString))
             {
-                throw new InvalidOperationException("Connection string is not set.");
+                connectionString = "Server=.;Database=AvansFoodAppIdentity;Trusted_Connection=True;";
             }
 
             optionsBuilder.UseSqlServer(connectionString);
