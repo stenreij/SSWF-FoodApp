@@ -1220,6 +1220,10 @@ namespace Core.DomainServices.Tests
 
             mealPackageRepoMock.Setup(m => m.GetMealPackageById(101)).Returns(mealPackage);
             studentRepoMock.Setup(repo => repo.GetStudentById(2020)).Returns(student);
+            mealPackageRepoMock.Setup(repo => repo.CancelReservation(It.IsAny<int>(), It.IsAny<int>())).Callback((int mpId, int studentId) =>
+            {
+                mealPackage.ReservedByStudent = null;
+            });
 
             var mealPackageToCancel = mealPackageService.CancelReservation(101, 2020);
 
