@@ -136,7 +136,7 @@ namespace Core.DomainServices.Services
 
             if (mealPackage.ReservedByStudent != null && mealPackage.ReservedByStudent.Id == student.Id)
             {
-                mealPackage.ReservedByStudent = null;
+                //mealPackage.ReservedByStudent = null;
                 _mealPackageRepo.CancelReservation(mealPackageId, studentId);
                 return true;
             }

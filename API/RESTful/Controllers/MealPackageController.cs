@@ -104,7 +104,6 @@ namespace API.RESTful.Controllers
             }
         }
 
-
         [HttpPost("Reserve")]
         [ServiceFilter(typeof(AuthFilter))]
         [ProducesResponseType(200)]
@@ -187,7 +186,7 @@ namespace API.RESTful.Controllers
                     return BadRequest(new { error = "This mealpackage is not reserved by this student." });
                 }
 
-                if (!CancelMealPackageReservation(request.mealPackageId, request.studentId))
+                if (!_mealPackageService.CancelReservation(request.mealPackageId, request.studentId))
                 {
                     return BadRequest(new { error = "Failed to cancel reservation. Please try again." });
                 }
@@ -200,22 +199,5 @@ namespace API.RESTful.Controllers
                 return BadRequest(new { error = e.Message });
             }
         }
-
-        public bool CancelMealPackageReservation(int mealPackageId, int studentId)
-        {
-            var mealPackage = _mealPackageRepo.GetMealPackageById(mealPackageId);
-
-            if (mealPackage == null || mealPackage.ReservedByStudent == null)
-            {
-                return false; 
-            }
-
-            mealPackage.ReservedByStudent = null;
-
-            _mealPackageRepo.EditMealPackage(mealPackage);
-            return true;
-        }
-
-
     }
 }
