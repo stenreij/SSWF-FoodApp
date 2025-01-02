@@ -24,6 +24,7 @@ namespace API.RESTful.Controllers
         }
 
         [HttpGet]
+        [ServiceFilter(typeof(AuthFilter))]
         [ProducesResponseType(typeof(IEnumerable<Student>), 200)]
         [ProducesResponseType(500)]
         public IActionResult GetStudents()

@@ -4,6 +4,7 @@ using Core.DomainServices.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Infrastructure;
 using API.RESTful.DTO;
+using System.Security.Claims;
 
 namespace API.RESTful.Controllers
 {
@@ -33,7 +34,9 @@ namespace API.RESTful.Controllers
         }
 
         [HttpGet]
+        [ServiceFilter(typeof(AuthFilter))]
         [ProducesResponseType(typeof(IEnumerable<MealPackage>), 200)]
+        [ProducesResponseType(403)]
         [ProducesResponseType(500)]
         public IActionResult GetMealPackages()
         {
@@ -50,6 +53,7 @@ namespace API.RESTful.Controllers
         }
 
         [HttpGet("Reserved")]
+        [ServiceFilter(typeof(AuthFilter))]
         [ProducesResponseType(typeof(IEnumerable<MealPackage>), 200)]
         [ProducesResponseType(500)]
         public IActionResult GetReservedMealPackages()
@@ -66,7 +70,43 @@ namespace API.RESTful.Controllers
             }
         }
 
+        [HttpGet("Reserved/LoggedInUser")]
+        [ServiceFilter(typeof(AuthFilter))]
+        [ProducesResponseType(typeof(IEnumerable<MealPackage>), 200)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(500)]
+        public IActionResult GetReservedMealPackagesForUser()
+        {
+            _logger.LogInformation("GetReservedMealPackagesForUser() called");
+
+            try
+            {
+                var userEmailClaim = User.FindFirst(ClaimTypes.Email)?.Value;
+
+                if (string.IsNullOrEmpty(userEmailClaim))
+                {
+                    return Unauthorized("User is not authenticated.");
+                }
+                var user = _studentRepo.GetStudentByEmail(userEmailClaim);
+                var userReservedMealPackages = _mealPackageRepo.GetReservedMealPackagesByStudent(user.Id);
+
+                if (userReservedMealPackages == null || !userReservedMealPackages.Any())
+                {
+                    return NotFound("No reserved meal packages found for this user.");
+                }
+
+                return Ok(userReservedMealPackages);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"An error occurred: {ex.Message}");
+                return StatusCode(500, new { Success = false, Error = ex.Message });
+            }
+        }
+
+
         [HttpPost("Reserve")]
+        [ServiceFilter(typeof(AuthFilter))]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
@@ -120,5 +160,62 @@ namespace API.RESTful.Controllers
                 return BadRequest(new { error = e.Message });
             }
         }
+
+        [HttpPost("CancelReservation")]
+        [ServiceFilter(typeof(AuthFilter))]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
+        public IActionResult CancelReservation([FromBody] ReserveMealPackageRequest request)
+        {
+            try
+            {
+                if (request == null)
+                {
+                    return BadRequest(new { error = "Invalid JSON payload." });
+                }
+
+                var mealPackage = _mealPackageRepo.GetMealPackageById(request.mealPackageId);
+
+                if (mealPackage == null)
+                {
+                    return BadRequest(new { error = "MealPackage not found." });
+                }
+
+                if (mealPackage.ReservedByStudent == null || mealPackage.ReservedByStudent.Id != request.studentId)
+                {
+                    return BadRequest(new { error = "This mealpackage is not reserved by this student." });
+                }
+
+                if (!CancelMealPackageReservation(request.mealPackageId, request.studentId))
+                {
+                    return BadRequest(new { error = "Failed to cancel reservation. Please try again." });
+                }
+
+                return Ok(new { message = "Reservation successfully cancelled." });
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Error in CancelReservation: {e}");
+                return BadRequest(new { error = e.Message });
+            }
+        }
+
+        public bool CancelMealPackageReservation(int mealPackageId, int studentId)
+        {
+            var mealPackage = _mealPackageRepo.GetMealPackageById(mealPackageId);
+
+            if (mealPackage == null || mealPackage.ReservedByStudent == null)
+            {
+                return false; 
+            }
+
+            mealPackage.ReservedByStudent = null;
+
+            _mealPackageRepo.EditMealPackage(mealPackage);
+            return true;
+        }
+
+
     }
 }

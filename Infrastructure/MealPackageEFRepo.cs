@@ -38,6 +38,9 @@ namespace Infrastructure
         public MealPackage GetMealPackageById(int id)
         {
             return _context.MealPackages
+                .Include(mp => mp.Canteen)
+                .Include(mp => mp.Products)
+                .Include (mp => mp.ReservedByStudent)
                 .First(mp => mp.Id == id);
         }
 

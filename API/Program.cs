@@ -5,6 +5,10 @@ using Core.DomainServices.Services;
 using Infrastructure;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +24,8 @@ builder.Services.AddScoped<IStudentRepo, StudentEFRepo>();
 builder.Services.AddScoped<IEmployeeRepo, EmployeeEFRepo>();
 builder.Services.AddScoped<IProductRepo, ProductEFRepo>();
 builder.Services.AddScoped<IMealPackageService, MealPackageService>();
+builder.Services.AddScoped<AuthFilter>();
+
 
 // Configure database connection strings
 var defaultConnection = string.Empty;
@@ -29,7 +35,7 @@ if (builder.Environment.IsDevelopment())
 {
     // Use local connection string during development
     defaultConnection = builder.Configuration.GetConnectionString("LocalDefaultConnection");
-    identityConnection = builder.Configuration.GetConnectionString("IdentityConnection");
+    identityConnection = builder.Configuration.GetConnectionString("LocalIdentityConnection");
 
 }
 else
@@ -47,8 +53,29 @@ builder.Services.AddDbContext<FoodAppIdentityDbContext>(options =>
     options.UseSqlServer(identityConnection));
 
 // Add Identity services
-builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = false)
-    .AddEntityFrameworkStores<FoodAppIdentityDbContext>();
+builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+    .AddRoles<IdentityRole>()
+    .AddEntityFrameworkStores<FoodAppIdentityDbContext>()
+    .AddDefaultTokenProviders();
+
+var jwtSettings = builder.Configuration.GetSection("JwtSettings");
+var key = Encoding.ASCII.GetBytes(jwtSettings["Secret"]);
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
+{
+    options.SaveToken = true;
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(key),
+        ValidateIssuer = false,
+        ValidateAudience = false
+    };
+});
 
 // Configure GraphQL services
 builder.Services.AddGraphQLServer()

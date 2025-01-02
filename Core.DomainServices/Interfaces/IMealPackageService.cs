@@ -9,5 +9,6 @@ namespace Application.Services
         IEnumerable<MealPackage> GetAvailableMealPackages();
         IEnumerable<MealPackage> GetReservedMealPackages();
         bool ReserveMealPackage(int mealPackageId, int studentId);
+        bool CancelReservation(int mealPackageId, int studentId);
     }
 }
