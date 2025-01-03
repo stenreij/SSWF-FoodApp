@@ -100,7 +100,6 @@ namespace Core.DomainServices.Services
             return true;
         }
 
-
         public bool ReserveMealPackage(int mealPackageId, int studentId)
         {
             var mealPackage = _mealPackageRepo.GetMealPackageById(mealPackageId);
@@ -142,6 +141,5 @@ namespace Core.DomainServices.Services
             }
             throw new ArgumentException("You're not allowed to cancel this reservation.");
         }
-
     }
 }

@@ -26,7 +26,6 @@ builder.Services.AddScoped<IProductRepo, ProductEFRepo>();
 builder.Services.AddScoped<IMealPackageService, MealPackageService>();
 builder.Services.AddScoped<AuthFilter>();
 
-
 // Configure database connection strings
 var defaultConnection = string.Empty;
 var identityConnection = string.Empty;
@@ -36,7 +35,6 @@ if (builder.Environment.IsDevelopment())
     // Use local connection string during development
     defaultConnection = builder.Configuration.GetConnectionString("LocalDefaultConnection");
     identityConnection = builder.Configuration.GetConnectionString("LocalIdentityConnection");
-
 }
 else
 {
@@ -45,14 +43,12 @@ else
     identityConnection = Environment.GetEnvironmentVariable("IdentityConnection");
 }
 
-// Register DbContext with appropriate connection string
 builder.Services.AddDbContext<FoodAppDbContext>(options =>
     options.UseSqlServer(defaultConnection));
 
 builder.Services.AddDbContext<FoodAppIdentityDbContext>(options =>
     options.UseSqlServer(identityConnection));
 
-// Add Identity services
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<FoodAppIdentityDbContext>()

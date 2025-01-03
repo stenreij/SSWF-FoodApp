@@ -18,7 +18,6 @@ namespace Infrastructure
             }
 
             optionsBuilder.UseSqlServer(connectionString);
-
             return new FoodAppIdentityDbContext(optionsBuilder.Options);
         }
     }

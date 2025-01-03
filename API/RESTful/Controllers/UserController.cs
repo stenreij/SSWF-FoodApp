@@ -1,10 +1,7 @@
-﻿using Application.Services;
-using Core.Domain;
+﻿using Core.Domain;
 using Core.DomainServices.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Infrastructure;
 using API.RESTful.DTO;
-using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -90,7 +87,6 @@ namespace API.RESTful.Controllers
             {
                 _logger.LogError($"An error occurred during login: {ex.Message}");
                 return StatusCode(500, "An internal server error occurred.");
-
             }
         }
 

@@ -18,7 +18,6 @@ public class FoodAppDbContextFactory : IDesignTimeDbContextFactory<FoodAppDbCont
         }
 
         optionsBuilder.UseSqlServer(connectionString);
-
         return new FoodAppDbContext(optionsBuilder.Options);
     }
 }

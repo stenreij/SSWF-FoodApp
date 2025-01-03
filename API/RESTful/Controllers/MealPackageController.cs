@@ -2,7 +2,6 @@ using Application.Services;
 using Core.Domain;
 using Core.DomainServices.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Infrastructure;
 using API.RESTful.DTO;
 using System.Security.Claims;
 

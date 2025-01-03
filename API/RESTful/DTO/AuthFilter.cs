@@ -11,7 +11,6 @@ public class AuthFilter : AuthorizeAttribute, IAuthorizationFilter
         {
             return; 
         }
-
         if (!context.HttpContext.User.Identity.IsAuthenticated)
         {
             context.Result = new UnauthorizedObjectResult("You need to be logged in to use this service.");
