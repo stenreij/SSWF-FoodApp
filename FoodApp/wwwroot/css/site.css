@@ -4,61 +4,48 @@ html {
 
 /* Navbar */
 .navbar {
-    background-color: #a3cca3bc !important;
+    background-color: #2e7d32 !important;
 }
+
 /* Navbar Title */
 .navbar-brand {
     font-size: 30px !important;
-    color: #3c3f41 !important;
+    color: #fff !important;
 }
 
 .nav-link {
-    color: #3c3f41 !important;
-    font-size: 24px !important
+    color: #fff !important;
+    font-size: 24px !important;
 }
 
 .navbar-nav.right {
-    margin-right: 30px; 
+    margin-right: 30px;
 }
 
-@media (min-width: 768px) {
-    html {
-        font-size: 16px;
-    }
-}
-
-html {
-    position: relative;
-    min-height: 100%;
-}
-
+/* Body */
 body {
-    background-color: #ecf3e2 !important;
+    background-color: #f5f0e6 !important;
     margin-bottom: 60px;
 }
 
-/* Footer styling */
+/* Footer */
 .footer {
-    background-color: #659765bc !important;
-    color: #4a4949 !important;
+    background-color: #2e7d32 !important;
+    color: #fff !important;
     font-size: 16px !important;
     text-align: center;
     margin-left: auto;
     margin-right: auto;
 }
 
-.footer a {
-    color: #3e3d3d !important;
-}
+    .footer a {
+        color: #fff !important;
+    }
 
-.footer a:hover {
-    color: #141514 !important;
-}
-/* Text styling */
-h1 {
-    font-size: 60px;
-    margin-bottom: 50px;
-}
+        .footer a:hover {
+            color: #e6e6e6 !important;
+        }
+
 /* Table Styling */
 table {
     width: 100%;
@@ -67,39 +54,39 @@ table {
     border: 1px solid #ddd;
 }
 
-table th {
-    background-color: #008000;
-    color: #fff;
-    font-size: 20px;
-    padding: 10px;
-    text-align: left;
-}
+    table th {
+        background-color: #2e7d32;
+        color: #fff;
+        font-size: 20px;
+        padding: 10px;
+        text-align: left;
+    }
 
-/* Styling for tablerows */
-table td {
-    padding: 8px;
-    border-bottom: 1px solid #ddd;
-    text-align: left;
-    padding-left: 10px;
-}
+    table td {
+        padding: 8px;
+        border-bottom: 1px solid #ddd;
+        text-align: left;
+        padding-left: 10px;
+    }
 
-table tr:nth-child(odd) {
-    background-color: #f8ffee;
-}
+    table tr:nth-child(odd) {
+        background-color: #f8ffee;
+    }
 
-table tr:nth-child(even) {
-    background-color: #e6eddd;
-}
+    table tr:nth-child(even) {
+        background-color: #e6eddd;
+    }
 
-/* Details Overview Styling*/
+/* Details Overview Styling */
 .content-container {
-    max-width: 800px; 
-    margin: 0 auto; 
+    max-width: 800px;
+    margin: 0 auto;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
 }
+
 dl {
     margin: 0;
     padding: 0;
@@ -113,8 +100,8 @@ dt {
     text-align: left;
 }
 
-.col-sm-3.products {
-    border-top: solid 1px;
+.col-sm-3.products, .col-sm-9.products {
+    border-top: solid 1px #ddd;
 }
 
 dd {
@@ -122,23 +109,20 @@ dd {
     padding: 5px 0;
     text-align: left;
 }
-.col-sm-9.products {
-    border-top: solid 1px;
-}
 
-/* Button styling */
+/* Button Styling */
 .btn-primary {
     background-color: #78bf78 !important;
     color: #000000;
-    border-color: #171717
+    border-color: #171717;
 }
 
-.btn-primary:hover {
-    background-color: #008000 !important;
-    border-color: #171717
-}
+    .btn-primary:hover {
+        background-color: #2e7d32 !important;
+        border-color: #171717;
+    }
 
-/* Alert if no content (e.g. no reserved meals, so nothing to be shown) */
+/* Alert Styling */
 .alert {
     padding: 20px;
     margin-top: 50px;

@@ -14,7 +14,7 @@
 <body>
     <div class="text-center">
         
-        @if (User.IsInRole("student"))
+        @if (User.IsInRole("student")) 
         {
             <h1>@ViewData["Title"]</h1>
             @if (!Model.StudentMealPackages.Any())
