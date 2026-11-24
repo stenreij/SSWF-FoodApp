@@ -3,10 +3,9 @@ using Core.Domain;
 using Core.DomainServices.Interfaces;
 using FoodApp.Models;
 using Infrastructure;
-using Infrastructure.Migrations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Runtime.Intrinsics.X86;
+using System.Security.Claims;
 
 namespace FoodApp.Controllers
 {
@@ -40,24 +39,46 @@ namespace FoodApp.Controllers
             var currentTime = DateTime.Now;
             _mealPackageRepo.DeleteExpiredMealPackages(currentTime);
             var students = _studentRepo.GetStudents();
-            var viewModel = new OverviewViewModel();
+            var viewModel = new OverviewViewModel
+            {
+                CanteenMealPackages = new List<MealPackage>(),
+                OtherCanteenMealPackages = new List<MealPackage>(),
+                StudentMealPackages = new List<MealPackage>()
+            };
+            ViewBag.CustomError = TempData["CustomError"] as string;
 
             if (User.IsInRole("student"))
             {
-                var studentId = _studentRepo.GetStudentByEmail(User.Identity.Name).Id;
-                ViewBag.studentId = studentId;
+                var student = GetCurrentStudent();
+                if (student == null)
+                {
+                    ViewBag.CustomError = "Your account is not linked to a student profile. Please contact an administrator to link your account before making reservations.";
+                }
+                else
+                {
+                    ViewBag.studentId = student.Id;
+                }
                 viewModel.StudentMealPackages = _mealPackageRepo.GetAvailableMealPackages().ToList();
             }
             else if (User.IsInRole("employee"))
             {
-                var employee = _employeeRepo.GetEmployeeByEmail(User.Identity.Name);
-                var employeeLocation = employee.Location;
-                var canteenEmployee = canteens.FirstOrDefault(c => c.Location == employeeLocation);
-                viewModel.CanteenMealPackages = _mealPackageRepo.GetAvailableMealPackages().Where(mp => mp.Canteen.Id == canteenEmployee.Id).ToList();
-                viewModel.OtherCanteenMealPackages = _mealPackageRepo.GetAvailableMealPackages().Where(mp => mp.Canteen.Id != canteenEmployee.Id).ToList();
-                var employeeId = _employeeRepo.GetEmployeeByEmail(User.Identity.Name).Id;
-                viewModel.CanteenName = canteenEmployee.CanteenName;
-                ViewBag.employeeId = employeeId;
+                var employee = GetCurrentEmployee();
+                var canteenEmployee = employee == null
+                    ? null
+                    : canteens.FirstOrDefault(c => c.Location == employee.Location);
+
+                if (employee == null || canteenEmployee == null)
+                {
+                    ViewBag.CustomError = "Your account is not linked to an employee and canteen profile. Please contact an administrator before managing meal packages.";
+                }
+                else
+                {
+                    var availableMealPackages = _mealPackageRepo.GetAvailableMealPackages();
+                    viewModel.CanteenMealPackages = availableMealPackages.Where(mp => mp.Canteen.Id == canteenEmployee.Id).ToList();
+                    viewModel.OtherCanteenMealPackages = availableMealPackages.Where(mp => mp.Canteen.Id != canteenEmployee.Id).ToList();
+                    viewModel.CanteenName = canteenEmployee.CanteenName;
+                    ViewBag.employeeId = employee.Id;
+                }
             }
 
             ViewBag.Students = students;
@@ -82,7 +103,13 @@ namespace FoodApp.Controllers
 
             if (User.IsInRole("student"))
             {
-                var studentId = _studentRepo.GetStudentByEmail(User.Identity.Name).Id;
+                var student = GetCurrentStudent();
+                if (student == null)
+                {
+                    TempData["CustomError"] = "Your account is not linked to a student profile. Please contact an administrator.";
+                    return View(new List<MealPackage>());
+                }
+                var studentId = student.Id;
                 var mealPackage = _mealPackageRepo.GetReservedMealPackagesByStudent(studentId);
 
 
@@ -115,8 +142,15 @@ namespace FoodApp.Controllers
 
                 if (User.IsInRole("student"))
                 {
-                    var studentId = _studentRepo.GetStudentByEmail(User.Identity.Name).Id;
-                    ViewBag.StudentId = studentId;
+                    var student = GetCurrentStudent();
+                    if (student != null)
+                    {
+                        ViewBag.StudentId = student.Id;
+                    }
+                    else
+                    {
+                        ViewBag.CustomError = "Your account is not linked to a student profile. Please contact an administrator.";
+                    }
                 }
 
                 var mealPackageProducts = _mealPackageRepo.GetMealPackageProducts(mealPackage.Id);
@@ -143,9 +177,15 @@ namespace FoodApp.Controllers
             var products = _productRepo.GetProducts();
             var canteens = _canteenRepo.GetCanteens();
 
-            var employee = _employeeRepo.GetEmployeeByEmail(User.Identity.Name);
-            var employeeLocation = employee.Location;
-            var canteenEmployee = canteens.FirstOrDefault(c => c.Location == employeeLocation);
+            var employee = GetCurrentEmployee();
+            var canteenEmployee = employee == null
+                ? null
+                : canteens.FirstOrDefault(c => c.Location == employee.Location);
+            if (employee == null || canteenEmployee == null)
+            {
+                TempData["CustomError"] = "Your account is not linked to an employee and canteen profile. Please contact an administrator before managing meal packages.";
+                return RedirectToAction("MealOverview");
+            }
             var warmMealAvailable = canteenEmployee.WarmMeal;
 
             var mealTypeValues = Enum.GetValues(typeof(MealType)).Cast<MealType>();
@@ -229,10 +269,16 @@ namespace FoodApp.Controllers
         {
             try
             {
-                var employee = _employeeRepo.GetEmployeeByEmail(User.Identity.Name);
+                var employee = GetCurrentEmployee();
                 var canteens = _canteenRepo.GetCanteens();
-                var employeeLocation = employee.Location;
-                var canteenEmployee = canteens.FirstOrDefault(c => c.Location == employeeLocation);
+                var canteenEmployee = employee == null
+                    ? null
+                    : canteens.FirstOrDefault(c => c.Location == employee.Location);
+                if (employee == null || canteenEmployee == null)
+                {
+                    TempData["CustomError"] = "Your account is not linked to an employee and canteen profile. Please contact an administrator before managing meal packages.";
+                    return RedirectToAction("MealOverview");
+                }
                 bool warmMeal = canteenEmployee.WarmMeal.Equals("True");
 
                 var mealTypeValues = Enum.GetValues(typeof(MealType)).Cast<MealType>();
@@ -404,9 +450,15 @@ namespace FoodApp.Controllers
         [Authorize(Roles = "student")]
         public IActionResult ReserveMealPackage(int mealPackageId, int studentId)
         {
-          
             try
             {
+                var student = GetCurrentStudent();
+                if (student == null)
+                {
+                    TempData["CustomError"] = "Your account is not linked to a student profile. Please contact an administrator.";
+                    return RedirectToAction("MealOverview");
+                }
+                studentId = student.Id;
                 var viewModel = new OverviewViewModel();
                 viewModel.StudentMealPackages = _mealPackageRepo.GetAvailableMealPackages().ToList();
                 var mealPackage = _mealPackageRepo.GetMealPackageById(mealPackageId);
@@ -460,7 +512,12 @@ namespace FoodApp.Controllers
         [Authorize(Roles = "student")]
         public IActionResult CancelReservation(int mealPackageId, int studentId)
         {
-            var student = _studentRepo.GetStudentByEmail(User.Identity.Name);
+            var student = GetCurrentStudent();
+            if (student == null)
+            {
+                TempData["CustomError"] = "Your account is not linked to a student profile. Please contact an administrator.";
+                return RedirectToAction("MealOverview");
+            }
             if (student.Id != studentId)
             {
                 return RedirectToAction("MealOverview");
@@ -481,6 +538,18 @@ namespace FoodApp.Controllers
             _mealPackageRepo.EditMealPackage(mealPackage);
             return RedirectToAction("Reserved");
 
+        }
+
+        private Student GetCurrentStudent()
+        {
+            var email = User.FindFirstValue(ClaimTypes.Email) ?? User.Identity?.Name;
+            return string.IsNullOrWhiteSpace(email) ? null : _studentRepo.GetStudentByEmail(email);
+        }
+
+        private Employee GetCurrentEmployee()
+        {
+            var email = User.FindFirstValue(ClaimTypes.Email) ?? User.Identity?.Name;
+            return string.IsNullOrWhiteSpace(email) ? null : _employeeRepo.GetEmployeeByEmail(email);
         }
 
     }

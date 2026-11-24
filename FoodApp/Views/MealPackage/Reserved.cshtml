@@ -14,11 +14,15 @@
 <body>
     <div class="text-center">
         <h1>@ViewData["Title"]</h1>
+        @if (TempData["CustomError"] is string customError)
+        {
+            <div class="alert alert-warning">@customError</div>
+        }
         @if (!Model.Any())
         {
             @if(User.IsInRole("student"))
             {
-                            <p class="alert">You don't have any reservations at this moment.</p>
+                <p class="alert">You don't have any reservations at this moment.</p>
 
             }
             @if (User.IsInRole("employee"))

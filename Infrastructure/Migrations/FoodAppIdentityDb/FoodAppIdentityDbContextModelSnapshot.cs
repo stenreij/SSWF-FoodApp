@@ -182,6 +182,38 @@ namespace Infrastructure.Migrations.FoodAppIdentityDb
                             SecurityStamp = "b5006bb2-04cb-4263-95e6-721b6e59a4b2",
                             TwoFactorEnabled = false,
                             UserName = "peter@mail.com"
+                        },
+                        new
+                        {
+                            Id = "2",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "f60cde3b-00ca-4bc6-a91f-bd1fa3e92781",
+                            Email = "student2@mail.com",
+                            EmailConfirmed = false,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "STUDENT2@MAIL.COM",
+                            NormalizedUserName = "STUDENT2@MAIL.COM",
+                            PasswordHash = "AQAAAAEAACcQAAAAEJfJxiV6mkNr+2+lQNeYOvnED0bsdiK1Q400kKs+afqaBKlFoZOeomQMOW6qUeZxMA==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "814d8ecd-8241-41f5-952c-f6e607c5a269",
+                            TwoFactorEnabled = false,
+                            UserName = "student2@mail.com"
+                        },
+                        new
+                        {
+                            Id = "21",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "c3b95f77-c81c-4b9a-a287-f11814a9be73",
+                            Email = "employee2@mail.com",
+                            EmailConfirmed = false,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "EMPLOYEE2@MAIL.COM",
+                            NormalizedUserName = "EMPLOYEE2@MAIL.COM",
+                            PasswordHash = "AQAAAAEAACcQAAAAEJfJxiV6mkNr+2+lQNeYOvnED0bsdiK1Q400kKs+afqaBKlFoZOeomQMOW6qUeZxMA==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "d36f45fa-1fd0-4e62-91d5-84618a764da6",
+                            TwoFactorEnabled = false,
+                            UserName = "employee2@mail.com"
                         });
                 });
 
@@ -256,6 +288,16 @@ namespace Infrastructure.Migrations.FoodAppIdentityDb
                         {
                             UserId = "1",
                             RoleId = "440stud"
+                        },
+                        new
+                        {
+                            UserId = "2",
+                            RoleId = "440stud"
+                        },
+                        new
+                        {
+                            UserId = "21",
+                            RoleId = "220empl"
                         });
                 });
 
