@@ -2,7 +2,7 @@
 @using Microsoft.AspNetCore.Identity
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="nl">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -12,55 +12,54 @@
     <link rel="stylesheet" href="~/FoodApp.styles.css" asp-append-version="true" />
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">FoodApp</a>
+    <header class="app-header">
+        <nav class="navbar navbar-expand-lg app-navbar">
+            <div class="container">
+                <a class="navbar-brand app-brand" asp-area="" asp-controller="Home" asp-action="Index"><span class="brand-mark" aria-hidden="true">A</span> Avans FoodApp</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav">
+                <div class="navbar-collapse collapse justify-content-between" id="navbarSupportedContent">
+                    <ul class="navbar-nav ms-lg-4">
                         @if (User.IsInRole("student") || User.IsInRole("employee"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="MealPackage" asp-action="MealOverview">Meal-Overview</a>
+                                <a class="nav-link @(ViewContext.RouteData.Values["Action"]?.ToString() == "MealOverview" ? "active" : "")" asp-area="" asp-controller="MealPackage" asp-action="MealOverview">Maaltijden</a>
                             </li>
                         }
                         @if (User.IsInRole("student") || User.IsInRole("employee"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="MealPackage" asp-action="Reserved">Reserved</a>
+                                <a class="nav-link @(ViewContext.RouteData.Values["Action"]?.ToString() == "Reserved" ? "active" : "")" asp-area="" asp-controller="MealPackage" asp-action="Reserved">Reserveringen</a>
                             </li>
                         }
                         @if (User.IsInRole("employee"))
                         {
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="MealPackage" asp-action="AddMealPackage">Add-MealPackage</a>
+                            <a class="nav-link @(ViewContext.RouteData.Values["Action"]?.ToString() == "AddMealPackage" ? "active" : "")" asp-area="" asp-controller="MealPackage" asp-action="AddMealPackage">Pakket toevoegen</a>
                             </li>
                         }
                     </ul>
 
-                    <div class="ml-auto"></div> 
                     @if (User.Identity.IsAuthenticated)
                     {
-                        <ul class="navbar-nav right">                          
+                        <ul class="navbar-nav">
                             <li class="nav-item">
                                 <form method="post" asp-area="" asp-controller="Account" asp-action="LogOut">
                                     @Html.AntiForgeryToken()
-                                    <button type="submit" class="nav-link btn btn-logout text-dark">LogOut</button>
+                                    <button type="submit" class="nav-link btn btn-logout">Uitloggen</button>
                                 </form>
                             </li>
                         </ul>
                     }
                     else{
-                    <ul class="navbar-nav right">
+                    <ul class="navbar-nav">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Login">Login</a>
+                            <a class="nav-link" asp-area="" asp-controller="Account" asp-action="Login">Inloggen</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Register">Register</a>
+                            <a class="nav-link" asp-area="" asp-controller="Account" asp-action="Register">Registreren</a>
                         </li>
                     </ul>
                     }
@@ -68,15 +67,13 @@
             </div>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
+    <main role="main" class="container app-main">
+        @RenderBody()
+    </main>
 
-    <footer class="border-top footer text-muted">
-        <div class="footer-items">
-            &copy; 2023 - FoodApp - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <footer class="site-footer">
+        <div class="container d-flex justify-content-between gap-3 flex-wrap">
+            <span>&copy; @DateTime.Now.Year Avans FoodApp</span><a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

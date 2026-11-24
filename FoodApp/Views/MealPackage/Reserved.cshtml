@@ -1,87 +1,46 @@
-﻿@using Core.Domain;
+@using Core.Domain;
 @model List<MealPackage>
 
 @{
-    ViewData["Title"] = "Reserved MealPackages";
+    ViewData["Title"] = "Reserveringen";
 }
 
-<!DOCTYPE html>
-<html>
-<head>
-    <link rel="stylesheet" href="~/css/site.css" />
-</head>
-
-<body>
-    <div class="text-center">
-        <h1>@ViewData["Title"]</h1>
-        @if (TempData["CustomError"] is string customError)
-        {
-            <div class="alert alert-warning">@customError</div>
-        }
-        @if (!Model.Any())
-        {
-            @if(User.IsInRole("student"))
-            {
-                <p class="alert">You don't have any reservations at this moment.</p>
-
-            }
-            @if (User.IsInRole("employee"))
-            {
-                            <p class="alert">There are no reservations at this moment.</p>
-
-            }
-        }
-        else
-        {
-            <table>
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>City</th>
-                        <th>Canteen</th>
-                        <th>Price</th>
-                        <th>MealType</th>
-                        <th>18+</th>
-                        <th>PickUpDateTime</th>
-                        <th>ExpireDateTime</th>
-                        <th>ReservedBy</th>
-                        <th>Details</th>
-                        @if (User.IsInRole("student"))
-                        {
-                            <th>Cancel</th>
-                        }                     
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var mealPackage in Model)
-                    {
-                        <tr>
-                            <td>@mealPackage.Name</td>
-                            <td>@mealPackage.Canteen.City</td>
-                            <td>@mealPackage.Canteen.CanteenName</td>
-                            <td>@string.Format("{0:C}", mealPackage.Price)</td>
-                            <td>@mealPackage.MealType</td>
-                            <td>@mealPackage.AdultsOnly</td>
-                            <td>@mealPackage.PickUpDateTime.ToString("dd-MM-yyyy HH:mm")</td>
-                            <td>@mealPackage.ExpireDateTime.ToString("dd-MM-yyyy HH:mm")</td>
-                            <td>@mealPackage.ReservedByStudent.FirstName</td>
-                            <td>
-                                <a asp-controller="MealPackage" asp-action="MealPackageDetails" asp-route-mealPackageId="@mealPackage.Id" class="btn btn-primary">Details</a>
-                            </td>
-
-                            @if (User.IsInRole("student"))
-                            {
-                                <td>
-                                    <form method="post" asp-controller="MealPackage" asp-action="CancelReservation" asp-route-mealPackageId="@mealPackage.Id" asp-route-studentId="@ViewBag.studentId">
-                                        <button type="submit" class="btn btn-primary">Cancel</button>
-                                    </form>
-                                </td>
-                            }
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        }
+<div class="page-heading">
+    <div><h1>Reserveringen</h1><p class="page-intro">Je gereserveerde maaltijden en het aanbod dat door studenten is gereserveerd.</p></div>
+    @if (Model.Any()) { <span class="badge-soft">@Model.Count @(Model.Count == 1 ? "reservering" : "reserveringen")</span> }
+</div>
+@if (TempData["CustomError"] is string customError)
+{
+    <div class="alert alert-warning">@customError</div>
+}
+@if (!Model.Any())
+{
+    <div class="empty-state"><h2>@(User.IsInRole("student") ? "Je hebt nog niets gereserveerd" : "Nog geen reserveringen")</h2><p>@(User.IsInRole("student") ? "Ontdek het aanbod en reserveer een lekkere maaltijd voor later." : "Zodra een student een pakket reserveert, verschijnt het hier.")</p>@if (User.IsInRole("student")) { <a asp-controller="MealPackage" asp-action="MealOverview" class="btn btn-primary mt-3">Bekijk maaltijden</a> }</div>
+}
+else
+{
+    <div class="meal-grid">
+    @foreach (var mealPackage in Model)
+    {
+        <article class="meal-card">
+            <div class="meal-card-top"><h2>@mealPackage.Name</h2><span class="meal-price">@mealPackage.Price.ToString("C")</span></div>
+            <div class="meal-meta"><span class="badge-soft">@mealPackage.MealType</span>@if (mealPackage.AdultsOnly) { <span class="badge-soft">18+</span> }</div>
+            <dl class="meal-info">
+                <div><dt>Kantine</dt><dd>@mealPackage.Canteen.City · @mealPackage.Canteen.CanteenName</dd></div>
+                <div><dt>Ophalen</dt><dd>@mealPackage.PickUpDateTime.ToString("ddd d MMM · HH:mm")</dd></div>
+                <div><dt>Tot</dt><dd>@mealPackage.ExpireDateTime.ToString("HH:mm")</dd></div>
+                @if (User.IsInRole("employee")) { <div><dt>Gereserveerd door</dt><dd>@(mealPackage.ReservedByStudent?.FirstName ?? "Onbekend")</dd></div> }
+            </dl>
+            <div class="meal-actions">
+                <a asp-controller="MealPackage" asp-action="MealPackageDetails" asp-route-mealPackageId="@mealPackage.Id" class="btn btn-outline-primary">Details</a>
+                @if (User.IsInRole("student"))
+                {
+                    <form method="post" asp-controller="MealPackage" asp-action="CancelReservation" asp-route-mealPackageId="@mealPackage.Id" asp-route-studentId="@ViewBag.studentId">
+                        <button type="submit" class="btn btn-outline-danger">Annuleren</button>
+                    </form>
+                }
+            </div>
+        </article>
+    }
     </div>
-</body>
-</html>
+}

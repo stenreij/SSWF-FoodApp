@@ -1,18 +1,41 @@
-﻿@{
-    ViewData["Title"] = "Avans Meals";
+@{
+    ViewData["Title"] = "Avans FoodApp";
 }
 
-<!DOCTYPE html>
-<html>
-<head>
-    <link rel="stylesheet" href="~/css/site.css" />
-</head>
-
-<body>
-    <div class="text-center">
-        <h1>@ViewData["Title"]</h1>
-        <h4>Welcome to the official Avans FoodApp!</h4>
-        <h5>Reserve a mealpackage and help to reduce foodwaste at Avans.</h5>
+<section class="home-hero">
+    <div class="home-hero-copy">
+        <h1>Een lekkere maaltijd.<br /><span>Een slimme keuze.</span></h1>
+        <p>Ontdek betaalbare maaltijdpakketten bij jouw Avans kantine. Reserveer wat bij je past en geef goed eten een tweede kans.</p>
+        <div class="home-actions">
+            @if (User.IsInRole("student"))
+            {
+                <a asp-controller="MealPackage" asp-action="MealOverview" class="btn btn-primary btn-lg">Bekijk maaltijden <span aria-hidden="true">→</span></a>
+                <a asp-controller="MealPackage" asp-action="Reserved" class="btn btn-home-secondary">Mijn reserveringen</a>
+            }
+            else if (User.IsInRole("employee"))
+            {
+                <a asp-controller="MealPackage" asp-action="MealOverview" class="btn btn-primary btn-lg">Beheer aanbod <span aria-hidden="true">→</span></a>
+                <a asp-controller="MealPackage" asp-action="AddMealPackage" class="btn btn-home-secondary">Pakket toevoegen</a>
+            }
+            else
+            {
+                <a asp-controller="Account" asp-action="Login" class="btn btn-primary btn-lg">Inloggen <span aria-hidden="true">→</span></a>
+                <a asp-controller="Account" asp-action="Register" class="btn btn-home-secondary">Account aanmaken</a>
+            }
+        </div>
+        <div class="home-proof"><span class="home-proof-check">✓</span> Minder verspilling, meer smaak op de campus</div>
     </div>
-</body>
-</html>
+    <div class="home-art" aria-hidden="true">
+        <div class="art-orbit orbit-one"></div><div class="art-orbit orbit-two"></div>
+        <div class="art-sun"></div>
+        <div class="art-card art-card-back"><span class="art-card-line"></span><span class="art-card-line short"></span><span class="art-card-pill"></span></div>
+        <div class="art-card art-card-front"><div class="art-food"><span class="food-leaf leaf-one"></span><span class="food-leaf leaf-two"></span><span class="food-round"></span><span class="food-tomato"></span><span class="food-grain"></span></div><div class="art-caption"><span>Vers samengesteld</span><strong>Vandaag op de campus</strong></div></div>
+        <div class="art-note"><span class="art-note-icon">✓</span><span><strong>Goed geregeld</strong><br />Reserveer in een paar stappen</span></div>
+    </div>
+</section>
+
+<section class="home-benefits" aria-label="Voordelen">
+    <article class="benefit-card"><span class="benefit-icon">01</span><div><h2>Kies wat je lekker vindt</h2><p>Bekijk ingrediënten, prijs en ophaaltijd vooraf.</p></div></article>
+    <article class="benefit-card"><span class="benefit-icon">02</span><div><h2>Reserveer eenvoudig</h2><p>Leg jouw maaltijdpakket direct online vast.</p></div></article>
+    <article class="benefit-card"><span class="benefit-icon">03</span><div><h2>Haal het vers op</h2><p>Loop langs bij de kantine op het gekozen tijdstip.</p></div></article>
+</section>

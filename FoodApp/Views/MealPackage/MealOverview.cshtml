@@ -1,190 +1,106 @@
-﻿@using Core.Domain;
+@using Core.Domain;
 @model OverviewViewModel
 
 @{
-    ViewData["Title"] = "Overview MealPackages";
+    ViewData["Title"] = "Maaltijden";
+    var customError = ViewBag.CustomError as string;
 }
 
-<!DOCTYPE html>
-<html>
-<head>
-    <link rel="stylesheet" href="~/css/site.css" />
-</head>
-
-<body>
-    <div class="text-center">
-        
-        @if (User.IsInRole("student")) 
+@if (User.IsInRole("student"))
+{
+    <div class="page-heading">
+        <div>
+            <h1>Maaltijden bij jou in de buurt</h1>
+            <p class="page-intro">Bekijk het aanbod van vandaag en reserveer eenvoudig een vers pakket bij een Avans kantine.</p>
+        </div>
+        @if (Model.StudentMealPackages.Any())
         {
-            <h1>@ViewData["Title"]</h1>
-            @if (!string.IsNullOrEmpty(ViewBag.CustomError as string))
-            {
-                <div class="alert alert-warning text-center">@ViewBag.CustomError</div>
-            }
-            @if (!Model.StudentMealPackages.Any())
-            {
-                <p class="alert">There are no available mealpackages at this moment.</p>
-            }
-            else
-            {
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>price</th>
-                            <th>City</th>
-                            <th>Canteen</th>
-                            <th>PickUpDate</th>
-                            <th>ExpireDate</th>
-                            <th>MealType</th>
-                            <th>18+</th>
-                            <th>Details</th>
-                            <th>Reserve</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var mealPackage in Model.StudentMealPackages)
-                        {
-                            <tr>
-                                <td>@mealPackage.Name</td>
-                                <td>@string.Format("{0:C}", mealPackage.Price)</td>
-                                <td>@mealPackage.City</td>
-                                <td>
-                                    @if (mealPackage.Canteen != null)
-                                    {
-                                        @mealPackage.Canteen.CanteenName
-                                    }
-                                </td>
-                                <td>@mealPackage.PickUpDateTime</td>
-                                <td>@mealPackage.ExpireDateTime</td>
-                                <td>@mealPackage.MealType</td>
-                                <td>@mealPackage.AdultsOnly</td>
-                                <td>
-                                    <a asp-controller="MealPackage" asp-action="MealPackageDetails" asp-route-mealPackageId="@mealPackage.Id" class="btn btn-primary">Details</a>
-                                </td>
-                                <td>
-                                    @if (ViewBag.StudentId != null)
-                                    {
-                                        <form method="post" asp-controller="MealPackage" asp-action="ReserveMealPackage" asp-route-mealPackageId="@mealPackage.Id" asp-route-studentId="@ViewBag.StudentId">
-                                            <button type="submit" class="btn btn-primary">Reserve</button>
-                                        </form>
-                                    }
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            }
-        }
-        @if (User.IsInRole("employee"))
-        {
-            @if (!string.IsNullOrEmpty(ViewBag.CustomError as string))
-            {
-                <div class="alert alert-warning text-center">@ViewBag.CustomError</div>
-            }
-            <h1>MealPackages @Model.CanteenName</h1>
-            @if (!Model.CanteenMealPackages.Any())
-            {
-                <p class="alert">Your canteen does not have any available mealpackages at this moment.</p>
-            }
-            else
-            {
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>price</th>
-                            <th>City</th>
-                            <th>Canteen</th>
-                            <th>PickUpDate</th>
-                            <th>ExpireDate</th>
-                            <th>MealType</th>
-                            <th>18+</th>
-                            <th>Details</th>
-                            <th>Edit</th>
-                            <th>Delete</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var mealPackage in Model.CanteenMealPackages)
-                        {
-                            <tr>
-                                <td>@mealPackage.Name</td>
-                                <td>@string.Format("{0:C}", mealPackage.Price)</td>
-                                <td>@mealPackage.City</td>
-                                <td>
-                                    @if (mealPackage.Canteen != null)
-                                    {
-                                        @mealPackage.Canteen.CanteenName
-                                    }
-                                </td>
-                                <td>@mealPackage.PickUpDateTime</td>
-                                <td>@mealPackage.ExpireDateTime</td>
-                                <td>@mealPackage.MealType</td>
-                                <td>@mealPackage.AdultsOnly</td>
-                                <td>
-                                    <a asp-controller="MealPackage" asp-action="MealPackageDetails" asp-route-mealPackageId="@mealPackage.Id" class="btn btn-primary">Details</a>
-                                </td>
-                                <td>
-                                    <a asp-controller="MealPackage" asp-action="EditMealPackage" asp-route-id="@mealPackage.Id" class="btn btn-primary">Edit</a>
-                                </td>
-                                <td>
-                                    <form method="post" action="@Url.Action("DeleteMealPackage", "mealPackage", new {    Id=mealPackage.Id    })">
-                                        @Html.Hidden("Id", mealPackage.Id)
-                                        <button type="submit" class="btn btn-primary">Delete</button>
-                                    </form>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            }
-            <h1>Other Canteens</h1>
-            @if (!Model.OtherCanteenMealPackages.Any())
-            {
-                <p class="alert">The other canteens do not have any available mealpackages at this moment.</p>
-            }
-            else
-            {
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>price</th>
-                            <th>City</th>
-                            <th>Canteen</th>
-                            <th>PickUpDate</th>
-                            <th>ExpireDate</th>
-                            <th>MealType</th>
-                            <th>18+</th>
-                            <th>Details</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var mealPackage in Model.OtherCanteenMealPackages)
-                        {
-                            <tr>
-                                <td>@mealPackage.Name</td>
-                                <td>@string.Format("{0:C}", mealPackage.Price)</td>
-                                <td>@mealPackage.City</td>
-                                <td>
-                                    @if (mealPackage.Canteen != null)
-                                    {
-                                        @mealPackage.Canteen.CanteenName
-                                    }
-                                </td>
-                                <td>@mealPackage.PickUpDateTime</td>
-                                <td>@mealPackage.ExpireDateTime</td>
-                                <td>@mealPackage.MealType</td>
-                                <td>@mealPackage.AdultsOnly</td>
-                                <td>
-                                    <a asp-controller="MealPackage" asp-action="MealPackageDetails" asp-route-mealPackageId="@mealPackage.Id" class="btn btn-primary">Details</a>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            }
+            <span class="badge-soft">@Model.StudentMealPackages.Count beschikbaar</span>
         }
     </div>
-</body>
-</html>
+    @if (!string.IsNullOrEmpty(customError))
+    {
+        <div class="alert alert-warning">@customError</div>
+    }
+    @if (!Model.StudentMealPackages.Any())
+    {
+        <div class="empty-state"><h2>Even geen maaltijden beschikbaar</h2><p>Kom later nog eens terug. Nieuwe pakketten verschijnen hier zodra ze zijn aangemaakt.</p></div>
+    }
+    else
+    {
+        <div class="meal-grid">
+        @foreach (var mealPackage in Model.StudentMealPackages)
+        {
+            <article class="meal-card">
+                <div class="meal-card-top"><h2>@mealPackage.Name</h2><span class="meal-price">@mealPackage.Price.ToString("C")</span></div>
+                <div class="meal-meta"><span class="badge-soft">@mealPackage.MealType</span>@if (mealPackage.AdultsOnly) { <span class="badge-soft">18+</span> }</div>
+                <dl class="meal-info">
+                    <div><dt>Locatie</dt><dd>@mealPackage.City · @(mealPackage.Canteen?.CanteenName ?? "Avans kantine")</dd></div>
+                    <div><dt>Ophalen</dt><dd>@mealPackage.PickUpDateTime.ToString("ddd d MMM · HH:mm")</dd></div>
+                    <div><dt>Tot</dt><dd>@mealPackage.ExpireDateTime.ToString("HH:mm")</dd></div>
+                </dl>
+                <div class="meal-actions">
+                    <a asp-controller="MealPackage" asp-action="MealPackageDetails" asp-route-mealPackageId="@mealPackage.Id" class="btn btn-outline-primary">Bekijk pakket</a>
+                    @if (ViewBag.StudentId != null)
+                    {
+                        <form method="post" asp-controller="MealPackage" asp-action="ReserveMealPackage" asp-route-mealPackageId="@mealPackage.Id" asp-route-studentId="@ViewBag.StudentId">
+                            <button type="submit" class="btn btn-primary">Reserveer</button>
+                        </form>
+                    }
+                </div>
+            </article>
+        }
+        </div>
+    }
+}
+
+@if (User.IsInRole("employee"))
+{
+    <div class="page-heading">
+        <div><h1>Maaltijden · @Model.CanteenName</h1><p class="page-intro">Beheer het aanbod van je kantine en houd reserveringen overzichtelijk bij.</p></div>
+        <a asp-controller="MealPackage" asp-action="AddMealPackage" class="btn btn-primary">+ Nieuw pakket</a>
+    </div>
+    @if (!string.IsNullOrEmpty(customError))
+    {
+        <div class="alert alert-warning">@customError</div>
+    }
+    @if (!Model.CanteenMealPackages.Any())
+    {
+        <div class="empty-state"><h2>Nog geen pakketten voor deze kantine</h2><p>Voeg een maaltijdpakket toe om het aanbod zichtbaar te maken voor studenten.</p><a asp-controller="MealPackage" asp-action="AddMealPackage" class="btn btn-primary mt-3">Pakket toevoegen</a></div>
+    }
+    else
+    {
+        <div class="meal-grid">
+        @foreach (var mealPackage in Model.CanteenMealPackages)
+        {
+            <article class="meal-card">
+                <div class="meal-card-top"><h2>@mealPackage.Name</h2><span class="meal-price">@mealPackage.Price.ToString("C")</span></div>
+                <div class="meal-meta"><span class="badge-soft">@mealPackage.MealType</span>@if (mealPackage.AdultsOnly) { <span class="badge-soft">18+</span> }</div>
+                <dl class="meal-info"><div><dt>Locatie</dt><dd>@mealPackage.City · @(mealPackage.Canteen?.CanteenName ?? "Kantine")</dd></div><div><dt>Ophalen</dt><dd>@mealPackage.PickUpDateTime.ToString("ddd d MMM · HH:mm")</dd></div><div><dt>Tot</dt><dd>@mealPackage.ExpireDateTime.ToString("HH:mm")</dd></div></dl>
+                <div class="meal-actions">
+                    <a asp-controller="MealPackage" asp-action="MealPackageDetails" asp-route-mealPackageId="@mealPackage.Id" class="btn btn-outline-primary">Details</a>
+                    <a asp-controller="MealPackage" asp-action="EditMealPackage" asp-route-id="@mealPackage.Id" class="btn btn-outline-primary">Bewerken</a>
+                    <form method="post" action="@Url.Action("DeleteMealPackage", "mealPackage", new { Id = mealPackage.Id })">
+                        @Html.Hidden("Id", mealPackage.Id)
+                        <button type="submit" class="btn btn-outline-danger">Verwijderen</button>
+                    </form>
+                </div>
+            </article>
+        }
+        </div>
+    }
+    <h2 class="section-title">Aanbod van andere kantines</h2>
+    @if (!Model.OtherCanteenMealPackages.Any())
+    {
+        <p class="text-secondary">Er staan momenteel geen pakketten van andere kantines online.</p>
+    }
+    else
+    {
+        <div class="meal-grid">
+        @foreach (var mealPackage in Model.OtherCanteenMealPackages)
+        {
+            <article class="meal-card"><div class="meal-card-top"><h2>@mealPackage.Name</h2><span class="meal-price">@mealPackage.Price.ToString("C")</span></div><div class="meal-meta"><span class="badge-soft">@mealPackage.MealType</span>@if (mealPackage.AdultsOnly) { <span class="badge-soft">18+</span> }</div><dl class="meal-info"><div><dt>Kantine</dt><dd>@mealPackage.City · @(mealPackage.Canteen?.CanteenName ?? "Kantine")</dd></div><div><dt>Ophalen</dt><dd>@mealPackage.PickUpDateTime.ToString("ddd d MMM · HH:mm")</dd></div></dl><div class="meal-actions"><a asp-controller="MealPackage" asp-action="MealPackageDetails" asp-route-mealPackageId="@mealPackage.Id" class="btn btn-outline-primary">Bekijk pakket</a></div></article>
+        }
+        </div>
+    }
+}
